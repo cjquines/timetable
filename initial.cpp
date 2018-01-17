@@ -23,7 +23,7 @@ int CountHardConstraints() {
 void AssignSubject(int subject, int section, int slot) {
   assert(timetable[section][slot] == -1);
   int teacher = subject_teachers[subject];
-  if (teacher_table[teacher][slot] > 0)
+  if (teacher_table[teacher][slot] != -1)
     num_teacher_conflicts[teacher] += 1;
   teacher_table[teacher][slot] += 1;
   timetable[section][slot] = subject;
