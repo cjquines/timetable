@@ -58,6 +58,10 @@ void InitialAssign() {
     InitialAssignSection(i);
 }
 
+void SwapTimeslots(int lhs, int rhs) {
+
+}
+
 void PrintAssignment() {
   std::cout << "SECTIONS\n";
   for (int i = 0; i < num_sections; i++) {
