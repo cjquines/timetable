@@ -13,12 +13,8 @@ private:
   std::string name_;
 };
 
-inline int Section::GetId() {
-  return id_;
-}
+inline int Section::GetId() { return id_; }
 
-inline std::string Section::GetName() {
-  return name_;
-}
+inline std::string Section::GetName() { return name_; }
 
 #endif
