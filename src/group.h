@@ -1,7 +1,6 @@
 #ifndef _TIMETABLING_GROUP_H
 #define _TIMETABLING_GROUP_H
 
-#include <iterator>
 #include <string>
 #include <vector>
 
