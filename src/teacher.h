@@ -1,5 +1,5 @@
-#ifndef _TIMETABLING_TEACHER_H
-#define _TIMETABLING_TEACHER_H
+#ifndef _TIMETABLE_TEACHER_H
+#define _TIMETABLE_TEACHER_H
 
 #include <string>
 

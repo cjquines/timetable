@@ -1,5 +1,5 @@
-#ifndef _TIMETABLING_SECTION_H
-#define _TIMETABLING_SECTION_H
+#ifndef _TIMETABLE_SECTION_H
+#define _TIMETABLE_SECTION_H
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef _TIMETABLING_GROUP_H
-#define _TIMETABLING_GROUP_H
+#ifndef _TIMETABLE_GROUP_H
+#define _TIMETABLE_GROUP_H
 
 #include <string>
 #include <vector>

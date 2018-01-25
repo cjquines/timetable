@@ -1,5 +1,5 @@
-#ifndef _TIMETABLING_SCHEDULE_H
-#define _TIMETABLING_SCHEDULE_H
+#ifndef _TIMETABLE_SCHEDULE_H
+#define _TIMETABLE_SCHEDULE_H
 
 #include <memory>
 #include <vector>
@@ -8,7 +8,7 @@ class Group;
 class Section;
 class Teacher;
 
-#include "constraint.h"
+#include "constraints/constraint.h"
 
 class Schedule {
 public:
