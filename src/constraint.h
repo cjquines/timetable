@@ -12,7 +12,7 @@ public:
   virtual int CountSwapTimeslot(const int &section, const int &lhs_timeslot,
                                 const int &rhs_timeslot);
 
-private:
+protected:
   Schedule* schedule_;
   int priority_;
 };

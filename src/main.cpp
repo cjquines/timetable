@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
-#include "section.h"
+
+#include "schedule.h"
+#include "nonsimultaneous.h"
 
 int main() {
-  Section a(0, "1");
-  std::cout << a.GetId() << std::endl;
   return 0;
 }

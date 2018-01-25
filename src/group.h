@@ -10,13 +10,19 @@
 class Group {
 public:
   Group(const int &id);
+  
   int GetId();
   int GetNumSections();
   int GetNumSubjects();
+
+  Section* GetSection(const int &idx);
   std::vector<Section*>::iterator GetSectionsBegin();
   std::vector<Section*>::iterator GetSectionsEnd();
+
+  Subject* GetSubject(const int &idx);
   std::vector<Subject*>::iterator GetSubjectsBegin();
   std::vector<Subject*>::iterator GetSubjectsEnd();
+
   void AddSection(const int &id, const std::string &name);
   void AddSubject(const int &id, const int &num_slots, const int &teacher,
                   const std::string &name);
