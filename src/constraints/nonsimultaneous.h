@@ -8,6 +8,8 @@ public:
   NonSimultaneous(Schedule* schedule);
   int CountAssign(const int &subject, const int &section, const int &timeslot)
     override;
+  int CountSwapTimeslot(const int &section, const int &lhs_timeslot,
+                        const int &rhs_timeslot) override;
 };
 
 #endif
