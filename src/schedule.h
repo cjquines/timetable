@@ -66,13 +66,13 @@ private:
   std::vector<Group*> groups_;
   std::vector<Section*> sections_;
   std::vector<Subject*> subjects_;
-  std::vector<Teacher*> teachers_;
+  // std::vector<Teacher*> teachers_;
   std::vector< std::unique_ptr<Constraint> > constraints_;
 
   bool hard_satisfied_;
 
-  std::vector< std::vector<Subject*> > timetable_;
-  std::vector< std::vector<Section*> > teacher_table_;
+  std::vector< std::vector<int> > timetable_;
+  std::vector< std::vector<int> > teacher_table_;
 
   void RandomTimeslots(std::vector< std::pair<int, int> >::iterator begin,
                        std::vector< std::pair<int, int> >::iterator end);

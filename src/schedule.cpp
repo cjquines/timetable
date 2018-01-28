@@ -3,6 +3,8 @@
 #include "schedule.h"
 #include "group.h"
 #include "subject.h"
+#include "constraints/distinctperday.h"
+#include "constraints/nonsimultaneous.h"
 
 Schedule::Schedule(const int &num_days, const int &num_slots_per_day)
     : num_days_(num_days), num_slots_per_day_(num_slots_per_day) {
@@ -36,7 +38,7 @@ std::vector<Section*>::iterator Schedule::GetSectionsEnd() {
   return sections_.end();
 }
 
-Subject* Schedule::GetSUbject(const int &idx) { return subjects_[idx]; }
+Subject* Schedule::GetSubject(const int &idx) { return subjects_[idx]; }
 
 std::vector<Subject*>::iterator Schedule::GetSubjectsBegin() {
   return subjects_.begin();
@@ -66,6 +68,25 @@ void Schedule::AddGroup(const int &id) {
 }
 
 void Schedule::Initialize() {
+  for (auto ptr : groups_) {
+    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
+      sections_.push_back(*it);
+    for (auto it = ptr->GetSubjectsBegin(); it != ptr->GetSubjectsEnd(); it++)
+      subjects_.push_back(*it);
+  }
+
+  std::unique_ptr<Constraint> ptr = std::make_unique<DistinctPerDay>(this);
+  constraints_.push_back(std::move(ptr));
+  ptr = std::make_unique<NonSimultaneous>(this);
+  constraints_.push_back(std::move(ptr));
+
+  timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
+  
+  int max_teacher = -1;
+  for (auto ptr : subjects_)
+    max_teacher = std::max(max_teacher, ptr->GetTeacher());
+
+  teacher_table_.assign(max_teacher+1, std::vector<int>(num_slots_, -1));
 }
 
 int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
