@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <utility>
+#include <random>
 #include <vector>
 
 class Group;
@@ -58,6 +59,11 @@ public:
   void SoftSwap(const int &section, const int &lhs_timeslot,
                 const int &rhs_timeslot);
 
+  void InitialSchedule();
+  void HardSolver();
+
+  void TestPrint();
+
 private:
   int num_days_;
   int num_slots_;
@@ -70,11 +76,14 @@ private:
   std::vector< std::unique_ptr<Constraint> > constraints_;
 
   bool hard_satisfied_;
+  std::random_device rand_device_;
+  std::mt19937 rand_generator_;
 
   std::vector< std::vector<int> > timetable_;
   std::vector< std::vector<int> > teacher_table_;
 
-  void RandomTimeslots(std::vector< std::pair<int, int> >::iterator begin,
+  void RandomTimeslots(Group* group,
+                       std::vector< std::pair<int, int> >::iterator begin,
                        std::vector< std::pair<int, int> >::iterator end);
 };
 

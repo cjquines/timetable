@@ -1,5 +1,9 @@
 #include <cassert>
 
+#include <algorithm>
+#include <iostream>
+#include <random>
+
 #include "schedule.h"
 #include "group.h"
 #include "subject.h"
@@ -7,9 +11,9 @@
 #include "constraints/nonsimultaneous.h"
 
 Schedule::Schedule(const int &num_days, const int &num_slots_per_day)
-    : num_days_(num_days), num_slots_per_day_(num_slots_per_day) {
+    : num_days_(num_days), num_slots_per_day_(num_slots_per_day),
+      hard_satisfied_(false), rand_device_(), rand_generator_(rand_device_()) {
   num_slots_ = num_days_ * num_slots_per_day_;
-  hard_satisfied_ = false;
 }
 
 int Schedule::GetNumDays() { return num_days_; }
@@ -86,7 +90,7 @@ void Schedule::Initialize() {
   for (auto ptr : subjects_)
     max_teacher = std::max(max_teacher, ptr->GetTeacher());
 
-  teacher_table_.assign(max_teacher+1, std::vector<int>(num_slots_, -1));
+  teacher_table_.assign(max_teacher+1, std::vector<int>(num_slots_, 0));
 }
 
 int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
@@ -98,12 +102,12 @@ int Schedule::GetTeacherOf(const int &section, const int &timeslot) {
 }
 
 int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {
-  assert(hard_satisfied_ = false);
+  assert(!hard_satisfied_);
   return teacher_table_[teacher][timeslot];
 }
 
 int Schedule::GetSectionOf(const int &teacher, const int &timeslot) {
-  assert(hard_satisfied_ = true);
+  assert(hard_satisfied_);
   return teacher_table_[teacher][timeslot];
 }
 
@@ -111,4 +115,52 @@ std::pair<int, int> Schedule::ClampDay(const int &timeslot) {
   // Returns [ltimeslot, rtimeslot) for the day timeslot is in.
   int lbound = timeslot / num_slots_per_day_ * num_slots_per_day_;
   return std::make_pair(lbound, lbound + num_slots_per_day_);
+}
+
+int Schedule::HardCountAssign(const int &subject, const int &section,
+                              const int &timeslot) {
+  int result = 0;
+  for (auto& ptr : constraints_)
+    if (ptr->GetPriority() <= 0)
+      result += ptr->CountAssign(subject, section, timeslot);
+  return result;
+}
+
+void Schedule::HardAssign(const int &subject, const int &section,
+                          const int &timeslot) {
+  timetable_[section][timeslot] = subject;
+  teacher_table_[GetSubject(subject)->GetTeacher()][timeslot]++;
+}
+
+void Schedule::InitialSchedule() {
+  for (auto ptr : groups_) {
+    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++) {
+      std::vector<int> unassigned;
+      for (auto jt = ptr->GetSubjectsBegin(); jt != ptr->GetSubjectsEnd(); jt++)
+        for (int kt = 0; kt < (*jt)->GetNumSlots(); kt++)
+          unassigned.push_back((*jt)->GetId());
+      std::shuffle(unassigned.begin(), unassigned.end(), rand_generator_);
+      for (auto jt : unassigned) {
+        int min = 1000000, min_index = -1;
+        for (int kt = 0; kt < num_slots_; kt++) {
+          if (timetable_[(*it)->GetId()][kt] == -1 &&
+              HardCountAssign(jt, (*it)->GetId(), kt) < min) {
+            min = HardCountAssign(jt, (*it)->GetId(), kt);
+            min_index = kt;
+          }
+        }
+        HardAssign(jt, (*it)->GetId(), min_index);
+      }
+    }
+  }
+}
+
+void Schedule::TestPrint() {
+  for (auto ptr : groups_) {
+    for (int it = 0; it < sections_.size(); it++) {
+      // std::cout << it << ' ' << GetSection(it)->GetName();
+      for (auto jt : timetable_[it]) std::cout << ' ' << jt;
+      std::cout << std::endl;
+    }
+  }
 }
