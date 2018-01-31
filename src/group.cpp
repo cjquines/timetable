@@ -8,7 +8,7 @@ int Group::GetNumSections() { return sections_.size(); }
 
 int Group::GetNumSubjects() { return subjects_.size(); }
 
-Section* GetSection(const int &idx) { return sections_[idx]; }
+Section* Group::GetSection(const int &idx) { return sections_[idx]; }
 
 std::vector<Section*>::iterator Group::GetSectionsBegin() {
   return sections_.begin();
@@ -18,7 +18,7 @@ std::vector<Section*>::iterator Group::GetSectionsEnd() {
   return sections_.end();
 }
 
-Subject* GetSubject(const int &idx) { return subjects_[idx]; }
+Subject* Group::GetSubject(const int &idx) { return subjects_[idx]; }
 
 std::vector<Subject*>::iterator Group::GetSubjectsBegin() {
   return subjects_.begin();

@@ -13,12 +13,15 @@ int NonSimultaneous::CountAssign(const int &subject, const int &section,
   return 0;
 }
 
-int NonSimultaneous::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
+int NonSimultaneous::CountSwapTimeslot(const int &section,
+                                       const int &lhs_timeslot,
                                        const int &rhs_timeslot) {
-  int lhs_teacher = Constraint::schedule->GetTeacherOf(section, lhs_timeslot);
-  int rhs_teacher = Constraint::schedule->GetTeacherOf(section, rhs_timeslot);
+  int lhs_teacher = Constraint::schedule_->GetTeacherOf(section, lhs_timeslot);
+  int rhs_teacher = Constraint::schedule_->GetTeacherOf(section, rhs_timeslot);
   if (lhs_teacher == rhs_teacher) return 0;
-  if (Constraint::schedule_->GetSectionOf(lhs_teacher, rhs_timeslot) != -1) return 1;
-  if (Constraint::schedule_->GetSectionOf(rhs_teacher, lhs_timeslot) != -1) return 1;
+  if (Constraint::schedule_->GetSectionOf(lhs_teacher, rhs_timeslot) != -1)
+    return 1;
+  if (Constraint::schedule_->GetSectionOf(rhs_teacher, lhs_timeslot) != -1)
+    return 1;
   return 0;
 }
