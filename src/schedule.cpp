@@ -133,8 +133,12 @@ void Schedule::HardAssign(const int &subject, const int &section,
   teacher_table_[GetSubject(subject)->GetTeacher()][timeslot]++;
 }
 
-void Schedule::HardCount() {
-
+int Schedule::HardCount() {
+  int result = 0;
+  for (auto& ptr : constraints_)
+    if (ptr->GetPriority() <= 0)
+      result += ptr->CountAll();
+  return result;
 }
 
 void Schedule::InitialSchedule() {

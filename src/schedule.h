@@ -61,7 +61,7 @@ public:
   void SoftSwap(const int &section, const int &lhs_timeslot,
                 const int &rhs_timeslot);
 
-  void HardCount();
+  int HardCount();
 
   void InitialSchedule();
   void HardSolver();
