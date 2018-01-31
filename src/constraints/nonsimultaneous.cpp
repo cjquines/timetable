@@ -1,6 +1,7 @@
 #include "nonsimultaneous.h"
 #include "../schedule.h"
 #include "../subject.h"
+#include "../teacher.h"
 
 NonSimultaneous::NonSimultaneous(Schedule* schedule)
     : Constraint(schedule, -1) {}
@@ -28,6 +29,7 @@ int NonSimultaneous::CountAll() {
   for (auto it = Constraint::schedule_->GetTeachersBegin();
        it != Constraint::schedule_->GetTeachersEnd(); it++)
     for (int j = 0; j < Constraint::schedule_->GetNumSlots(); j++)
-      result += min(0, Constraint::schedule_->CountSectionsOf(it, j) - 1);
+      result += std::min(0,
+        Constraint::schedule_->CountSectionsOf((*it)->GetId(), j) - 1);
   return result;
 }
