@@ -59,6 +59,8 @@ public:
   void SoftSwap(const int &section, const int &lhs_timeslot,
                 const int &rhs_timeslot);
 
+  void HardCount();
+
   void InitialSchedule();
   void HardSolver();
 
@@ -76,7 +78,6 @@ private:
   std::vector< std::unique_ptr<Constraint> > constraints_;
 
   bool hard_satisfied_;
-  std::random_device rand_device_;
   std::mt19937 rand_generator_;
 
   std::vector< std::vector<int> > timetable_;

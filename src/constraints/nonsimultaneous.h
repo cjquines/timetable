@@ -10,6 +10,7 @@ public:
     override;
   int CountSwapTimeslot(const int &section, const int &lhs_timeslot,
                         const int &rhs_timeslot) override;
+  int CountAll() override;
 };
 
 #endif

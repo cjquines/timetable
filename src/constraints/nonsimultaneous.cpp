@@ -25,3 +25,19 @@ int NonSimultaneous::CountSwapTimeslot(const int &section,
     return 1;
   return 0;
 }
+
+int NonSimultaneous::CountAll() {
+  int result = 0;
+  for (auto it = Constraint::schedule_->GetSectionsBegin();
+       it != Constraint::schedule_->GetSectionsEnd(); it++) {
+    for (int i = 0; i < Constraint::schedule_->num_days_; i++) {
+      std::set<int> seen_subjects;
+      for (int j = i*Constraint::schedule_->num_slots_per_day;
+           j < (i+1)*Constraint::schedule_->num_slots_per_day; j++) {
+        if (!seen_subjects.insert(
+            Constraint::schedule_->GetSubjectOf(it, j)).second) result++;
+      }
+    }
+  }
+  return result;
+}

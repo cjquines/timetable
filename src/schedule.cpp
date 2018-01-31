@@ -1,4 +1,5 @@
 #include <cassert>
+#include <ctime>
 
 #include <algorithm>
 #include <iostream>
@@ -12,7 +13,7 @@
 
 Schedule::Schedule(const int &num_days, const int &num_slots_per_day)
     : num_days_(num_days), num_slots_per_day_(num_slots_per_day),
-      hard_satisfied_(false), rand_device_(), rand_generator_(rand_device_()) {
+      hard_satisfied_(false), rand_generator_(std::time(nullptr)) {
   num_slots_ = num_days_ * num_slots_per_day_;
 }
 
@@ -130,6 +131,10 @@ void Schedule::HardAssign(const int &subject, const int &section,
                           const int &timeslot) {
   timetable_[section][timeslot] = subject;
   teacher_table_[GetSubject(subject)->GetTeacher()][timeslot]++;
+}
+
+void Schedule::HardCount() {
+  
 }
 
 void Schedule::InitialSchedule() {

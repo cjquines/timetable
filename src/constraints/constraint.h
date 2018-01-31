@@ -11,6 +11,7 @@ public:
                           const int &timeslot);
   virtual int CountSwapTimeslot(const int &section, const int &lhs_timeslot,
                                 const int &rhs_timeslot);
+  virtual int CountAll();
 
 protected:
   Schedule* schedule_;

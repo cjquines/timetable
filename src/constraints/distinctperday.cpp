@@ -1,3 +1,4 @@
+#include <set>
 #include <tuple>
 
 #include "distinctperday.h"
@@ -35,6 +36,22 @@ int DistinctPerDay::CountSwapTimeslot(const int &section, const int &lhs_timeslo
     int subject = Constraint::schedule_->GetSubjectOf(section, i);
     if (subject == rhs_subject) result--;
     if (subject == lhs_subject) result++;
+  }
+  return result;
+}
+
+int DistinctPerDay::CountAll() {
+  int result = 0;
+  for (auto it = Constraint::schedule_->GetSectionsBegin();
+       it != Constraint::schedule_->GetSectionsEnd(); it++) {
+    for (int i = 0; i < Constraint::schedule_->num_days_; i++) {
+      std::set<int> seen_subjects;
+      for (int j = i*Constraint::schedule_->num_slots_per_day;
+           j < (i+1)*Constraint::schedule_->num_slots_per_day; j++) {
+        if (!seen_subjects.insert(
+            Constraint::schedule_->GetSubjectOf(it, j)).second) result++;
+      }
+    }
   }
   return result;
 }
