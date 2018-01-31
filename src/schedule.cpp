@@ -167,9 +167,10 @@ void Schedule::InitialSchedule() {
 void Schedule::TestPrint() {
   for (auto ptr : groups_) {
     for (int it = 0; it < sections_.size(); it++) {
-      // std::cout << it << ' ' << GetSection(it)->GetName();
+      std::cout << it << ' ';
       for (auto jt : timetable_[it]) std::cout << ' ' << jt;
       std::cout << std::endl;
     }
   }
+  std::cout << HardCount() << std::endl;
 }

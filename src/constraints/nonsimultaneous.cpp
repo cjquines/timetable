@@ -29,7 +29,7 @@ int NonSimultaneous::CountAll() {
   for (auto it = Constraint::schedule_->GetTeachersBegin();
        it != Constraint::schedule_->GetTeachersEnd(); it++)
     for (int j = 0; j < Constraint::schedule_->GetNumSlots(); j++)
-      result += std::min(0,
+      result += std::max(0,
         Constraint::schedule_->CountSectionsOf((*it)->GetId(), j) - 1);
   return result;
 }
