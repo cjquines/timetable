@@ -103,7 +103,10 @@ int Schedule::GetTeacherOf(const int &section, const int &timeslot) {
 }
 
 int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {
-  assert(!hard_satisfied_);
+  if (hard_satisfied_) {
+    if (teacher_table_[teacher][timeslot] == -1) return 0;
+    return 1;
+  }
   return teacher_table_[teacher][timeslot];
 }
 
@@ -134,7 +137,7 @@ void Schedule::HardAssign(const int &subject, const int &section,
 }
 
 void Schedule::HardCount() {
-  
+
 }
 
 void Schedule::InitialSchedule() {
