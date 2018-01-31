@@ -8,6 +8,7 @@
 #include "schedule.h"
 #include "group.h"
 #include "subject.h"
+#include "teacher.h"
 #include "constraints/distinctperday.h"
 #include "constraints/nonsimultaneous.h"
 
@@ -53,23 +54,24 @@ std::vector<Subject*>::iterator Schedule::GetSubjectsEnd() {
   return subjects_.end();
 }
 
-// std::unique_ptr<Constraint> Schedule::GetConstraint(const int &idx) {
-//   return constraints_[idx];
-// }
+Teacher* Schedule::GetTeacher(const int &idx) { return teachers_[idx]; }
 
-// std::vector< std::unique_ptr<Constraint> >::iterator
-//   Schedule::GetConstraintsBegin() {
-//   return constraints_.begin();
-// }
+std::vector<Teacher*>::iterator Schedule::GetTeachersBegin() {
+  return teachers_.begin();
+}
 
-// std::vector< std::unique_ptr<Constraint> >::iterator
-//   Schedule::GetConstraintsEnd(){
-//   return constraints_.end();
-// }
+std::vector<Teacher*>::iterator Schedule::GetTeachersEnd() {
+  return teachers_.end();
+}
 
 void Schedule::AddGroup(const int &id) {
   Group* ptr = new Group(id);
   groups_.push_back(ptr);
+}
+
+void Schedule::AddTeacher(const int &id, const std::string &name) {
+  Teacher* ptr = new Teacher(id, name);
+  teachers_.push_back(ptr);
 }
 
 void Schedule::Initialize() {
@@ -86,12 +88,7 @@ void Schedule::Initialize() {
   constraints_.push_back(std::move(ptr));
 
   timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
-  
-  int max_teacher = -1;
-  for (auto ptr : subjects_)
-    max_teacher = std::max(max_teacher, ptr->GetTeacher());
-
-  teacher_table_.assign(max_teacher+1, std::vector<int>(num_slots_, 0));
+  teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
 }
 
 int Schedule::GetSubjectOf(const int &section, const int &timeslot) {

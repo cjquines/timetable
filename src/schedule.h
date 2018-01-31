@@ -2,8 +2,9 @@
 #define _TIMETABLE_SCHEDULE_H
 
 #include <memory>
-#include <utility>
 #include <random>
+#include <string>
+#include <utility>
 #include <vector>
 
 class Group;
@@ -33,11 +34,12 @@ public:
   std::vector<Subject*>::iterator GetSubjectsBegin();
   std::vector<Subject*>::iterator GetSubjectsEnd();
 
-  // std::unique_ptr<Constraint> GetConstraint(const int &idx);
-  // std::vector< std::unique_ptr<Constraint> >::iterator GetConstraintsBegin();
-  // std::vector< std::unique_ptr<Constraint> >::iterator GetConstraintsEnd();
+  Teacher* GetTeacher(const int &idx);
+  std::vector<Teacher*>::iterator GetTeachersBegin();
+  std::vector<Teacher*>::iterator GetTeachersEnd();
 
   void AddGroup(const int &id);
+  void AddTeacher(const int &id, const std::string &name);
   void Initialize();
 
   int GetSubjectOf(const int &section, const int &timeslot);
@@ -74,7 +76,7 @@ private:
   std::vector<Group*> groups_;
   std::vector<Section*> sections_;
   std::vector<Subject*> subjects_;
-  // std::vector<Teacher*> teachers_;
+  std::vector<Teacher*> teachers_;
   std::vector< std::unique_ptr<Constraint> > constraints_;
 
   bool hard_satisfied_;

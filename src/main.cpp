@@ -7,6 +7,11 @@
 int main() {
   Schedule config(5, 3);
   std::cout << config.GetNumDays() << std::endl;
+  config.AddTeacher(0, "Darilag");
+  config.AddTeacher(1, "Catimbang");
+  config.AddTeacher(2, "Salvador");
+  config.AddTeacher(3, "De Jesus");
+  config.AddTeacher(4, "Villareal");
   config.AddGroup(0);
   auto grp = config.GetGroup(0);
   grp->AddSection(0, "Locke");

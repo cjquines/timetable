@@ -3,6 +3,7 @@
 
 #include "distinctperday.h"
 #include "../schedule.h"
+#include "../section.h"
 
 DistinctPerDay::DistinctPerDay(Schedule* schedule)
     : Constraint(schedule, 0) {}
@@ -44,12 +45,13 @@ int DistinctPerDay::CountAll() {
   int result = 0;
   for (auto it = Constraint::schedule_->GetSectionsBegin();
        it != Constraint::schedule_->GetSectionsEnd(); it++) {
-    for (int i = 0; i < Constraint::schedule_->num_days_; i++) {
+    for (int i = 0; i < Constraint::schedule_->GetNumDays(); i++) {
       std::set<int> seen_subjects;
-      for (int j = i*Constraint::schedule_->num_slots_per_day;
-           j < (i+1)*Constraint::schedule_->num_slots_per_day; j++) {
+      for (int j = i*Constraint::schedule_->GetNumSlotsPerDay();
+           j < (i+1)*Constraint::schedule_->GetNumSlotsPerDay(); j++) {
         if (!seen_subjects.insert(
-            Constraint::schedule_->GetSubjectOf(it, j)).second) result++;
+            Constraint::schedule_->GetSubjectOf((*it)->GetId(), j)).second)
+          result++;
       }
     }
   }

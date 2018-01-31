@@ -23,6 +23,6 @@ int NonSimultaneous::CountSwapTimeslot(const int &section,
 
 int NonSimultaneous::CountAll() {
   int result = 0;
-
+  // expose teacher iteration interface for schedule
   return result;
 }
