@@ -52,6 +52,10 @@ public:
   int HardCountAssign(const int &subject, const int &section,
                       const int &timeslot);
   void HardAssign(const int &subject, const int &section, const int &timeslot);
+  int HardCountTranslate(const int &section, const int &timeslot,
+                         const int &open_timeslot);
+  void HardTranslate(const int &section, const int &timeslot,
+                     const int &open_timeslot);
   int HardCountSwap(const int &section, const int &lhs_timeslot,
                     const int &rhs_timeslot);
   void HardSwap(const int &section, const int &lhs_timeslot,

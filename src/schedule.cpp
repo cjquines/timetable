@@ -133,6 +133,24 @@ void Schedule::HardAssign(const int &subject, const int &section,
   teacher_table_[GetSubject(subject)->GetTeacher()][timeslot]++;
 }
 
+int Schedule::HardCountTranslate(const int &section, const int &timeslot,
+                                 const int &open_timeslot) {
+  int result = 0;
+  for (auto& ptr : constraints_)
+    if (ptr->GetPriority() <= 0)
+      result += ptr->CountTranslate(section, timeslot, open_timeslot);
+  return result;
+}
+
+void Schedule::HardTranslate(const int &section, const int &timeslot,
+                             const int &open_timeslot) {
+  int subject = GetSubjectOf(section, timeslot);
+  timetable_[section][timeslot] = -1;
+  timetable_[section][open_timeslot] = subject;
+  teacher_table_[GetSubject(subject)->GetTeacher()][timeslot]--;
+  teacher_table_[GetSubject(subject)->GetTeacher()][open_timeslot]++;
+}
+
 int Schedule::HardCountSwap(const int &section, const int &lhs_timeslot,
                             const int &rhs_timeslot) {
   int result = 0;
@@ -144,7 +162,6 @@ int Schedule::HardCountSwap(const int &section, const int &lhs_timeslot,
 
 void Schedule::HardSwap(const int &section, const int &lhs_timeslot,
                         const int &rhs_timeslot) {
-  assert(lhs_timeslot != rhs_timeslot);
   int lhs_subject = GetSubjectOf(section, lhs_timeslot);
   int rhs_subject = GetSubjectOf(section, rhs_timeslot);
   timetable_[section][lhs_timeslot] = rhs_subject;
@@ -195,13 +212,25 @@ void Schedule::HardSolver(int current) {
         to_swap.emplace_back((*it)->GetId(), jt);
     std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
     for (int i = 0; i < to_swap.size(); i++) {
+      int section = to_swap[i].first;
+      if (timetable_[section][to_swap[i].second] == -1) continue;
       for (int j = i+1; j < to_swap.size(); j++) {
-        if (to_swap[i].first == to_swap[j].first) {
-          int delta = HardCountSwap(to_swap[i].first, to_swap[i].second,
-                                    to_swap[j].second);
-          if (delta <= 0) {
-            HardSwap(to_swap[i].first, to_swap[i].second, to_swap[j].second);
-            return HardSolver(current + delta);
+        if (to_swap[j].first == section) {
+          if (timetable_[section][to_swap[j].second] == -1) {
+            int delta = HardCountTranslate(section, to_swap[i].second,
+                                           to_swap[j].second);
+            std::cout << delta << std::endl;
+            if (delta < 0) {
+              HardTranslate(section, to_swap[i].second, to_swap[j].second);
+              return HardSolver(current + delta);
+            }
+          } else {
+            int delta = HardCountSwap(to_swap[i].first, to_swap[i].second,
+                                      to_swap[j].second);
+            if (delta < 0) {
+              HardSwap(to_swap[i].first, to_swap[i].second, to_swap[j].second);
+              return HardSolver(current + delta);
+            }
           }
         }
       }
@@ -210,10 +239,15 @@ void Schedule::HardSolver(int current) {
 }
 
 void Schedule::TestPrint() {
+  std::cout << "   ";
+  for (int i = 0; i < num_slots_; i++) std::cout << "x   ";
+  std::cout << std::endl;
   for (int it = 0; it < sections_.size(); it++) {
     std::cout << it << ' ';
-    for (auto jt : timetable_[it])
-      std::cout << ' ' << GetSubject(jt)->GetName();
+    for (auto jt : timetable_[it]) {
+      if (jt >= 0) std::cout << ' ' << GetSubject(jt)->GetName();
+      else std::cout << ' ' << "---";
+    }
     std::cout << std::endl;
   }
   std::cout << std::endl;

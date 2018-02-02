@@ -7,9 +7,10 @@
 #include "group.h"
 
 int main() {
-  Schedule config(5, 3, std::time(nullptr));
-  // Schedule config(5, 3, 1);
-  std::cout << config.GetNumDays() << std::endl;
+  // std::cout << std::time(nullptr) << std::endl;
+  Schedule config(5, 4, std::time(nullptr));
+  // std::cout << std::time(nullptr) << std::endl;
+  // Schedule config(5, 3, 1517567544);
   config.AddTeacher(0, "Darilag");
   config.AddTeacher(1, "Catimbang");
   config.AddTeacher(2, "Salvador");
