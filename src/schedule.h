@@ -16,7 +16,7 @@ class Teacher;
 
 class Schedule {
 public:
-  Schedule(const int &num_days, const int &num_slots_per_day);
+  Schedule(const int &num_days, const int &num_slots_per_day, const int &seed);
 
   int GetNumDays();
   int GetNumSlots();
@@ -64,7 +64,7 @@ public:
   int HardCount();
 
   void InitialSchedule();
-  void HardSolver();
+  void HardSolver(int current);
 
   void TestPrint();
 

@@ -1,5 +1,4 @@
 #include <cassert>
-#include <ctime>
 
 #include <algorithm>
 #include <iostream>
@@ -12,9 +11,10 @@
 #include "constraints/distinctperday.h"
 #include "constraints/nonsimultaneous.h"
 
-Schedule::Schedule(const int &num_days, const int &num_slots_per_day)
+Schedule::Schedule(const int &num_days, const int &num_slots_per_day,
+                   const int &seed)
     : num_days_(num_days), num_slots_per_day_(num_slots_per_day),
-      hard_satisfied_(false), rand_generator_(std::time(nullptr)) {
+      hard_satisfied_(false), rand_generator_(seed) {
   num_slots_ = num_days_ * num_slots_per_day_;
 }
 
@@ -133,6 +133,28 @@ void Schedule::HardAssign(const int &subject, const int &section,
   teacher_table_[GetSubject(subject)->GetTeacher()][timeslot]++;
 }
 
+int Schedule::HardCountSwap(const int &section, const int &lhs_timeslot,
+                            const int &rhs_timeslot) {
+  int result = 0;
+  for (auto& ptr : constraints_)
+    if (ptr->GetPriority() <= 0)
+      result += ptr->CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
+  return result;
+}
+
+void Schedule::HardSwap(const int &section, const int &lhs_timeslot,
+                        const int &rhs_timeslot) {
+  assert(lhs_timeslot != rhs_timeslot);
+  int lhs_subject = GetSubjectOf(section, lhs_timeslot);
+  int rhs_subject = GetSubjectOf(section, rhs_timeslot);
+  timetable_[section][lhs_timeslot] = rhs_subject;
+  timetable_[section][rhs_timeslot] = lhs_subject;
+  teacher_table_[GetSubject(lhs_subject)->GetTeacher()][lhs_timeslot]--;
+  teacher_table_[GetSubject(lhs_subject)->GetTeacher()][rhs_timeslot]++;
+  teacher_table_[GetSubject(rhs_subject)->GetTeacher()][rhs_timeslot]--;
+  teacher_table_[GetSubject(rhs_subject)->GetTeacher()][lhs_timeslot]++;
+}
+
 int Schedule::HardCount() {
   int result = 0;
   for (auto& ptr : constraints_)
@@ -164,13 +186,43 @@ void Schedule::InitialSchedule() {
   }
 }
 
-void Schedule::TestPrint() {
+void Schedule::HardSolver(int current) {
+  if (current <= 0) return;
   for (auto ptr : groups_) {
-    for (int it = 0; it < sections_.size(); it++) {
-      std::cout << it << ' ';
-      for (auto jt : timetable_[it]) std::cout << ' ' << jt;
-      std::cout << std::endl;
+    std::vector< std::pair<int, int> > to_swap;
+    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
+      for (auto jt = 0; jt < num_slots_; jt++)
+        to_swap.emplace_back((*it)->GetId(), jt);
+    std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
+    for (int i = 0; i < to_swap.size(); i++) {
+      for (int j = i+1; j < to_swap.size(); j++) {
+        if (to_swap[i].first == to_swap[j].first) {
+          int delta = HardCountSwap(to_swap[i].first, to_swap[i].second,
+                                    to_swap[j].second);
+          if (delta <= 0) {
+            HardSwap(to_swap[i].first, to_swap[i].second, to_swap[j].second);
+            return HardSolver(current + delta);
+          }
+        }
+      }
     }
   }
+}
+
+void Schedule::TestPrint() {
+  for (int it = 0; it < sections_.size(); it++) {
+    std::cout << it << ' ';
+    for (auto jt : timetable_[it])
+      std::cout << ' ' << GetSubject(jt)->GetName();
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+  for (int it = 0; it < teachers_.size(); it++) {
+    std::cout << it << ' ';
+    for (auto jt : teacher_table_[it]) std::cout << ' ' << jt;
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
   std::cout << HardCount() << std::endl;
+  std::cout << std::endl;
 }

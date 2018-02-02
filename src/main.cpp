@@ -1,3 +1,5 @@
+#include <ctime>
+
 #include <iostream>
 #include <string>
 
@@ -5,7 +7,8 @@
 #include "group.h"
 
 int main() {
-  Schedule config(5, 3);
+  Schedule config(5, 3, std::time(nullptr));
+  // Schedule config(5, 3, 1);
   std::cout << config.GetNumDays() << std::endl;
   config.AddTeacher(0, "Darilag");
   config.AddTeacher(1, "Catimbang");
@@ -27,6 +30,8 @@ int main() {
   grp->AddSubject(7, 2, 4, "CAP");
   config.Initialize();
   config.InitialSchedule();
+  config.TestPrint();
+  config.HardSolver(config.HardCount());
   config.TestPrint();
   return 0;
 }
