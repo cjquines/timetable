@@ -25,9 +25,9 @@ int DistinctPerDay::CountSwapTimeslot(const int &section, const int &lhs_timeslo
   std::tie(rhs_lbound, rhs_rbound) = Constraint::schedule_->ClampDay(rhs_timeslot);
   int lhs_subject = Constraint::schedule_->GetSubjectOf(section, lhs_timeslot);
   int rhs_subject = Constraint::schedule_->GetSubjectOf(section, rhs_timeslot);
-  int result = 0;
+  if (lhs_lbound == rhs_lbound || lhs_subject == rhs_subject) return 0;
 
-  if (lhs_lbound == rhs_lbound || lhs_subject == rhs_subject) return result;
+  int result = 2;
   for (int i = lhs_lbound; i < lhs_rbound; i++) {
     int subject = Constraint::schedule_->GetSubjectOf(section, i);
     if (subject == lhs_subject) result--;
