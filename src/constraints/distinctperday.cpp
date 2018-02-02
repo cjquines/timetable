@@ -18,6 +18,26 @@ int DistinctPerDay::CountAssign(const int &subject, const int &section,
   return result;
 }
 
+int DistinctPerDay::CountTranslate(const int &section, const int &timeslot,
+                                   const int &open_timeslot) {
+  int lbound, rbound, open_lbound, open_rbound;
+  std::tie(lbound, rbound) = Constraint::schedule_->ClampDay(timeslot);
+  std::tie(open_lbound, open_rbound) = Constraint::schedule_->ClampDay(open_timeslot);
+  int subject = Constraint::schedule_->GetSubjectOf(section, timeslot);
+  if (lbound == open_lbound) return 0;
+
+  int result = 1;
+  for (int i = lbound; i < rbound; i++) {
+    int this_subject = Constraint::schedule_->GetSubjectOf(section, i);
+    if (this_subject == subject) result--;
+  }
+  for (int i = open_lbound; i < open_rbound; i++) {
+    int this_subject = Constraint::schedule_->GetSubjectOf(section, i);
+    if (this_subject == subject) result++;
+  }
+  return result;
+}
+
 int DistinctPerDay::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
                                       const int &rhs_timeslot) {
   int lhs_lbound, lhs_rbound, rhs_lbound, rhs_rbound;
