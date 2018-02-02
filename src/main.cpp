@@ -33,6 +33,7 @@ int main() {
   config.InitialSchedule();
   config.TestPrint();
   config.HardSolver(config.HardCount());
+  if (config.HardCount() == 0) config.SoftInitialize();
   config.TestPrint();
   return 0;
 }

@@ -41,6 +41,7 @@ public:
   void AddGroup(const int &id);
   void AddTeacher(const int &id, const std::string &name);
   void Initialize();
+  void SoftInitialize();
 
   int GetSubjectOf(const int &section, const int &timeslot);
   int GetTeacherOf(const int &section, const int &timeslot);
@@ -60,15 +61,18 @@ public:
                     const int &rhs_timeslot);
   void HardSwap(const int &section, const int &lhs_timeslot,
                 const int &rhs_timeslot);
+
   int SoftCountSwap(const int &section, const int &lhs_timeslot,
                     const int &rhs_timeslot);
   void SoftSwap(const int &section, const int &lhs_timeslot,
                 const int &rhs_timeslot);
 
   int HardCount();
+  int SoftCount();
 
   void InitialSchedule();
   void HardSolver(int current);
+  void SoftSolver(int current);
 
   void TestPrint();
 
@@ -88,10 +92,6 @@ private:
 
   std::vector< std::vector<int> > timetable_;
   std::vector< std::vector<int> > teacher_table_;
-
-  void RandomTimeslots(Group* group,
-                       std::vector< std::pair<int, int> >::iterator begin,
-                       std::vector< std::pair<int, int> >::iterator end);
 };
 
 #endif

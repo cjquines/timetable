@@ -91,11 +91,21 @@ void Schedule::Initialize() {
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
 }
 
+void Schedule::SoftInitialize() {
+  assert(hard_satisfied_);
+  teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, -1));
+  for (int it = 0; it < sections_.size(); it++)
+    for (int jt = 0; jt < num_slots_; jt++)
+      if (timetable_[it][jt] != -1)
+        teacher_table_[GetTeacherOf(it, jt)][jt] = it;
+}
+
 int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
   return timetable_[section][timeslot];
 }
 
 int Schedule::GetTeacherOf(const int &section, const int &timeslot) {
+  assert(timetable_[section][timeslot] != -1);
   return GetSubject(timetable_[section][timeslot])->GetTeacher();
 }
 
@@ -180,6 +190,14 @@ int Schedule::HardCount() {
   return result;
 }
 
+int Schedule::SoftCount() {
+  int result = 0;
+  for (auto& ptr : constraints_)
+    if (ptr->GetPriority() > 0)
+      result += ptr->CountAll();
+  return result;
+}
+
 void Schedule::InitialSchedule() {
   for (auto ptr : groups_) {
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++) {
@@ -204,7 +222,10 @@ void Schedule::InitialSchedule() {
 }
 
 void Schedule::HardSolver(int current) {
-  if (current <= 0) return;
+  if (current <= 0) {
+    hard_satisfied_ = true;
+    return;
+  }
   for (auto ptr : groups_) {
     std::vector< std::pair<int, int> > to_swap;
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
@@ -246,14 +267,17 @@ void Schedule::TestPrint() {
     std::cout << it << ' ';
     for (auto jt : timetable_[it]) {
       if (jt >= 0) std::cout << ' ' << GetSubject(jt)->GetName();
-      else std::cout << ' ' << "---";
+      else std::cout << " ---";
     }
     std::cout << std::endl;
   }
   std::cout << std::endl;
   for (int it = 0; it < teachers_.size(); it++) {
     std::cout << it << ' ';
-    for (auto jt : teacher_table_[it]) std::cout << ' ' << jt;
+    for (auto jt : teacher_table_[it]) {
+      if (jt >= 0) std::cout << ' ' << jt;
+      else std::cout << " -";
+    }
     std::cout << std::endl;
   }
   std::cout << std::endl;
