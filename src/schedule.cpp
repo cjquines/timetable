@@ -10,6 +10,7 @@
 #include "teacher.h"
 #include "constraints/distinctperday.h"
 #include "constraints/nonsimultaneous.h"
+#include "constraints/teachertime.h"
 
 Schedule::Schedule(const int &num_days, const int &num_slots_per_day,
                    const int &seed)
@@ -72,6 +73,13 @@ void Schedule::AddGroup(const int &id) {
 void Schedule::AddTeacher(const int &id, const std::string &name) {
   Teacher* ptr = new Teacher(id, name);
   teachers_.push_back(ptr);
+}
+
+void Schedule::AddTeacherTime(const int &priority, const int &teacher,
+                              const std::vector<int> &unassignable) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<TeacherTime>(
+    this, priority, teacher, unassignable);
+  constraints_.push_back(std::move(ptr));
 }
 
 void Schedule::Initialize() {
@@ -182,6 +190,41 @@ void Schedule::HardSwap(const int &section, const int &lhs_timeslot,
   teacher_table_[GetSubject(rhs_subject)->GetTeacher()][lhs_timeslot]++;
 }
 
+int Schedule::SoftCountTranslate(const int &section, const int &timeslot,
+                                 const int &open_timeslot) {
+  int result = 0;
+  for (auto& ptr : constraints_)
+    if (ptr->GetPriority() > 0)
+      result += ptr->CountTranslate(section, timeslot, open_timeslot);
+  return result;
+}
+
+void Schedule::SoftTranslate(const int &section, const int &timeslot,
+                             const int &open_timeslot) {
+  int subject = GetSubjectOf(section, timeslot);
+  timetable_[section][timeslot] = -1;
+  timetable_[section][open_timeslot] = subject;
+  teacher_table_[GetSubject(subject)->GetTeacher()][timeslot] = -1;
+  teacher_table_[GetSubject(subject)->GetTeacher()][open_timeslot] = section;
+}
+
+int Schedule::SoftCountSwap(const int &section, const int &lhs_timeslot,
+                            const int &rhs_timeslot) {
+  int result = 0;
+  for (auto& ptr : constraints_)
+    if (ptr->GetPriority() > 0)
+      result += ptr->CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
+  return result;
+}
+
+void Schedule::SoftSwap(const int &section, const int &lhs_timeslot,
+                        const int &rhs_timeslot) {
+  int lhs_subject = GetSubjectOf(section, lhs_timeslot);
+  int rhs_subject = GetSubjectOf(section, rhs_timeslot);
+  timetable_[section][lhs_timeslot] = rhs_subject;
+  timetable_[section][rhs_timeslot] = lhs_subject;
+}
+
 int Schedule::HardCount() {
   int result = 0;
   for (auto& ptr : constraints_)
@@ -240,7 +283,6 @@ void Schedule::HardSolver(int current) {
           if (timetable_[section][to_swap[j].second] == -1) {
             int delta = HardCountTranslate(section, to_swap[i].second,
                                            to_swap[j].second);
-            std::cout << delta << std::endl;
             if (delta < 0) {
               HardTranslate(section, to_swap[i].second, to_swap[j].second);
               return HardSolver(current + delta);
@@ -251,6 +293,44 @@ void Schedule::HardSolver(int current) {
             if (delta < 0) {
               HardSwap(section, to_swap[i].second, to_swap[j].second);
               return HardSolver(current + delta);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void Schedule::SoftSolver(int current) {
+  if (current <= 0) return;
+  for (auto ptr : groups_) {
+    std::vector< std::pair<int, int> > to_swap;
+    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
+      for (auto jt = 0; jt < num_slots_; jt++)
+        to_swap.emplace_back((*it)->GetId(), jt);
+    std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
+    for (int i = 0; i < to_swap.size(); i++) {
+      int section = to_swap[i].first;
+      if (timetable_[section][to_swap[i].second] == -1) continue;
+      for (int j = i+1; j < to_swap.size(); j++) {
+        if (to_swap[j].first == section) {
+          if (timetable_[section][to_swap[j].second] == -1) {
+            if (HardCountTranslate(section, to_swap[i].second,
+                                   to_swap[j].second) > 0) continue;
+            int delta = SoftCountTranslate(section, to_swap[i].second,
+                                           to_swap[j].second);
+            if (delta < 0) {
+              SoftTranslate(section, to_swap[i].second, to_swap[j].second);
+              return SoftSolver(current + delta);
+            }
+          } else {
+            if (HardCountSwap(section, to_swap[i].second,
+                              to_swap[j].second) > 0) continue;
+            int delta = SoftCountSwap(section, to_swap[i].second,
+                                      to_swap[j].second);
+            if (delta < 0) {
+              SoftSwap(section, to_swap[i].second, to_swap[j].second);
+              return SoftSolver(current + delta);
             }
           }
         }
@@ -281,6 +361,7 @@ void Schedule::TestPrint() {
     std::cout << std::endl;
   }
   std::cout << std::endl;
-  std::cout << HardCount() << std::endl;
+  if (!hard_satisfied_) std::cout << HardCount() << std::endl;
+  else std::cout << SoftCount() << std::endl;
   std::cout << std::endl;
 }

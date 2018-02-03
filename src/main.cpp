@@ -16,6 +16,11 @@ int main() {
   config.AddTeacher(2, "Salvador");
   config.AddTeacher(3, "De Jesus");
   config.AddTeacher(4, "Villareal");
+  config.AddTeacherTime(1, 0, {3, 7, 11, 15, 19});
+  config.AddTeacherTime(1, 1, {3, 7, 11, 15, 19});
+  config.AddTeacherTime(1, 2, {3, 7, 11, 15, 19});
+  config.AddTeacherTime(1, 3, {3, 7, 11, 15, 19});
+  config.AddTeacherTime(1, 4, {3, 7, 11, 15, 19});
   config.AddGroup(0);
   auto grp = config.GetGroup(0);
   grp->AddSection(0, "Locke");
@@ -34,6 +39,8 @@ int main() {
   config.TestPrint();
   config.HardSolver(config.HardCount());
   if (config.HardCount() == 0) config.SoftInitialize();
+  config.TestPrint();
+  config.SoftSolver(config.SoftCount());
   config.TestPrint();
   return 0;
 }

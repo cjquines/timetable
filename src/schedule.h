@@ -40,6 +40,8 @@ public:
 
   void AddGroup(const int &id);
   void AddTeacher(const int &id, const std::string &name);
+  void AddTeacherTime(const int &priority, const int &teacher,
+                      const std::vector<int> &unassignable);
   void Initialize();
   void SoftInitialize();
 
@@ -62,6 +64,10 @@ public:
   void HardSwap(const int &section, const int &lhs_timeslot,
                 const int &rhs_timeslot);
 
+  int SoftCountTranslate(const int &section, const int &timeslot,
+                         const int &open_timeslot);
+  void SoftTranslate(const int &section, const int &timeslot,
+                     const int &open_timeslot);
   int SoftCountSwap(const int &section, const int &lhs_timeslot,
                     const int &rhs_timeslot);
   void SoftSwap(const int &section, const int &lhs_timeslot,
