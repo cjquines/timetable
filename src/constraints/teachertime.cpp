@@ -32,7 +32,8 @@ int TeacherTime::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
 
 int TeacherTime::CountAll() {
   int result = 0;
-  for (auto i : unassignable_)
-    if (Constraint::schedule_->GetSectionOf(teacher_, i) != -1) result++;
+  for (int i = 0; i < Constraint::schedule_->GetNumSlots(); i++)
+    if (unassignable_[i] &&
+        Constraint::schedule_->GetSectionOf(teacher_, i) != -1) result++;
   return result;
 }
