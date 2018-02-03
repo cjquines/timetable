@@ -246,10 +246,10 @@ void Schedule::HardSolver(int current) {
               return HardSolver(current + delta);
             }
           } else {
-            int delta = HardCountSwap(to_swap[i].first, to_swap[i].second,
+            int delta = HardCountSwap(section, to_swap[i].second,
                                       to_swap[j].second);
             if (delta < 0) {
-              HardSwap(to_swap[i].first, to_swap[i].second, to_swap[j].second);
+              HardSwap(section, to_swap[i].second, to_swap[j].second);
               return HardSolver(current + delta);
             }
           }
