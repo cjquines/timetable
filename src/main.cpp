@@ -7,20 +7,15 @@
 #include "group.h"
 
 int main() {
-  // std::cout << std::time(nullptr) << std::endl;
   Schedule config(5, 4, std::time(nullptr));
-  // std::cout << std::time(nullptr) << std::endl;
-  // Schedule config(5, 3, 1517567544);
+  std::cout << std::time(nullptr) << std::endl;
+  // Schedule config(5, 3, 1517665738);
   config.AddTeacher(0, "Darilag");
   config.AddTeacher(1, "Catimbang");
   config.AddTeacher(2, "Salvador");
   config.AddTeacher(3, "De Jesus");
   config.AddTeacher(4, "Villareal");
-  config.AddTeacherTime(1, 0, {3, 7, 11, 15, 19});
-  config.AddTeacherTime(1, 1, {3, 7, 11, 15, 19});
-  config.AddTeacherTime(1, 2, {3, 7, 11, 15, 19});
-  config.AddTeacherTime(1, 3, {3, 7, 11, 15, 19});
-  config.AddTeacherTime(1, 4, {3, 7, 11, 15, 19});
+  config.AddTeacherTime(1, 0, {0, 1, 2});
   config.AddGroup(0);
   auto grp = config.GetGroup(0);
   grp->AddSection(0, "Locke");

@@ -224,9 +224,9 @@ void Schedule::SoftSwap(const int &section, const int &lhs_timeslot,
   timetable_[section][lhs_timeslot] = rhs_subject;
   timetable_[section][rhs_timeslot] = lhs_subject;
   teacher_table_[GetSubject(lhs_subject)->GetTeacher()][lhs_timeslot] = -1;
-  teacher_table_[GetSubject(lhs_subject)->GetTeacher()][rhs_timeslot] = section;
-  teacher_table_[GetSubject(rhs_subject)->GetTeacher()][rhs_timeslot] = -1;
   teacher_table_[GetSubject(rhs_subject)->GetTeacher()][lhs_timeslot] = section;
+  teacher_table_[GetSubject(rhs_subject)->GetTeacher()][rhs_timeslot] = -1;
+  teacher_table_[GetSubject(lhs_subject)->GetTeacher()][rhs_timeslot] = section;
 }
 
 int Schedule::HardCount() {
@@ -323,7 +323,7 @@ void Schedule::SoftSolver(int current) {
                                    to_swap[j].second) > 0) continue;
             int delta = SoftCountTranslate(section, to_swap[i].second,
                                            to_swap[j].second);
-            if (delta < 0) {
+            if (delta <= 0) {
               SoftTranslate(section, to_swap[i].second, to_swap[j].second);
               return SoftSolver(current + delta);
             }
@@ -332,7 +332,7 @@ void Schedule::SoftSolver(int current) {
                               to_swap[j].second) > 0) continue;
             int delta = SoftCountSwap(section, to_swap[i].second,
                                       to_swap[j].second);
-            if (delta < 0) {
+            if (delta <= 0) {
               SoftSwap(section, to_swap[i].second, to_swap[j].second);
               return SoftSolver(current + delta);
             }
