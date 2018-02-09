@@ -77,8 +77,10 @@ public:
   int SoftCount();
 
   void InitialSchedule();
-  void HardSolver(int current);
-  void SoftSolver(int current);
+  int HardSolver();
+  int HardLocalSearch();
+  int HardTabuSearch();
+  int SoftSolver();
 
   void TestPrint();
 

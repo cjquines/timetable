@@ -100,7 +100,8 @@ void Schedule::Initialize() {
 }
 
 void Schedule::SoftInitialize() {
-  assert(hard_satisfied_);
+  assert(HardCount() == 0);
+  hard_satisfied_ = true;
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, -1));
   for (int it = 0; it < sections_.size(); it++)
     for (int jt = 0; jt < num_slots_; jt++)
@@ -268,74 +269,122 @@ void Schedule::InitialSchedule() {
   }
 }
 
-void Schedule::HardSolver(int current) {
-  if (current <= 0) {
-    hard_satisfied_ = true;
-    return;
-  }
-  for (auto ptr : groups_) {
-    std::vector< std::pair<int, int> > to_swap;
+int Schedule::HardSolver() {
+  int result = HardLocalSearch();
+  int delta;
+  do {
+    delta = HardTabuSearch();
+    result += delta;
+  } while (delta > 0);
+  return result;
+}
+
+int Schedule::HardLocalSearch() {
+  std::vector< std::pair<int, int> > to_swap;
+  for (auto ptr : groups_)
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
       for (auto jt = 0; jt < num_slots_; jt++)
         to_swap.emplace_back((*it)->GetId(), jt);
-    std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
-    for (int i = 0; i < to_swap.size(); i++) {
-      int section = to_swap[i].first;
-      if (timetable_[section][to_swap[i].second] == -1) continue;
-      for (int j = i+1; j < to_swap.size(); j++) {
-        if (to_swap[j].first == section) {
-          if (timetable_[section][to_swap[j].second] == -1) {
-            int delta = HardCountTranslate(section, to_swap[i].second,
-                                           to_swap[j].second);
-            if (delta < 0) {
-              HardTranslate(section, to_swap[i].second, to_swap[j].second);
-              return HardSolver(current + delta);
-            }
-          } else {
-            int delta = HardCountSwap(section, to_swap[i].second,
-                                      to_swap[j].second);
-            if (delta < 0) {
-              HardSwap(section, to_swap[i].second, to_swap[j].second);
-              return HardSolver(current + delta);
-            }
+  std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
+  int result = 0;
+  for (int i = 0; i < to_swap.size(); i++) {
+    int section = to_swap[i].first;
+    if (timetable_[section][to_swap[i].second] == -1) continue;
+    bool to_continue = false;
+    for (int j = i+1; j < to_swap.size(); j++) {
+      if (to_swap[j].first == section) {
+        if (timetable_[section][to_swap[j].second] == -1) {
+          int delta = HardCountTranslate(section, to_swap[i].second,
+                                         to_swap[j].second);
+          if (delta <= 0) {
+            HardTranslate(section, to_swap[i].second, to_swap[j].second);
+            result += delta;
+            to_continue = true;
+            break;
+          }
+        } else {
+          int delta = HardCountSwap(section, to_swap[i].second,
+                                    to_swap[j].second);
+          if (delta <= 0) {
+            HardSwap(section, to_swap[i].second, to_swap[j].second);
+            result += delta;
+            to_continue = true;
+            break;
           }
         }
       }
     }
+    if (to_continue) continue;
   }
+  return result;
 }
 
-void Schedule::SoftSolver(int current) {
-  if (current <= 0) return;
-  for (auto ptr : groups_) {
-    std::vector< std::pair<int, int> > to_swap;
+int Schedule::HardTabuSearch() {
+  int best = 0, lhs_best = -1, rhs_best = -1;
+  std::vector< std::pair<int, int> > to_swap;
+  for (auto ptr : groups_)
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
       for (auto jt = 0; jt < num_slots_; jt++)
         to_swap.emplace_back((*it)->GetId(), jt);
-    std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
-    for (int i = 0; i < to_swap.size(); i++) {
-      int section = to_swap[i].first;
-      if (timetable_[section][to_swap[i].second] == -1) continue;
-      for (int j = i+1; j < to_swap.size(); j++) {
-        if (to_swap[j].first == section) {
-          if (timetable_[section][to_swap[j].second] == -1) {
-            if (HardCountTranslate(section, to_swap[i].second,
-                                   to_swap[j].second) > 0) continue;
-            int delta = SoftCountTranslate(section, to_swap[i].second,
-                                           to_swap[j].second);
-            if (delta <= 0) {
-              SoftTranslate(section, to_swap[i].second, to_swap[j].second);
-              return SoftSolver(current + delta);
-            }
-          } else {
-            if (HardCountSwap(section, to_swap[i].second,
-                              to_swap[j].second) > 0) continue;
-            int delta = SoftCountSwap(section, to_swap[i].second,
-                                      to_swap[j].second);
-            if (delta <= 0) {
-              SoftSwap(section, to_swap[i].second, to_swap[j].second);
-              return SoftSolver(current + delta);
-            }
+  std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
+  for (int i = 0; i < to_swap.size(); i++) {
+    int section = to_swap[i].first;
+    if (timetable_[section][to_swap[i].second] == -1) continue;
+    for (int j = i+1; j < to_swap.size(); j++) {
+      if (to_swap[j].first == section) {
+        int delta;
+        if (timetable_[section][to_swap[j].second] == -1)
+          delta = HardCountTranslate(section, to_swap[i].second,
+                                     to_swap[j].second);
+        else
+          delta = HardCountSwap(section, to_swap[i].second, to_swap[j].second);
+        if (delta < best) {
+          best = delta;
+          lhs_best = i;
+          rhs_best = j;
+        }
+      }
+    }
+  }
+  if (best == 0) return best;
+  else if (timetable_[to_swap[lhs_best].first][to_swap[rhs_best].second] == -1)
+    HardTranslate(to_swap[lhs_best].first, to_swap[lhs_best].second,
+                  to_swap[rhs_best].second);
+  else
+    HardSwap(to_swap[lhs_best].first, to_swap[lhs_best].second,
+             to_swap[rhs_best].second);
+  return best;
+}
+
+int Schedule::SoftSolver() {
+  std::vector< std::pair<int, int> > to_swap;
+  for (auto ptr : groups_)
+    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
+      for (auto jt = 0; jt < num_slots_; jt++)
+        to_swap.emplace_back((*it)->GetId(), jt);
+  std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
+  for (int i = 0; i < to_swap.size(); i++) {
+    int section = to_swap[i].first;
+    if (timetable_[section][to_swap[i].second] == -1) continue;
+    for (int j = i+1; j < to_swap.size(); j++) {
+      if (to_swap[j].first == section) {
+        if (timetable_[section][to_swap[j].second] == -1) {
+          if (HardCountTranslate(section, to_swap[i].second,
+                                 to_swap[j].second) > 0) continue;
+          int delta = SoftCountTranslate(section, to_swap[i].second,
+                                         to_swap[j].second);
+          if (delta <= 0) {
+            SoftTranslate(section, to_swap[i].second, to_swap[j].second);
+            return delta;
+          }
+        } else {
+          if (HardCountSwap(section, to_swap[i].second,
+                            to_swap[j].second) > 0) continue;
+          int delta = SoftCountSwap(section, to_swap[i].second,
+                                    to_swap[j].second);
+          if (delta <= 0) {
+            SoftSwap(section, to_swap[i].second, to_swap[j].second);
+            return delta;
           }
         }
       }
