@@ -47,6 +47,7 @@ public:
 
   int GetSubjectOf(const int &section, const int &timeslot);
   int GetTeacherOf(const int &section, const int &timeslot);
+  int GetLengthOf(const int &section, const int &timeslot);
   int CountSectionsOf(const int &teacher, const int &timeslot);
   int GetSectionOf(const int &teacher, const int &timeslot);
 
