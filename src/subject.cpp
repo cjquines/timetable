@@ -1,15 +1,17 @@
 #include "subject.h"
 
-Subject::Subject(const int &id, const int &num_slots, const int &teacher,
-                 const std::string &name)
+Subject::Subject(const int &id, const std::vector<int> &slots,
+                 const int &teacher, const std::string &name)
     : id_(id),
-      num_slots_(num_slots),
+      slots_(slots),
       teacher_(teacher),
       name_(name) {}
 
 int Subject::GetId() { return id_; }
 
-int Subject::GetNumSlots() { return num_slots_; }
+std::vector<int>::iterator Subject::GetSlotsBegin() { return slots_.begin(); }
+
+std::vector<int>::iterator Subject::GetSlotsEnd() { return slots_.end(); }
 
 int Subject::GetTeacher() { return teacher_; }
 
