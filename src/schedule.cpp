@@ -110,12 +110,16 @@ void Schedule::SoftInitialize() {
 }
 
 int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
+  while (timetable_[section][timeslot] == -2) {
+    timeslot--;
+    assert(timeslot >= 0);
+  }
   return timetable_[section][timeslot];
 }
 
 int Schedule::GetTeacherOf(const int &section, const int &timeslot) {
-  assert(timetable_[section][timeslot] != -1);
-  return GetSubject(timetable_[section][timeslot])->GetTeacher();
+  assert(GetSubjectOf(section, timeslot) != -1);
+  return GetSubject(GetSubjectOf(section, timeslot))->GetTeacher();
 }
 
 int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {
