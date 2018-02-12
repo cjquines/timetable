@@ -122,6 +122,16 @@ int Schedule::GetTeacherOf(const int &section, const int &timeslot) {
   return GetSubject(GetSubjectOf(section, timeslot))->GetTeacher();
 }
 
+int Schedule::GetLengthOf(const int &section, const int &timeslot) {
+  int lbound = timeslot, rbound = timeslot;
+  while (timetable_[section][lbound] == -2) {
+    lbound--;
+    assert(lbound >= 0);
+  }
+  while (timetable_[section][rbound] == -2 && rbound < num_slots_) rbound++;
+  return rbound - lbound;
+}
+
 int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {
   if (hard_satisfied_) {
     if (teacher_table_[teacher][timeslot] == -1) return 0;
