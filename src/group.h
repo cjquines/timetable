@@ -24,8 +24,8 @@ public:
   std::vector<Subject*>::iterator GetSubjectsEnd();
 
   void AddSection(const int &id, const std::string &name);
-  void AddSubject(const int &id, const int &num_slots, const int &teacher,
-                  const std::string &name);
+  void AddSubject(const int &id, const std::vector<int> &slots,
+                  const int &teacher, const std::string &name);
 
 private:
   int id_;

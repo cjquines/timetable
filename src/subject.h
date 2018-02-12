@@ -2,19 +2,21 @@
 #define _TIMETABLE_SUBJECT_H
 
 #include <string>
+#include <vector>
 
 class Subject {
 public:
-  Subject(const int &id, const int &num_slots, const int &teacher,
+  Subject(const int &id, const std::vector<int> &slots, const int &teacher,
           const std::string &name);
   int GetId();
-  int GetNumSlots();
+  std::vector<int>::iterator GetSlotsBegin();
+  std::vector<int>::iterator GetSlotsEnd();
   int GetTeacher();
   std::string GetName();
 
 private:
   int id_;
-  int num_slots_;
+  std::vector<int> slots_;
   int teacher_;
   std::string name_;
 };

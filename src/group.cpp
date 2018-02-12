@@ -33,8 +33,8 @@ void Group::AddSection(const int &id, const std::string &name) {
   sections_.push_back(ptr);
 }
 
-void Group::AddSubject(const int &id, const int &num_slots, const int &teacher,
-                       const std::string &name) {
-  Subject* ptr = new Subject(id, num_slots, teacher, name);
+void Group::AddSubject(const int &id, const std::vector<int> &slots,
+                       const int &teacher, const std::string &name) {
+  Subject* ptr = new Subject(id, slots, teacher, name);
   subjects_.push_back(ptr);
 }
