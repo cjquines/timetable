@@ -277,10 +277,15 @@ int Schedule::SoftCountTranslate(const int &section, const int &timeslot,
 void Schedule::SoftTranslate(const int &section, const int &timeslot,
                              const int &open_timeslot) {
   int subject = GetSubjectOf(section, timeslot);
-  timetable_[section][timeslot] = -1;
-  timetable_[section][open_timeslot] = subject;
-  teacher_table_[GetSubject(subject)->GetTeacher()][timeslot] = -1;
-  teacher_table_[GetSubject(subject)->GetTeacher()][open_timeslot] = section;
+  int teacher = GetSubject(subject)->GetTeacher();
+  int num_slots = GetLengthOf(section, timeslot);
+  for (int i = 0; i < num_slots; i++) {
+    timetable_[section][timeslot+i] = -1;
+    timetable_[section][open_timeslot+i] = -2;
+    teacher_table_[teacher][timeslot+i] = -1;
+    teacher_table_[teacher][open_timeslot+i] = section;
+  }
+  timetable_[section][timeslot] = subject;
 }
 
 int Schedule::SoftCountSwap(const int &section, const int &lhs_timeslot,
@@ -296,12 +301,17 @@ void Schedule::SoftSwap(const int &section, const int &lhs_timeslot,
                         const int &rhs_timeslot) {
   int lhs_subject = GetSubjectOf(section, lhs_timeslot);
   int rhs_subject = GetSubjectOf(section, rhs_timeslot);
+  int lhs_teacher = GetSubject(lhs_subject)->GetTeacher();
+  int rhs_teacher = GetSubject(rhs_subject)->GetTeacher();
+  int num_slots = GetLengthOf(section, lhs_timeslot);
+  for (int i = 0; i < num_slots; i++) {
+    teacher_table_[lhs_teacher][lhs_timeslot+i] = -1;
+    teacher_table_[lhs_teacher][rhs_timeslot+i] = section;
+    teacher_table_[rhs_teacher][rhs_timeslot+i] = -1;
+    teacher_table_[rhs_teacher][lhs_timeslot+i] = section;
+  }
   timetable_[section][lhs_timeslot] = rhs_subject;
   timetable_[section][rhs_timeslot] = lhs_subject;
-  teacher_table_[GetSubject(lhs_subject)->GetTeacher()][lhs_timeslot] = -1;
-  teacher_table_[GetSubject(rhs_subject)->GetTeacher()][lhs_timeslot] = section;
-  teacher_table_[GetSubject(rhs_subject)->GetTeacher()][rhs_timeslot] = -1;
-  teacher_table_[GetSubject(lhs_subject)->GetTeacher()][rhs_timeslot] = section;
 }
 
 int Schedule::HardCount() {
