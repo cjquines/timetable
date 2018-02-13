@@ -51,6 +51,16 @@ public:
   int CountSectionsOf(const int &teacher, const int &timeslot);
   int GetSectionOf(const int &teacher, const int &timeslot);
 
+  bool IsFree(const int &section, const int &timeslot, const int &num_slots);
+  bool IsValidHardTranslate(const int &section, const int &timeslot,
+                            const int &open_timeslot);
+  bool IsValidHardSwap(const int &section, const int &lhs_timeslot,
+                       const int &rhs_timeslot);
+  bool IsValidSoftTranslate(const int &section, const int &timeslot,
+                            const int &open_timeslot);
+  bool IsValidSoftSwap(const int &section, const int &lhs_timeslot,
+                       const int &rhs_timeslot);
+
   std::pair<int, int> ClampDay(const int &timeslot);
 
   int HardCountAssign(const int &subject, const int &section,

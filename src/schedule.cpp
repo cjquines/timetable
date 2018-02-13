@@ -110,19 +110,21 @@ void Schedule::SoftInitialize() {
 }
 
 int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
-  while (timetable_[section][timeslot] == -2) {
-    timeslot--;
-    assert(timeslot >= 0);
+  int lbound = timeslot;
+  while (timetable_[section][lbound] == -2) {
+    lbound--;
+    assert(lbound >= 0);
   }
-  return timetable_[section][timeslot];
+  return timetable_[section][lbound];
 }
 
 int Schedule::GetTeacherOf(const int &section, const int &timeslot) {
-  assert(GetSubjectOf(section, timeslot) != -1);
+  assert(timetable_[section][timeslot] != -1);
   return GetSubject(GetSubjectOf(section, timeslot))->GetTeacher();
 }
 
 int Schedule::GetLengthOf(const int &section, const int &timeslot) {
+  assert(timetable_[section][timeslot] != -1);
   int lbound = timeslot, rbound = timeslot;
   while (timetable_[section][lbound] == -2) {
     lbound--;
@@ -143,6 +145,47 @@ int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {
 int Schedule::GetSectionOf(const int &teacher, const int &timeslot) {
   assert(hard_satisfied_);
   return teacher_table_[teacher][timeslot];
+}
+
+bool Schedule::IsFree(const int &section, const int &timeslot,
+                      const int &num_slots) {
+  // Returns True if section has num_slots free slots, starting with timeslot.
+  assert(timetable_[section][timeslot] == -1);
+  int rbound = timeslot, cur_moved = 0;
+  while (timetable_[section][rbound] == -1 && rbound < num_slots_ &&
+         cur_moved < num_slots) rbound++, cur_moved++;
+  return cur_moved == num_slots;
+}
+
+bool Schedule::IsValidHardTranslate(const int &section, const int &timeslot,
+                                    const int &open_timeslot) {
+  // Returns True if the section's subject with head at timeslot can be
+  // hard translated to open_timeslot.
+  assert(timetable_[section][timeslot] >= 0);
+  assert(timetable_[section][open_timeslot] == -1);
+  return IsFree(section, open_timeslot, GetLengthOf(section, timeslot));
+}
+
+bool Schedule::IsValidHardSwap(const int &section, const int &lhs_timeslot,
+                               const int &rhs_timeslot) {
+  // Returns True if the section's subject with head at lhs_timeslot can be
+  // hard swapped to subject with head at rhs_timeslot. 
+  assert(timetable_[section][lhs_timeslot] >= 0);
+  assert(timetable_[section][rhs_timeslot] >= 0);
+  return GetLengthOf(section, lhs_timeslot) ==
+         GetLengthOf(section, rhs_timeslot);
+}
+
+bool Schedule::IsValidSoftTranslate(const int &section, const int &timeslot,
+                                    const int &open_timeslot) {
+  return IsValidHardTranslate(section, timeslot, open_timeslot) &&
+         (HardCountTranslate(section, timeslot, open_timeslot) == 0);
+}
+
+bool Schedule::IsValidSoftSwap(const int &section, const int &lhs_timeslot,
+                               const int &rhs_timeslot) {
+  return IsValidHardSwap(section, lhs_timeslot, rhs_timeslot) &&
+         (HardCountSwap(section, lhs_timeslot, rhs_timeslot) == 0);
 }
 
 std::pair<int, int> Schedule::ClampDay(const int &timeslot) {
