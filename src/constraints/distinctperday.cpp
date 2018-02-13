@@ -69,7 +69,7 @@ int DistinctPerDay::CountAll() {
       std::set<int> seen_subjects;
       for (int j = i*Constraint::schedule_->GetNumSlotsPerDay();
            j < (i+1)*Constraint::schedule_->GetNumSlotsPerDay(); j++) {
-        if (Constraint::schedule_->GetSubjectOf((*it)->GetId(), j) == -1)
+        if (Constraint::schedule_->GetSubjectOf((*it)->GetId(), j) < 0)
           continue;
         if (!seen_subjects.insert(
             Constraint::schedule_->GetSubjectOf((*it)->GetId(), j)).second)
