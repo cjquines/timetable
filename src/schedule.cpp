@@ -110,28 +110,30 @@ void Schedule::SoftInitialize() {
 }
 
 int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
-  int lbound = timeslot;
-  while (timetable_[section][lbound] == -2) {
-    lbound--;
-    assert(lbound >= 0);
+  return timetable_[section][timeslot];
+}
+
+int Schedule::GetHeadOf(const int &section, const int &timeslot) {
+  int head = timeslot;
+  while (timetable_[section][head] == -2) {
+    head--;
+    assert(head >= 0);
   }
-  return timetable_[section][lbound];
+  return head;
 }
 
 int Schedule::GetTeacherOf(const int &section, const int &timeslot) {
-  assert(timetable_[section][timeslot] != -1);
+  // Get teacher of subject with head at timeslot.
+  assert(timetable_[section][timeslot] >= 0);
   return GetSubject(GetSubjectOf(section, timeslot))->GetTeacher();
 }
 
 int Schedule::GetLengthOf(const int &section, const int &timeslot) {
-  assert(timetable_[section][timeslot] != -1);
-  int lbound = timeslot, rbound = timeslot;
-  while (timetable_[section][lbound] == -2) {
-    lbound--;
-    assert(lbound >= 0);
-  }
-  while (timetable_[section][rbound] == -2 && rbound < num_slots_) rbound++;
-  return rbound - lbound;
+  // Get length of subject with head at timeslot.
+  assert(timetable_[section][timeslot] >= 0);
+  int last = timeslot + 1;
+  while (last < num_slots_ && timetable_[section][last] == -2) last++;
+  return last - timeslot;
 }
 
 int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {

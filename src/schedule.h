@@ -46,6 +46,7 @@ public:
   void SoftInitialize();
 
   int GetSubjectOf(const int &section, const int &timeslot);
+  int GetHeadOf(const int &section, const int &timeslot);
   int GetTeacherOf(const int &section, const int &timeslot);
   int GetLengthOf(const int &section, const int &timeslot);
   int CountSectionsOf(const int &teacher, const int &timeslot);
