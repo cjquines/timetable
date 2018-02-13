@@ -9,7 +9,7 @@ DistinctPerDay::DistinctPerDay(Schedule* schedule)
     : Constraint(schedule, 0) {}
 
 int DistinctPerDay::CountAssign(const int &subject, const int &section,
-                                 const int &timeslot) {
+                                 const int &timeslot, const int &num_slots) {
   int lbound, rbound, result = 0;
   std::tie(lbound, rbound) = Constraint::schedule_->ClampDay(timeslot);
   for (int i = lbound; i < rbound; i++)
