@@ -106,7 +106,7 @@ void Schedule::SoftInitialize() {
   for (int it = 0; it < sections_.size(); it++)
     for (int jt = 0; jt < num_slots_; jt++)
       if (timetable_[it][jt] != -1)
-        teacher_table_[GetTeacherOf(it, jt)][jt] = it;
+        teacher_table_[GetTeacherOf(it, GetHeadOf(it, jt))][jt] = it;
 }
 
 int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
@@ -151,10 +151,11 @@ int Schedule::GetSectionOf(const int &teacher, const int &timeslot) {
 
 bool Schedule::IsFree(const int &section, const int &timeslot,
                       const int &num_slots) {
-  // Returns True if section has num_slots free slots, starting with timeslot.
+  // Returns True if section has num_slots free slots, starting with timeslot,
+  // such that all free slots are on the same day.
   assert(timetable_[section][timeslot] == -1);
-  int rbound = timeslot, cur_moved = 0;
-  while (timetable_[section][rbound] == -1 && rbound < num_slots_ &&
+  int rbound = timeslot, cur_moved = 0, rtimeslot = ClampDay(timeslot).second;
+  while (timetable_[section][rbound] == -1 && rbound < rtimeslot &&
          cur_moved < num_slots) rbound++, cur_moved++;
   return cur_moved == num_slots;
 }
@@ -197,18 +198,22 @@ std::pair<int, int> Schedule::ClampDay(const int &timeslot) {
 }
 
 int Schedule::HardCountAssign(const int &subject, const int &section,
-                              const int &timeslot) {
+                              const int &timeslot, const int &num_slots) {
   int result = 0;
   for (auto& ptr : constraints_)
     if (ptr->GetPriority() <= 0)
-      result += ptr->CountAssign(subject, section, timeslot);
+      result += ptr->CountAssign(subject, section, timeslot, num_slots);
   return result;
 }
 
 void Schedule::HardAssign(const int &subject, const int &section,
-                          const int &timeslot) {
+                          const int &timeslot, const int &num_slots) {
+  int teacher = GetSubject(subject)->GetTeacher();
+  for (int i = 0; i < num_slots; i++) {
+    timetable_[section][timeslot+i] = -2;
+    teacher_table_[teacher][timeslot+i]++;
+  }
   timetable_[section][timeslot] = subject;
-  teacher_table_[GetSubject(subject)->GetTeacher()][timeslot]++;
 }
 
 int Schedule::HardCountTranslate(const int &section, const int &timeslot,
@@ -223,10 +228,15 @@ int Schedule::HardCountTranslate(const int &section, const int &timeslot,
 void Schedule::HardTranslate(const int &section, const int &timeslot,
                              const int &open_timeslot) {
   int subject = GetSubjectOf(section, timeslot);
-  timetable_[section][timeslot] = -1;
-  timetable_[section][open_timeslot] = subject;
-  teacher_table_[GetSubject(subject)->GetTeacher()][timeslot]--;
-  teacher_table_[GetSubject(subject)->GetTeacher()][open_timeslot]++;
+  int teacher = GetSubject(subject)->GetTeacher();
+  int num_slots = GetLengthOf(section, timeslot);
+  for (int i = 0; i < num_slots; i++) {
+    timetable_[section][timeslot+i] = -1;
+    timetable_[section][open_timeslot+i] = -2;
+    teacher_table_[teacher][timeslot+i]--;
+    teacher_table_[teacher][open_timeslot+i]++;
+  }
+  timetable_[section][timeslot] = subject;
 }
 
 int Schedule::HardCountSwap(const int &section, const int &lhs_timeslot,
@@ -242,12 +252,17 @@ void Schedule::HardSwap(const int &section, const int &lhs_timeslot,
                         const int &rhs_timeslot) {
   int lhs_subject = GetSubjectOf(section, lhs_timeslot);
   int rhs_subject = GetSubjectOf(section, rhs_timeslot);
+  int lhs_teacher = GetSubject(lhs_subject)->GetTeacher();
+  int rhs_teacher = GetSubject(rhs_subject)->GetTeacher();
+  int num_slots = GetLengthOf(section, lhs_timeslot);
+  for (int i = 0; i < num_slots; i++) {
+    teacher_table_[lhs_teacher][lhs_timeslot+i]--;
+    teacher_table_[lhs_teacher][rhs_timeslot+i]++;
+    teacher_table_[rhs_teacher][rhs_timeslot+i]--;
+    teacher_table_[rhs_teacher][lhs_timeslot+i]++;
+  }
   timetable_[section][lhs_timeslot] = rhs_subject;
   timetable_[section][rhs_timeslot] = lhs_subject;
-  teacher_table_[GetSubject(lhs_subject)->GetTeacher()][lhs_timeslot]--;
-  teacher_table_[GetSubject(lhs_subject)->GetTeacher()][rhs_timeslot]++;
-  teacher_table_[GetSubject(rhs_subject)->GetTeacher()][rhs_timeslot]--;
-  teacher_table_[GetSubject(rhs_subject)->GetTeacher()][lhs_timeslot]++;
 }
 
 int Schedule::SoftCountTranslate(const int &section, const int &timeslot,

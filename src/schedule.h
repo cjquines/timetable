@@ -65,8 +65,9 @@ public:
   std::pair<int, int> ClampDay(const int &timeslot);
 
   int HardCountAssign(const int &subject, const int &section,
-                      const int &timeslot);
-  void HardAssign(const int &subject, const int &section, const int &timeslot);
+                      const int &timeslot, const int &num_slots);
+  void HardAssign(const int &subject, const int &section, const int &timeslot,
+                  const int &num_slots);
   int HardCountTranslate(const int &section, const int &timeslot,
                          const int &open_timeslot);
   void HardTranslate(const int &section, const int &timeslot,
