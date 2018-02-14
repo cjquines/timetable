@@ -348,7 +348,8 @@ void Schedule::InitialSchedule() {
             min_index = kt;
           }
         }
-        HardAssign(subject, section, min_index, num_slots);
+        if (min_index != -1) HardAssign(subject, section, min_index, num_slots);
+        std::cout << "ASSIGN " << subject << ' ' << section << ' ' << min_index << ' ' << num_slots << std::endl;
       }
     }
   }
