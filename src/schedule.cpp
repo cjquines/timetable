@@ -201,7 +201,7 @@ int Schedule::HardCountAssign(const int &subject, const int &section,
                               const int &timeslot, const int &num_slots) {
   int result = 0;
   for (auto& ptr : hard_constraints_)
-    result += ptr->CountAssign(subject, section, timeslot);
+    result += ptr->CountAssign(subject, section, timeslot, num_slots);
   return result;
 }
 
