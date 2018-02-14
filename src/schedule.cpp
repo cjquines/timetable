@@ -237,6 +237,7 @@ void Schedule::HardTranslate(const int &section, const int &timeslot,
     teacher_table_[teacher][open_timeslot+i]++;
   }
   timetable_[section][timeslot] = subject;
+  timetable_[section][open_timeslot] = -1;
 }
 
 int Schedule::HardCountSwap(const int &section, const int &lhs_timeslot,
@@ -306,8 +307,8 @@ void Schedule::SoftSwap(const int &section, const int &lhs_timeslot,
   int num_slots = GetLengthOf(section, lhs_timeslot);
   for (int i = 0; i < num_slots; i++) {
     teacher_table_[lhs_teacher][lhs_timeslot+i] = -1;
-    teacher_table_[lhs_teacher][rhs_timeslot+i] = section;
     teacher_table_[rhs_teacher][rhs_timeslot+i] = -1;
+    teacher_table_[lhs_teacher][rhs_timeslot+i] = section;
     teacher_table_[rhs_teacher][lhs_timeslot+i] = section;
   }
   timetable_[section][lhs_timeslot] = rhs_subject;
