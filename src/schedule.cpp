@@ -418,7 +418,7 @@ int Schedule::HardTabuSearch() {
   std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
   for (int i = 0; i < to_swap.size(); i++) {
     int section = to_swap[i].first;
-    if (timetable_[section][to_swap[i].second] == -1) continue;
+    if (timetable_[section][to_swap[i].second] < 0) continue;
     for (int j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
         int delta;
@@ -456,25 +456,25 @@ int Schedule::SoftSolver() {
   std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
   for (int i = 0; i < to_swap.size(); i++) {
     int section = to_swap[i].first;
-    if (timetable_[section][to_swap[i].second] == -1) continue;
+    if (timetable_[section][to_swap[i].second] < 0) continue;
     for (int j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
-        if (timetable_[section][to_swap[j].second] == -1) {
-          if (HardCountTranslate(section, to_swap[i].second,
-                                 to_swap[j].second) > 0) continue;
-          int delta = SoftCountTranslate(section, to_swap[i].second,
-                                         to_swap[j].second);
-          if (delta <= 0) {
-            SoftTranslate(section, to_swap[i].second, to_swap[j].second);
-            return delta;
-          }
-        } else {
-          if (HardCountSwap(section, to_swap[i].second,
-                            to_swap[j].second) > 0) continue;
+        if (timetable_[section][to_swap[j].second] >= 0) {
+          if (!IsValidSoftSwap(section, to_swap[i].second, to_swap[j].second))
+            continue;
           int delta = SoftCountSwap(section, to_swap[i].second,
                                     to_swap[j].second);
           if (delta <= 0) {
             SoftSwap(section, to_swap[i].second, to_swap[j].second);
+            return delta;
+          }
+        } else if (timetable_[section][to_swap[j].second] == -1) {
+          if (!IsValidSoftTranslate(section, to_swap[i].second,
+                                    to_swap[j].second)) continue;
+          int delta = SoftCountTranslate(section, to_swap[i].second,
+                                         to_swap[j].second);
+          if (delta <= 0) {
+            SoftTranslate(section, to_swap[i].second, to_swap[j].second);
             return delta;
           }
         }
