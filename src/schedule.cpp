@@ -348,8 +348,8 @@ void Schedule::InitialSchedule() {
             min_index = kt;
           }
         }
-        if (min_index != -1) HardAssign(subject, section, min_index, num_slots);
-        std::cout << "ASSIGN " << subject << ' ' << section << ' ' << min_index << ' ' << num_slots << std::endl;
+        assert(min_index != -1);
+        HardAssign(subject, section, min_index, num_slots);
       }
     }
   }
@@ -480,7 +480,7 @@ int Schedule::SoftSolver() {
 
 void Schedule::TestPrint() {
   std::cout << "   ";
-  for (int i = 0; i < num_slots_; i++) std::cout << "x   ";
+  for (int i = 0; i < num_slots_; i++) std::cout << (i%10) << "   ";
   std::cout << std::endl;
   for (int it = 0; it < sections_.size(); it++) {
     std::cout << it << ' ';
@@ -491,6 +491,8 @@ void Schedule::TestPrint() {
     }
     std::cout << std::endl;
   }
+  std::cout << std::endl << "   ";
+  for (int i = 0; i < num_slots_; i++) std::cout << (i%10) << ' ';
   std::cout << std::endl;
   for (int it = 0; it < teachers_.size(); it++) {
     std::cout << it << ' ';
