@@ -106,7 +106,8 @@ private:
   std::vector<Section*> sections_;
   std::vector<Subject*> subjects_;
   std::vector<Teacher*> teachers_;
-  std::vector< std::unique_ptr<Constraint> > constraints_;
+  std::vector< std::unique_ptr<Constraint> > hard_constraints_;
+  std::vector< std::unique_ptr<Constraint> > soft_constraints_;
 
   bool hard_satisfied_;
   std::mt19937 rand_generator_;
