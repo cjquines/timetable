@@ -236,8 +236,7 @@ void Schedule::HardTranslate(const int &section, const int &timeslot,
     teacher_table_[teacher][timeslot+i]--;
     teacher_table_[teacher][open_timeslot+i]++;
   }
-  timetable_[section][timeslot] = subject;
-  timetable_[section][open_timeslot] = -1;
+  timetable_[section][open_timeslot] = subject;
 }
 
 int Schedule::HardCountSwap(const int &section, const int &lhs_timeslot,
@@ -286,7 +285,7 @@ void Schedule::SoftTranslate(const int &section, const int &timeslot,
     teacher_table_[teacher][timeslot+i] = -1;
     teacher_table_[teacher][open_timeslot+i] = section;
   }
-  timetable_[section][timeslot] = subject;
+  timetable_[section][open_timeslot] = subject;
 }
 
 int Schedule::SoftCountSwap(const int &section, const int &lhs_timeslot,
@@ -501,10 +500,10 @@ void Schedule::TestPrint() {
   for (int i = 0; i < num_slots_; i++) std::cout << (i%10) << ' ';
   std::cout << std::endl;
   for (int it = 0; it < teachers_.size(); it++) {
-    std::cout << it << ' ';
+    std::cout << (it%10) << ' ';
     for (auto jt : teacher_table_[it]) {
       if (jt >= 0) std::cout << ' ' << jt;
-      else std::cout << " -";
+      else std::cout << "  ";
     }
     std::cout << std::endl;
   }
