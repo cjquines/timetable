@@ -153,7 +153,7 @@ bool Schedule::IsFree(const int &section, const int &timeslot,
                       const int &num_slots) {
   // Returns True if section has num_slots free slots, starting with timeslot,
   // such that all free slots are on the same day.
-  assert(timetable_[section][timeslot] == -1);
+  if (timetable_[section][timeslot] != -1) return false;
   int rbound = timeslot, cur_moved = 0, rtimeslot = ClampDay(timeslot).second;
   while (timetable_[section][rbound] == -1 && rbound < rtimeslot &&
          cur_moved < num_slots) rbound++, cur_moved++;
@@ -333,21 +333,22 @@ int Schedule::SoftCount() {
 void Schedule::InitialSchedule() {
   for (auto ptr : groups_) {
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++) {
-      std::vector<int> unassigned;
+      std::vector< std::pair<int, int> > unassigned;
       for (auto jt = ptr->GetSubjectsBegin(); jt != ptr->GetSubjectsEnd(); jt++)
-        for (int kt = 0; kt < (*jt)->GetNumSlots(); kt++)
-          unassigned.push_back((*jt)->GetId());
+        for (auto kt = (*jt)->GetSlotsBegin(); kt != (*jt)->GetSlotsEnd(); kt++)
+          unassigned.emplace_back((*jt)->GetId(), *kt);
       std::shuffle(unassigned.begin(), unassigned.end(), rand_generator_);
-      for (auto jt : unassigned) {
+      for (auto sb : unassigned) {
+        int section = (*it)->GetId(), subject = sb.first, num_slots = sb.second;
         int min = 1000000, min_index = -1;
         for (int kt = 0; kt < num_slots_; kt++) {
-          if (timetable_[(*it)->GetId()][kt] == -1 &&
-              HardCountAssign(jt, (*it)->GetId(), kt) < min) {
-            min = HardCountAssign(jt, (*it)->GetId(), kt);
+          if (IsFree(section, kt, num_slots) &&
+              HardCountAssign(subject, section, kt, num_slots) < min) {
+            min = HardCountAssign(subject, section, kt, num_slots);
             min_index = kt;
           }
         }
-        HardAssign(jt, (*it)->GetId(), min_index);
+        HardAssign(subject, section, min_index, num_slots);
       }
     }
   }
@@ -484,7 +485,8 @@ void Schedule::TestPrint() {
     std::cout << it << ' ';
     for (auto jt : timetable_[it]) {
       if (jt >= 0) std::cout << ' ' << GetSubject(jt)->GetName();
-      else std::cout << " ---";
+      else if (jt == -1) std::cout << "    ";
+      else std::cout << "----"; 
     }
     std::cout << std::endl;
   }
