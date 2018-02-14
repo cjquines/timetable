@@ -79,7 +79,7 @@ void Schedule::AddTeacherTime(const int &priority, const int &teacher,
                               const std::vector<int> &unassignable) {
   std::unique_ptr<Constraint> ptr = std::make_unique<TeacherTime>(
     this, priority, teacher, unassignable);
-  constraints_.push_back(std::move(ptr));
+  soft_constraints_.push_back(std::move(ptr));
 }
 
 void Schedule::Initialize() {
@@ -91,9 +91,9 @@ void Schedule::Initialize() {
   }
 
   std::unique_ptr<Constraint> ptr = std::make_unique<DistinctPerDay>(this);
-  constraints_.push_back(std::move(ptr));
+  hard_constraints_.push_back(std::move(ptr));
   ptr = std::make_unique<NonSimultaneous>(this);
-  constraints_.push_back(std::move(ptr));
+  hard_constraints_.push_back(std::move(ptr));
 
   timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
@@ -140,9 +140,8 @@ std::pair<int, int> Schedule::ClampDay(const int &timeslot) {
 int Schedule::HardCountAssign(const int &subject, const int &section,
                               const int &timeslot) {
   int result = 0;
-  for (auto& ptr : constraints_)
-    if (ptr->GetPriority() <= 0)
-      result += ptr->CountAssign(subject, section, timeslot);
+  for (auto& ptr : hard_constraints_)
+    result += ptr->CountAssign(subject, section, timeslot);
   return result;
 }
 
@@ -155,9 +154,8 @@ void Schedule::HardAssign(const int &subject, const int &section,
 int Schedule::HardCountTranslate(const int &section, const int &timeslot,
                                  const int &open_timeslot) {
   int result = 0;
-  for (auto& ptr : constraints_)
-    if (ptr->GetPriority() <= 0)
-      result += ptr->CountTranslate(section, timeslot, open_timeslot);
+  for (auto& ptr : hard_constraints_)
+    result += ptr->CountTranslate(section, timeslot, open_timeslot);
   return result;
 }
 
@@ -173,9 +171,8 @@ void Schedule::HardTranslate(const int &section, const int &timeslot,
 int Schedule::HardCountSwap(const int &section, const int &lhs_timeslot,
                             const int &rhs_timeslot) {
   int result = 0;
-  for (auto& ptr : constraints_)
-    if (ptr->GetPriority() <= 0)
-      result += ptr->CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
+  for (auto& ptr : hard_constraints_)
+    result += ptr->CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
   return result;
 }
 
@@ -194,9 +191,8 @@ void Schedule::HardSwap(const int &section, const int &lhs_timeslot,
 int Schedule::SoftCountTranslate(const int &section, const int &timeslot,
                                  const int &open_timeslot) {
   int result = 0;
-  for (auto& ptr : constraints_)
-    if (ptr->GetPriority() > 0)
-      result += ptr->CountTranslate(section, timeslot, open_timeslot);
+  for (auto& ptr : soft_constraints_)
+    result += ptr->CountTranslate(section, timeslot, open_timeslot);
   return result;
 }
 
@@ -212,9 +208,8 @@ void Schedule::SoftTranslate(const int &section, const int &timeslot,
 int Schedule::SoftCountSwap(const int &section, const int &lhs_timeslot,
                             const int &rhs_timeslot) {
   int result = 0;
-  for (auto& ptr : constraints_)
-    if (ptr->GetPriority() > 0)
-      result += ptr->CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
+  for (auto& ptr : soft_constraints_)
+    result += ptr->CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
   return result;
 }
 
@@ -232,17 +227,15 @@ void Schedule::SoftSwap(const int &section, const int &lhs_timeslot,
 
 int Schedule::HardCount() {
   int result = 0;
-  for (auto& ptr : constraints_)
-    if (ptr->GetPriority() <= 0)
-      result += ptr->CountAll();
+  for (auto& ptr : hard_constraints_)
+    result += ptr->CountAll();
   return result;
 }
 
 int Schedule::SoftCount() {
   int result = 0;
-  for (auto& ptr : constraints_)
-    if (ptr->GetPriority() > 0)
-      result += ptr->CountAll();
+  for (auto& ptr : soft_constraints_)
+    result += ptr->CountAll();
   return result;
 }
 
