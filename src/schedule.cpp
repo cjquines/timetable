@@ -375,24 +375,27 @@ int Schedule::HardLocalSearch() {
   int result = 0;
   for (int i = 0; i < to_swap.size(); i++) {
     int section = to_swap[i].first;
-    if (timetable_[section][to_swap[i].second] == -1) continue;
+    if (timetable_[section][to_swap[i].second] < 0) continue;
     bool to_continue = false;
     for (int j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
-        if (timetable_[section][to_swap[j].second] == -1) {
-          int delta = HardCountTranslate(section, to_swap[i].second,
-                                         to_swap[j].second);
-          if (delta <= 0) {
-            HardTranslate(section, to_swap[i].second, to_swap[j].second);
-            result += delta;
-            to_continue = true;
-            break;
-          }
-        } else {
+        if (timetable_[section][to_swap[j].second] >= 0 &&
+            IsValidHardSwap(section, to_swap[i].second, to_swap[j].second)) {
           int delta = HardCountSwap(section, to_swap[i].second,
                                     to_swap[j].second);
           if (delta <= 0) {
             HardSwap(section, to_swap[i].second, to_swap[j].second);
+            result += delta;
+            to_continue = true;
+            break;
+          }
+        } else if (timetable_[section][to_swap[j].second] == -1 &&
+                   IsValidHardTranslate(section, to_swap[i].second,
+                                        to_swap[j].second)) {
+          int delta = HardCountTranslate(section, to_swap[i].second,
+                                         to_swap[j].second);
+          if (delta <= 0) {
+            HardTranslate(section, to_swap[i].second, to_swap[j].second);
             result += delta;
             to_continue = true;
             break;
@@ -419,11 +422,13 @@ int Schedule::HardTabuSearch() {
     for (int j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
         int delta;
-        if (timetable_[section][to_swap[j].second] == -1)
+        if (timetable_[section][to_swap[j].second] >= 0 &&
+            IsValidHardSwap(section, to_swap[i].second, to_swap[j].second))
+          delta = HardCountSwap(section, to_swap[i].second, to_swap[j].second);
+        else if (timetable_[section][to_swap[j].second] == -1 &&
+            IsValidHardTranslate(section, to_swap[i].second, to_swap[j].second))
           delta = HardCountTranslate(section, to_swap[i].second,
                                      to_swap[j].second);
-        else
-          delta = HardCountSwap(section, to_swap[i].second, to_swap[j].second);
         if (delta < best) {
           best = delta;
           lhs_best = i;
