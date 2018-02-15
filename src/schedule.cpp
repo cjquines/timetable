@@ -333,16 +333,15 @@ void Schedule::InitialSchedule() {
       std::shuffle(unassigned.begin(), unassigned.end(), rand_generator_);
       for (auto sb : unassigned) {
         int section = (*it)->GetId(), subject = sb.first, num_slots = sb.second;
-        int min = 1000000, min_index = -1;
+        bool assigned = false;
         for (int kt = 0; kt < num_slots_; kt++) {
-          if (IsFree(section, kt, num_slots) &&
-              HardCountAssign(subject, section, kt, num_slots) < min) {
-            min = HardCountAssign(subject, section, kt, num_slots);
-            min_index = kt;
+          if (IsFree(section, kt, num_slots)) {
+            HardAssign(subject, section, kt, num_slots);
+            assigned = true;
+            break;
           }
         }
-        assert(min_index != -1);
-        HardAssign(subject, section, min_index, num_slots);
+        assert(assigned);
       }
     }
   }
@@ -369,7 +368,6 @@ int Schedule::HardLocalSearch() {
   for (int i = 0; i < to_swap.size(); i++) {
     int section = to_swap[i].first;
     if (timetable_[section][to_swap[i].second] < 0) continue;
-    bool to_continue = false;
     for (int j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
         if (timetable_[section][to_swap[j].second] >= 0 &&
@@ -379,7 +377,6 @@ int Schedule::HardLocalSearch() {
           if (delta <= 0) {
             HardSwap(section, to_swap[i].second, to_swap[j].second);
             result += delta;
-            to_continue = true;
             break;
           }
         } else if (timetable_[section][to_swap[j].second] == -1 &&
@@ -390,13 +387,11 @@ int Schedule::HardLocalSearch() {
           if (delta <= 0) {
             HardTranslate(section, to_swap[i].second, to_swap[j].second);
             result += delta;
-            to_continue = true;
             break;
           }
         }
       }
     }
-    if (to_continue) continue;
   }
   return result;
 }
@@ -431,12 +426,13 @@ int Schedule::HardTabuSearch() {
     }
   }
   if (best == 0) return best;
-  else if (timetable_[to_swap[lhs_best].first][to_swap[rhs_best].second] == -1)
+  else if (timetable_[to_swap[lhs_best].first][to_swap[rhs_best].second] == -1) {
     HardTranslate(to_swap[lhs_best].first, to_swap[lhs_best].second,
                   to_swap[rhs_best].second);
-  else
+  } else {
     HardSwap(to_swap[lhs_best].first, to_swap[lhs_best].second,
              to_swap[rhs_best].second);
+  }
   return best;
 }
 

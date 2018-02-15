@@ -21,8 +21,8 @@ int NonSimultaneous::CountTranslate(const int &section, const int &timeslot,
   int num_slots = Constraint::schedule_->GetLengthOf(section, timeslot);
   int result = 0;
   for (int i = 0; i < num_slots; i++) {
-    result += Constraint::schedule_->CountSectionsOf(teacher, open_timeslot+i) + 1;
-    result -= Constraint::schedule_->CountSectionsOf(teacher, timeslot+i);
+    if (Constraint::schedule_->CountSectionsOf(teacher, open_timeslot+i) > 0) result++;
+    if (Constraint::schedule_->CountSectionsOf(teacher, timeslot+i) > 1) result--;
   }
   return result;
 }
@@ -36,10 +36,10 @@ int NonSimultaneous::CountSwapTimeslot(const int &section,
   int num_slots = Constraint::schedule_->GetLengthOf(section, lhs_timeslot);
   int result = 0;
   for (int i = 0; i < num_slots; i++) {
-    result += Constraint::schedule_->CountSectionsOf(lhs_teacher, rhs_timeslot+i) + 1;
-    result -= Constraint::schedule_->CountSectionsOf(lhs_teacher, lhs_timeslot+i);
-    result += Constraint::schedule_->CountSectionsOf(rhs_teacher, lhs_timeslot+i) + 1;
-    result -= Constraint::schedule_->CountSectionsOf(rhs_teacher, rhs_timeslot+i);
+    if (Constraint::schedule_->CountSectionsOf(lhs_teacher, rhs_timeslot+i) > 0) result++;
+    if (Constraint::schedule_->CountSectionsOf(lhs_teacher, lhs_timeslot+i) > 1) result--;
+    if (Constraint::schedule_->CountSectionsOf(rhs_teacher, lhs_timeslot+i) > 0) result++;
+    if (Constraint::schedule_->CountSectionsOf(rhs_teacher, rhs_timeslot+i) > 1) result--;
   }
   return result;
 }
