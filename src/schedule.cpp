@@ -10,6 +10,8 @@
 #include "teacher.h"
 #include "constraints/distinctperday.h"
 #include "constraints/nonsimultaneous.h"
+#include "constraints/reqfirstsubject.h"
+#include "constraints/subjectgaps.h"
 #include "constraints/teachertime.h"
 
 Schedule::Schedule(const int &num_days, const int &num_slots_per_day,
@@ -75,6 +77,12 @@ void Schedule::AddTeacher(const int &id, const std::string &name) {
   teachers_.push_back(ptr);
 }
 
+void Schedule::AddSubjectGaps(const int &priority) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<SubjectGaps>(
+    this, priority);
+  soft_constraints_.push_back(std::move(ptr));
+}
+
 void Schedule::AddTeacherTime(const int &priority, const int &teacher,
                               const std::vector<int> &unassignable) {
   std::unique_ptr<Constraint> ptr = std::make_unique<TeacherTime>(
@@ -93,6 +101,8 @@ void Schedule::Initialize() {
   std::unique_ptr<Constraint> ptr = std::make_unique<DistinctPerDay>(this);
   hard_constraints_.push_back(std::move(ptr));
   ptr = std::make_unique<NonSimultaneous>(this);
+  hard_constraints_.push_back(std::move(ptr));
+  ptr = std::make_unique<ReqFirstSubject>(this);
   hard_constraints_.push_back(std::move(ptr));
 
   timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
@@ -153,6 +163,7 @@ bool Schedule::IsFree(const int &section, const int &timeslot,
                       const int &num_slots) {
   // Returns True if section has num_slots free slots, starting with timeslot,
   // such that all free slots are on the same day.
+  if (num_slots == 0) return true;
   if (timetable_[section][timeslot] != -1) return false;
   int rbound = timeslot, cur_moved = 0, rtimeslot = ClampDay(timeslot).second;
   while (timetable_[section][rbound] == -1 && rbound < rtimeslot &&
@@ -311,7 +322,7 @@ void Schedule::SoftSwap(const int &section, const int &lhs_timeslot,
 
 int Schedule::HardCount() {
   int result = 0;
-  for (auto& ptr : hard_constraints_)
+  for (auto& ptr : hard_constraints_) 
     result += ptr->CountAll();
   return result;
 }
