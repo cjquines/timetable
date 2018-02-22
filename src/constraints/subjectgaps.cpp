@@ -2,6 +2,8 @@
 #include "../schedule.h"
 #include "../section.h"
 
+#include <iostream>
+
 SubjectGaps::SubjectGaps(Schedule* schedule, const int &priority)
     : Constraint(schedule, priority) {}
 
@@ -19,7 +21,7 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
   int result = 0;
 
   if (lbound == open_lbound && Constraint::schedule_->IsFree(section,
-    std::min(timeslot, open_timeslot) + length, std::abs(timeslot - open_timeslot) - 1)) {
+    std::min(timeslot, open_timeslot) + length, std::abs(timeslot - open_timeslot) - length)) {
     int small = timeslot, large = open_timeslot;
     if (small > large) std::swap(small, large);
     bool open_left = Constraint::schedule_->IsFree(section, lbound, small - lbound);
