@@ -78,7 +78,8 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
     }
   }
 
-  return result;
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  else return result;
 }
 
 int SubjectGaps::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
@@ -107,5 +108,7 @@ int SubjectGaps::CountAll() {
             seen_empty = true, num_empty = 1;
       }
     }
-  return result;
+    
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  else return result;
 }
