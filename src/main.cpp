@@ -10,9 +10,9 @@
 int main() {
   std::ios_base::sync_with_stdio(0);
 
-  // Schedule config(5, 8, std::time(nullptr));
-  // std::cout << std::time(nullptr) << std::endl;
-  Schedule config(5, 8, 1519279692);
+  Schedule config(5, 8, std::time(nullptr));
+  std::cout << std::time(nullptr) << std::endl;
+  // Schedule config(5, 8, 1519279692);
   config.AddTeacher(0, "Darilag");
   config.AddTeacher(1, "Catimbang");
   config.AddTeacher(2, "Salvador");
@@ -97,16 +97,21 @@ int main() {
 
   config.Initialize();
   config.InitialSchedule();
-  config.TestPrint();
+  // config.TestPrint();
   int hard_count = config.HardCount();
   while (hard_count > 0) {
     hard_count += config.HardSolver();
     // config.TestPrint();
   }
   config.SoftInitialize();
-  config.TestPrint();
+  // config.TestPrint();
   int soft_count = config.SoftCount();
-  while (soft_count > 0) soft_count += config.SoftSolver();
+  while (soft_count > 0) {
+    soft_count += config.SoftSolver();
+    // config.TestPrint();
+    // std::cout << soft_count << std::endl;
+    assert(config.SoftCount() == soft_count);
+  }
   config.TestPrint();
   return 0;
 }

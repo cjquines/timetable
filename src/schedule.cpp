@@ -80,14 +80,16 @@ void Schedule::AddTeacher(const int &id, const std::string &name) {
 void Schedule::AddSubjectGaps(const int &priority) {
   std::unique_ptr<Constraint> ptr = std::make_unique<SubjectGaps>(
     this, priority);
-  soft_constraints_.push_back(std::move(ptr));
+  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
+  else soft_constraints_.push_back(std::move(ptr));
 }
 
 void Schedule::AddTeacherTime(const int &priority, const int &teacher,
                               const std::vector<int> &unassignable) {
   std::unique_ptr<Constraint> ptr = std::make_unique<TeacherTime>(
     this, priority, teacher, unassignable);
-  soft_constraints_.push_back(std::move(ptr));
+  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
+  else soft_constraints_.push_back(std::move(ptr));
 }
 
 void Schedule::Initialize() {
