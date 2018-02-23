@@ -41,6 +41,8 @@ public:
   void AddGroup(const int &id);
   void AddTeacher(const int &id, const std::string &name);
   void AddSubjectGaps(const int &priority);
+  void AddSubjectTime(const int &priority, const int &subject,
+                      const std::vector<int> &unassignable);
   void AddTeacherTime(const int &priority, const int &teacher,
                       const std::vector<int> &unassignable);
   void Initialize();

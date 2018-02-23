@@ -12,6 +12,7 @@
 #include "constraints/nonsimultaneous.h"
 #include "constraints/reqfirstsubject.h"
 #include "constraints/subjectgaps.h"
+#include "constraints/subjecttime.h"
 #include "constraints/teachertime.h"
 
 Schedule::Schedule(const int &num_days, const int &num_slots_per_day,
@@ -80,6 +81,14 @@ void Schedule::AddTeacher(const int &id, const std::string &name) {
 void Schedule::AddSubjectGaps(const int &priority) {
   std::unique_ptr<Constraint> ptr = std::make_unique<SubjectGaps>(
     this, priority);
+  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
+  else soft_constraints_.push_back(std::move(ptr));
+}
+
+void Schedule::AddSubjectTime(const int &priority, const int &subject,
+                              const std::vector<int> &unassignable) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<SubjectTime>(
+    this, priority, subject, unassignable);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }

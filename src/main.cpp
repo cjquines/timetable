@@ -12,7 +12,7 @@ int main() {
 
   Schedule config(5, 8, std::time(nullptr));
   std::cout << std::time(nullptr) << std::endl;
-  // Schedule config(5, 8, 1519279692);
+  // Schedule config(5, 8, 1519369531);
   config.AddTeacher(0, "Darilag");
   config.AddTeacher(1, "Catimbang");
   config.AddTeacher(2, "Salvador");
@@ -47,6 +47,7 @@ int main() {
   grp->AddSection(1, "Rousseau");
   grp->AddSubject(0, {2, 2}, 0, "DRR");
   grp->AddSubject(1, {1}, 0, "PE4");
+  config.AddSubjectTime(1, 1, {0, 1, 2, 3, 4, 5, 6, 7});
   grp->AddSubject(2, {2, 2}, 1, "MIL");
   grp->AddSubject(3, {2, 2}, 1, "PPL");
   grp->AddSubject(4, {2, 2}, 2, "BIO");
@@ -59,6 +60,7 @@ int main() {
   grp->AddSection(2, "Hobbes");
   grp->AddSubject(8, {2, 2}, 0, "DRR");
   grp->AddSubject(9, {1}, 0, "PE4");
+  config.AddSubjectTime(1, 9, {0, 1, 2, 3, 4, 5, 6, 7});
   grp->AddSubject(10, {2, 2}, 1, "MIL");
   grp->AddSubject(11, {2, 2}, 1, "PPL");
   grp->AddSubject(12, {2, 2}, 2, "BIO");
@@ -77,6 +79,7 @@ int main() {
   grp->AddSubject(18, {2, 2}, 7, "PPP");
   grp->AddSubject(19, {2, 2}, 8, "PR1");
   grp->AddSubject(20, {1}, 0, "PE2");
+  config.AddSubjectTime(1, 20, {0, 1, 2, 3, 4, 5, 6, 7});
   grp->AddSubject(21, {2, 2}, 9, "STA");
   grp->AddSubject(22, {2, 2}, 10, "EAP");
   grp->AddSubject(23, {2, 2}, 11, "EMT");
@@ -90,6 +93,7 @@ int main() {
   grp->AddSubject(27, {2, 2}, 7, "PPP");
   grp->AddSubject(28, {2, 2}, 4, "PR1");
   grp->AddSubject(29, {1}, 0, "PE2");
+  config.AddSubjectTime(1, 29, {0, 1, 2, 3, 4, 5, 6, 7});
   grp->AddSubject(30, {2, 2}, 9, "STA");
   grp->AddSubject(31, {2, 2}, 10, "EAP");
   grp->AddSubject(32, {2, 2}, 11, "EMT");
@@ -102,6 +106,8 @@ int main() {
   while (hard_count > 0) {
     hard_count += config.HardSolver();
     // config.TestPrint();
+    // if (hard_count == 2) config.TestPrint();
+    // std::cout << hard_count << std::endl;
   }
   config.SoftInitialize();
   // config.TestPrint();
@@ -110,7 +116,7 @@ int main() {
     soft_count += config.SoftSolver();
     // config.TestPrint();
     // std::cout << soft_count << std::endl;
-    assert(config.SoftCount() == soft_count);
+    // assert(config.SoftCount() == soft_count);
   }
   config.TestPrint();
   return 0;
