@@ -124,7 +124,7 @@ void Schedule::SoftInitialize() {
   assert(HardCount() == 0);
   hard_satisfied_ = true;
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, -1));
-  for (int it = 0; it < sections_.size(); it++)
+  for (std::vector<int>::size_type it = 0; it < sections_.size(); it++)
     for (int jt = 0; jt < num_slots_; jt++)
       if (timetable_[it][jt] != -1)
         teacher_table_[GetTeacherOf(it, GetHeadOf(it, jt))][jt] = it;
@@ -387,10 +387,10 @@ int Schedule::HardLocalSearch() {
         to_swap.emplace_back((*it)->GetId(), jt);
   std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
   int result = 0;
-  for (int i = 0; i < to_swap.size(); i++) {
+  for (std::vector<int>::size_type i = 0; i < to_swap.size(); i++) {
     int section = to_swap[i].first;
     if (timetable_[section][to_swap[i].second] < 0) continue;
-    for (int j = i+1; j < to_swap.size(); j++) {
+    for (std::vector<int>::size_type j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
         if (timetable_[section][to_swap[j].second] >= 0 &&
             IsValidHardSwap(section, to_swap[i].second, to_swap[j].second)) {
@@ -426,12 +426,12 @@ int Schedule::HardTabuSearch() {
       for (auto jt = 0; jt < num_slots_; jt++)
         to_swap.emplace_back((*it)->GetId(), jt);
   std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
-  for (int i = 0; i < to_swap.size(); i++) {
+  for (std::vector<int>::size_type i = 0; i < to_swap.size(); i++) {
     int section = to_swap[i].first;
     if (timetable_[section][to_swap[i].second] < 0) continue;
-    for (int j = i+1; j < to_swap.size(); j++) {
+    for (std::vector<int>::size_type j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
-        int delta;
+        int delta = 0;
         if (timetable_[section][to_swap[j].second] >= 0 &&
             IsValidHardSwap(section, to_swap[i].second, to_swap[j].second))
           delta = HardCountSwap(section, to_swap[i].second, to_swap[j].second);
@@ -465,10 +465,10 @@ int Schedule::SoftSolver() {
       for (auto jt = 0; jt < num_slots_; jt++)
         to_swap.emplace_back((*it)->GetId(), jt);
   std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
-  for (int i = 0; i < to_swap.size(); i++) {
+  for (std::vector<int>::size_type i = 0; i < to_swap.size(); i++) {
     int section = to_swap[i].first;
     if (timetable_[section][to_swap[i].second] < 0) continue;
-    for (int j = i+1; j < to_swap.size(); j++) {
+    for (std::vector<int>::size_type j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
         if (timetable_[section][to_swap[j].second] >= 0) {
           if (!IsValidSoftSwap(section, to_swap[i].second, to_swap[j].second))
@@ -492,32 +492,54 @@ int Schedule::SoftSolver() {
       }
     }
   }
+  return 0;
 }
 
 void Schedule::TestPrint() {
-  std::cout << "   ";
-  for (int i = 0; i < num_slots_; i++) std::cout << (i%10) << "   ";
+  std::cout << "  ";
+  for (std::vector<int>::size_type i = 0; i < sections_.size(); i++)
+    std::cout << (i%10) << "   ";
   std::cout << std::endl;
-  for (int it = 0; it < sections_.size(); it++) {
-    std::cout << it << ' ';
-    for (auto jt : timetable_[it]) {
+  for (int j = 0; j < num_slots_; j++) {
+    std::cout << (j%10);
+    for (std::vector<int>::size_type it = 0; it < sections_.size(); it++) {
+      auto jt = timetable_[it][j];
       if (jt >= 0) std::cout << ' ' << GetSubject(jt)->GetName();
       else if (jt == -1) std::cout << "    ";
-      else std::cout << "----"; 
+      else std::cout << " ---"; 
     }
     std::cout << std::endl;
+    if (j % num_slots_per_day_ == num_slots_per_day_ - 1 && j != num_slots_-1) {
+      std::cout << std::endl;
+      std::cout << "  ";
+      for (std::vector<int>::size_type i = 0; i < sections_.size(); i++)
+        std::cout << (i%10) << "   ";
+      std::cout << std::endl;
+    }
   }
-  std::cout << std::endl << "   ";
-  for (int i = 0; i < num_slots_; i++) std::cout << (i%10) << ' ';
   std::cout << std::endl;
-  for (int it = 0; it < teachers_.size(); it++) {
-    std::cout << (it%10) << ' ';
-    for (auto jt : teacher_table_[it]) {
+
+  std::cout << "  ";
+  for (std::vector<int>::size_type i = 0; i < teachers_.size(); i++)
+    std::cout << (i%10) << " ";
+  std::cout << std::endl;
+  for (int j = 0; j < num_slots_; j++) {
+    std::cout << (j%10);
+    for (std::vector<int>::size_type it = 0; it < teachers_.size(); it++) {
+      auto jt = teacher_table_[it][j];
       if (jt >= 0) std::cout << ' ' << jt;
       else std::cout << "  ";
     }
     std::cout << std::endl;
+    if (j % num_slots_per_day_ == num_slots_per_day_ - 1 && j != num_slots_-1) {
+      std::cout << std::endl;
+      std::cout << "  ";
+      for (std::vector<int>::size_type i = 0; i < teachers_.size(); i++)
+        std::cout << (i%10) << " ";
+      std::cout << std::endl;
+    }
   }
+
   std::cout << std::endl;
   if (!hard_satisfied_) std::cout << HardCount() << std::endl;
   else std::cout << SoftCount() << std::endl;
