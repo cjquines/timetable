@@ -120,5 +120,20 @@ int main() {
     // assert(config.SoftCount() == soft_count);
   }
   config.TestPrint();
+
+  config.Reset();
+  config.InitialSchedule();
+  config.TestPrint();
+  hard_count = config.HardCount();
+  while (hard_count > 0) {
+    hard_count += config.HardSolver();
+  }
+  config.SoftInitialize();
+  config.TestPrint();
+  soft_count = config.SoftCount();
+  while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 10) {
+    soft_count += config.SoftSolver();
+  }
+  config.TestPrint();
   return 0;
 }

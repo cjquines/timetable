@@ -101,6 +101,13 @@ void Schedule::AddTeacherTime(const int &priority, const int &teacher,
   else soft_constraints_.push_back(std::move(ptr));
 }
 
+void Schedule::Reset() {
+  hard_satisfied_ = false;
+  timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
+  teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
+  subject_tabus_.assign(subjects_.size(), std::vector<bool>(num_slots_, 0));
+}
+
 void Schedule::Initialize() {
   for (auto ptr : groups_) {
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
@@ -116,9 +123,7 @@ void Schedule::Initialize() {
   ptr = std::make_unique<ReqFirstSubject>(this);
   hard_constraints_.push_back(std::move(ptr));
 
-  timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
-  teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
-  subject_tabus_.assign(subjects_.size(), std::vector<bool>(num_slots_, 0));
+  Reset();
 }
 
 void Schedule::SoftInitialize() {
