@@ -1,13 +1,75 @@
-SECTIONS
-0 7 7 6 6 5 5 4 4 3 3 2 2 1 0 0 
-1 6 6 7 7 4 4 5 5 2 1 0 0 3 3 2 
-2 4 4 3 3 7 7 2 2 6 6 5 5 1 0 0 
-
-TEACHERS
-0 -1 -1 -1 -1 -1 -1 -1 -1 -1 0 0 0 1 1 1 
-1 -1 -1 0 0 -1 -1 0 0 1 0 0 0 0 0 0 
-2 0 0 -1 -1 0 0 0 0 -1 -1 -1 -1 -1 -1 -1 
-3 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1 
-4 0 0 0 0 0 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 
-
-4
+e0d4334	Feb 23	Add SubjectTime to Schedule	
+58fd74a	Feb 23	Add subjecttime.h	
+c927d6f	Feb 23	Add weight to SubjectGaps	
+8563af2	Feb 23	Add constraint SubjectTime	
+e4ff1ff	Feb 23	Add possibility of making hard constraints soft constraints	
+d7eac2f	Feb 22	Fix SubjectGaps::CountTranslate() logic	
+7b79e69	Feb 22	Add SubjectGaps	
+a10080b	Feb 22	Add constraint ReqFirstSubject	
+ef1181c	Feb 15	Fix NonSimultaneous count logic	
+252c115	Feb 14	Fix Schedule::HardCountAssign()	
+0b091e3	Feb 14	Merge difftime to master	
+ba0b5f0	Feb 14	Split constraints_ into soft and hard	
+83f9336	Feb 14	Change main.cpp for difftime	
+679088e	Feb 14	Fix Schedule::TestPrint() alignment for teachers	
+b116850	Feb 14	Fix Schedule mutator logic	
+5f41923	Feb 14	Change Schedule::SoftSolver() to difftime	
+8883736	Feb 14	Change Schedule::Hard solvers to difftime	
+56facc4	Feb 14	Change Schedule::TestPrint() to include indices for time	
+e4e892e	Feb 14	Fix Schedule::InitialSchedule() assign to -1 bug	
+a756ebe	Feb 14	Change Schedule::InitialSchedule() to difftime	
+731db6a	Feb 13	Change Schedule::Soft mutators	
+542dab8	Feb 13	Change constraints logic	
+7f57df9	Feb 13	Change Constraint::CountAssign() inputs	
+bef57bf	Feb 13	Change Schedule::Hard mutators	
+247eef5	Feb 13	Change DistinctPerDay to follow new Subject accessors	
+9038b45	Feb 13	Change Schedule accessors to use subject head	
+255fcda	Feb 13	Add Schedule::IsThings	
+6f7f768	Feb 12	Update Schedule header file	
+4cd443f	Feb 12	Add Schedule::GetLengthOf	
+2032e84	Feb 12	Change Schedule accessors	
+7bdaff7	Feb 12	Change Subject dependents	
+39f7b68	Feb 12	Change Subject::num_slots_ to vector of slots	
+7abcee2	Feb 9	Iteratively calls to avoid stack overflow	
+ad61dad	Feb 9	Split HardSolver() and add HardTabuSearch()	
+7fb44d1	Feb 3	Accept non-improving moves in SoftSolver	
+dc66d52	Feb 3	Fix TeacherTime::CountSwapTimeslot logic	
+a157394	Feb 3	Fix Schedule::SoftSwap() logic	
+1cca18d	Feb 3	Add Schedule::SoftSolver and antecedents	
+f9c47d0	Feb 3	Fix TeacherTime::CountAll logic	
+6432025	Feb 3	Add TeacherTime constraint	
+87420e8	Feb 3	Fix translate logic	
+5d5fbbf	Feb 2	Remove schedule.o	
+36a61ac	Feb 2	Add Schedule::SoftInitialize	
+341b517	Feb 2	Add schedule translate logic	
+01e0ab2	Feb 2	Fix DistinctPerDay::CountAll logic	
+017bd9e	Feb 2	Add constraint translate logic	
+5291ba7	Feb 2	Add Schedule::HardSolver, separate seed	
+b0f7986	Feb 2	Fix DistinctPerDay::CountSwapTimeslot logic	
+9efdfab	Jan 31	Fix NonSimultaneous::CountAll	
+7699a34	Jan 31	Add Schedule::HardCount()	
+12546b6	Jan 31	Fix constraints dereferencing	
+3d50464	Jan 31	Change DistinctPerDay logic	
+5392455	Jan 31	Add NonSimultaneous::CountAll()	
+57fff64	Jan 31	Add and expose Schedule::teachers_	
+f37698a	Jan 31	Rewrite NonSimultaneous logic	
+6746595	Jan 31	Add CountAll() and derivatives	
+3c4869d	Jan 31	Hard-code testing in main.cpp	
+4de211c	Jan 31	Write Schedule::Initialize etc.	
+1fbb2b2	Jan 31	Fix bugs in class files	
+b7b8e22	Jan 28	Add Schedule::Initialize	
+f284b45	Jan 27	Add NonSimultaneous::CountSwapTimeslot	
+0f299f1	Jan 27	Add Constraint logic	
+74cb218	Jan 25	Change directory structure	
+e07115c	Jan 25	Add NonSimultaneous	
+a63db35	Jan 25	Add Schedule	
+2cf7ebf	Jan 25	Add Constraint	
+072392d	Jan 25	Add Group	
+c390489	Jan 24	Remove .o files	
+ffdb0ab	Jan 24	Change directory structure	
+d74a4d8	Jan 24	Cleanup	
+313ae06	Jan 24	Add Subject, Teacher	
+fa85ce1	Jan 24	Add Section	
+2b021a7	Jan 17	Fix AssignSubject	
+d642dc6	Jan 17	Create readme	
+1511547	Jan 17	One-file program	

@@ -8,8 +8,9 @@
 #include "group.h"
 
 int main() {
-  std::ios_base::sync_with_stdio(0);
+    std::time_t start_max_5 = std::time(NULL);
 
+  std::ios_base::sync_with_stdio(0);
   Schedule config(5, 8, std::time(nullptr));
   std::cout << std::time(nullptr) << std::endl;
   // Schedule config(5, 8, 1519369531);
@@ -27,7 +28,7 @@ int main() {
   config.AddTeacher(10, "Pheobe");
   config.AddTeacher(11, "Dogma");
   config.AddTeacher(12, "Agustin");
-  // config.AddTeacherTime(1, 0, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
+  config.AddTeacherTime(1, 0, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
   // config.AddTeacherTime(1, 1, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
   // config.AddTeacherTime(1, 2, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
   // config.AddTeacherTime(1, 3, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
@@ -101,7 +102,7 @@ int main() {
 
   config.Initialize();
   config.InitialSchedule();
-  // config.TestPrint();
+  config.TestPrint();
   int hard_count = config.HardCount();
   while (hard_count > 0) {
     hard_count += config.HardSolver();
@@ -110,9 +111,9 @@ int main() {
     // std::cout << hard_count << std::endl;
   }
   config.SoftInitialize();
-  // config.TestPrint();
+  config.TestPrint();
   int soft_count = config.SoftCount();
-  while (soft_count > 0) {
+  while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
     soft_count += config.SoftSolver();
     // config.TestPrint();
     // std::cout << soft_count << std::endl;
