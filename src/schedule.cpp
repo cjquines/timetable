@@ -118,6 +118,7 @@ void Schedule::Initialize() {
 
   timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
+  subject_tabus_.assign(subjects_.size(), std::vector<bool>(num_slots_, 0));
 }
 
 void Schedule::SoftInitialize() {
@@ -428,7 +429,8 @@ int Schedule::HardTabuSearch() {
   std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
   for (std::vector<int>::size_type i = 0; i < to_swap.size(); i++) {
     int section = to_swap[i].first;
-    if (timetable_[section][to_swap[i].second] < 0) continue;
+    int subject = GetSubjectOf(section, to_swap[i].second);
+    if (subject < 0) continue;
     for (std::vector<int>::size_type j = i+1; j < to_swap.size(); j++) {
       if (to_swap[j].first == section) {
         int delta = 0;
@@ -439,7 +441,7 @@ int Schedule::HardTabuSearch() {
             IsValidHardTranslate(section, to_swap[i].second, to_swap[j].second))
           delta = HardCountTranslate(section, to_swap[i].second,
                                      to_swap[j].second);
-        if (delta < best) {
+        if (delta < best && subject_tabus_[subject][to_swap[j].second] == 0) {
           best = delta;
           lhs_best = i;
           rhs_best = j;
@@ -448,7 +450,9 @@ int Schedule::HardTabuSearch() {
     }
   }
   if (best == 0) return best;
-  else if (timetable_[to_swap[lhs_best].first][to_swap[rhs_best].second] == -1) {
+  int subject = GetSubjectOf(to_swap[lhs_best].first, to_swap[lhs_best].second);
+  subject_tabus_[subject][to_swap[rhs_best].second] = 1;
+  if (timetable_[to_swap[lhs_best].first][to_swap[rhs_best].second] == -1) {
     HardTranslate(to_swap[lhs_best].first, to_swap[lhs_best].second,
                   to_swap[rhs_best].second);
   } else {
