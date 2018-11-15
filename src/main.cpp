@@ -19,7 +19,7 @@ int main() {
   config.AddTeacher(2, "Salvador");
   config.AddTeacher(3, "De Jesus");
   config.AddTeacher(4, "Villareal");
-  config.AddSubjectGaps(1);
+  config.AddSubjectGaps(0);
   config.AddTeacher(5, "Kath");
   config.AddTeacher(6, "Dayrit");
   config.AddTeacher(7, "Fernandez");
@@ -102,7 +102,7 @@ int main() {
 
   config.Initialize();
   config.InitialSchedule();
-  config.TestPrint();
+  // config.TestPrint();
   int hard_count = config.HardCount();
   while (hard_count > 0) {
     hard_count += config.HardSolver();
@@ -111,28 +111,40 @@ int main() {
     // std::cout << hard_count << std::endl;
   }
   config.SoftInitialize();
-  config.TestPrint();
+  // config.TestPrint();
   int soft_count = config.SoftCount();
+  int loops = 0;
   while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
-    soft_count += config.SoftSolver();
+    if (loops % 5 == 0) {
+      soft_count += config.SoftLocalSearch(true, true);
+    } else {
+      soft_count += config.SoftLocalSearch(true, false);
+    }
     // config.TestPrint();
     // std::cout << soft_count << std::endl;
     // assert(config.SoftCount() == soft_count);
+    loops++;
   }
   config.TestPrint();
 
   config.Reset();
   config.InitialSchedule();
-  config.TestPrint();
+  // config.TestPrint();
   hard_count = config.HardCount();
   while (hard_count > 0) {
     hard_count += config.HardSolver();
   }
   config.SoftInitialize();
-  config.TestPrint();
+  // config.TestPrint();
   soft_count = config.SoftCount();
+  loops = 0;
   while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 10) {
-    soft_count += config.SoftSolver();
+    if (loops % 5 == 0) {
+      soft_count += config.SoftLocalSearch(true, true);
+    } else {
+      soft_count += config.SoftLocalSearch(true, false);
+    }
+    loops++;
   }
   config.TestPrint();
   return 0;

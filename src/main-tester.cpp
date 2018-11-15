@@ -24,7 +24,7 @@ int main() {
     config.AddTeacher(2, "Salvador");
     config.AddTeacher(3, "De Jesus");
     config.AddTeacher(4, "Villareal");
-    config.AddSubjectGaps(1);
+    config.AddSubjectGaps(0);
     config.AddTeacher(5, "Kath");
     config.AddTeacher(6, "Dayrit");
     config.AddTeacher(7, "Fernandez");
@@ -124,13 +124,19 @@ int main() {
     last_ping = std::chrono::system_clock::now();
     double pinged = 1;
 
+    int loops = 0;
     while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
-      soft_count += config.SoftSolver();
+      if (loops % 5 == 0) {
+        soft_count += config.SoftLocalSearch(true, true);
+      } else {
+        soft_count += config.SoftLocalSearch(true, false);
+      }
       if (std::chrono::duration<double>(std::chrono::system_clock::now() - last_ping).count() > 0.1) {
         std::cout << soft_count << ' ';
         pinged++;
         last_ping = std::chrono::system_clock::now();
       }
+      loops++;
     }
     std::cout << std::endl;
 

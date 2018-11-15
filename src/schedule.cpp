@@ -1,4 +1,5 @@
 #include <cassert>
+#include <ctime>
 
 #include <algorithm>
 #include <iostream>
@@ -467,7 +468,7 @@ int Schedule::HardTabuSearch() {
   return best;
 }
 
-int Schedule::SoftSolver() {
+int Schedule::SoftLocalSearch(const bool &accept_back, const bool &accept_bad) {
   std::vector< std::pair<int, int> > to_swap;
   for (auto ptr : groups_)
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
@@ -484,7 +485,9 @@ int Schedule::SoftSolver() {
             continue;
           int delta = SoftCountSwap(section, to_swap[i].second,
                                     to_swap[j].second);
-          if (delta <= 0) {
+          if (delta < 0 ||
+              (delta == 0 && accept_back) ||
+              (delta > 0 && accept_bad)) {
             SoftSwap(section, to_swap[i].second, to_swap[j].second);
             return delta;
           }
@@ -493,7 +496,9 @@ int Schedule::SoftSolver() {
                                     to_swap[j].second)) continue;
           int delta = SoftCountTranslate(section, to_swap[i].second,
                                          to_swap[j].second);
-          if (delta <= 0) {
+          if (delta < 0 ||
+              (delta == 0 && accept_back) ||
+              (delta > 0 && accept_bad)) {
             SoftTranslate(section, to_swap[i].second, to_swap[j].second);
             return delta;
           }

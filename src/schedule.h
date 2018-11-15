@@ -45,6 +45,7 @@ public:
                       const std::vector<int> &unassignable);
   void AddTeacherTime(const int &priority, const int &teacher,
                       const std::vector<int> &unassignable);
+  void Reset();
   void Initialize();
   void SoftInitialize();
 
@@ -96,7 +97,7 @@ public:
   int HardSolver();
   int HardLocalSearch();
   int HardTabuSearch();
-  int SoftSolver();
+  int SoftLocalSearch(const bool &accept_back, const bool &accept_bad);
 
   void TestPrint();
 
@@ -117,6 +118,8 @@ private:
 
   std::vector< std::vector<int> > timetable_;
   std::vector< std::vector<int> > teacher_table_;
+
+  std::vector< std::vector<bool> > subject_tabus_;
 };
 
 #endif
