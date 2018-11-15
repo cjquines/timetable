@@ -97,7 +97,11 @@ public:
   int HardSolver(const int &time_limit);
   int HardLocalSearch();
   int HardTabuSearch();
-  int SoftLocalSearch(const bool &accept_back, const bool &accept_bad);
+  int SoftLocalSearch(const bool &accept_side, const int &threshold);
+  int SoftSimulatedAnnealing(const int &time_limit, const double &kappa,
+                             const int &tau, const double &alpha);
+  double SimulatedAnnealingSample(const int &num_samples);
+  int SimulatedAnnealingSearch(const double &temperature);
 
   void TestPrint();
 

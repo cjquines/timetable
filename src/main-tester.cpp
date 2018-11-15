@@ -33,19 +33,19 @@ int main() {
     config.AddTeacher(10, "Pheobe");
     config.AddTeacher(11, "Dogma");
     config.AddTeacher(12, "Agustin");
-    // config.AddTeacherTime(1, 0, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1, 1, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1, 2, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1, 3, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1, 4, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1,  5, {14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1,  6, {14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1,  7, {14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1,  8, {14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1,  9, {14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1, 10, {14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1, 11, {14, 15, 22, 23, 30, 31, 38, 39});
-    // config.AddTeacherTime(1, 12, {14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1, 0, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1, 1, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1, 2, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1, 3, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1, 4, {6, 7, 14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1,  5, {14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1,  6, {14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1,  7, {14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1,  8, {14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1,  9, {14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1, 10, {14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1, 11, {14, 15, 22, 23, 30, 31, 38, 39});
+    config.AddTeacherTime(1, 12, {14, 15, 22, 23, 30, 31, 38, 39});
 
     config.AddGroup(0);
     auto grp = config.GetGroup(0);
@@ -107,16 +107,12 @@ int main() {
 
     config.Initialize();
     config.InitialSchedule();
+    std::cout << config.HardSolver(5) << ": ";
 
-    int hard_count = config.HardCount();
-    while (hard_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
-      hard_count += config.HardSolver();
-    }
-
-    if (std::difftime(std::time(NULL), start_max_5) >= 5) {
-      std::cout << "FAIL HARD " << hard_count << std::endl;
-      continue;
-    }
+    // if (std::difftime(std::time(NULL), start_max_5) >= 5) {
+    //   std::cout << "FAIL HARD " << config.HardCount() << std::endl;
+    //   continue;
+    // }
 
     config.SoftInitialize();
     int soft_count = config.SoftCount();
@@ -126,21 +122,28 @@ int main() {
 
     int loops = 0;
     while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
-      if (loops % 5 == 0) {
-        soft_count += config.SoftLocalSearch(true, true);
+      if (loops >= 1000) {
+        std::cout << "SA ";
+        // output-2: 0.2, 50, 0.99
+        soft_count = config.SoftSimulatedAnnealing(5, 0.2, 50, 0.99);
+        // soft_count += config.SoftLocalSearch(true, 10);
+        // loops = 0;
       } else {
-        soft_count += config.SoftLocalSearch(true, false);
+        int delta = config.SoftLocalSearch(true, 0);
+        if (delta == 0) loops++;
+        else loops = 0;
+        soft_count += delta;
       }
       if (std::chrono::duration<double>(std::chrono::system_clock::now() - last_ping).count() > 0.1) {
         std::cout << soft_count << ' ';
         pinged++;
         last_ping = std::chrono::system_clock::now();
       }
-      loops++;
     }
     std::cout << std::endl;
 
     if (std::difftime(std::time(NULL), start_max_5) >= 5) {
+      assert(soft_count == config.SoftCount());
       std::cout << "FAIL SOFT " << soft_count << std::endl;
       continue;
     }

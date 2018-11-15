@@ -102,23 +102,26 @@ int main() {
 
   config.Initialize();
   config.InitialSchedule();
-  // config.TestPrint();
-  int hard_count = config.HardCount();
-  while (hard_count > 0) {
-    hard_count += config.HardSolver();
-    // config.TestPrint();
-    // if (hard_count == 2) config.TestPrint();
-    // std::cout << hard_count << std::endl;
+  if (config.HardSolver(5)) {
+    std::cout << config.HardCount() << std::endl;
   }
+  // config.TestPrint();
+  // int hard_count = config.HardCount();
+  // while (hard_count > 0) {
+  //   hard_count += config.HardSolver();
+  //   // config.TestPrint();
+  //   // if (hard_count == 2) config.TestPrint();
+  //   // std::cout << hard_count << std::endl;
+  // }
   config.SoftInitialize();
   // config.TestPrint();
   int soft_count = config.SoftCount();
   int loops = 0;
   while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
     if (loops % 5 == 0) {
-      soft_count += config.SoftLocalSearch(true, true);
+      soft_count += config.SoftLocalSearch(true, 10);
     } else {
-      soft_count += config.SoftLocalSearch(true, false);
+      soft_count += config.SoftLocalSearch(true, 0);
     }
     // config.TestPrint();
     // std::cout << soft_count << std::endl;
@@ -127,25 +130,25 @@ int main() {
   }
   config.TestPrint();
 
-  config.Reset();
-  config.InitialSchedule();
+  // config.Reset();
+  // config.InitialSchedule();
+  // // config.TestPrint();
+  // hard_count = config.HardCount();
+  // while (hard_count > 0) {
+  //   hard_count += config.HardSolver();
+  // }
+  // config.SoftInitialize();
+  // // config.TestPrint();
+  // soft_count = config.SoftCount();
+  // loops = 0;
+  // while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 10) {
+  //   if (loops % 5 == 0) {
+  //     soft_count += config.SoftLocalSearch(true, true);
+  //   } else {
+  //     soft_count += config.SoftLocalSearch(true, false);
+  //   }
+  //   loops++;
+  // }
   // config.TestPrint();
-  hard_count = config.HardCount();
-  while (hard_count > 0) {
-    hard_count += config.HardSolver();
-  }
-  config.SoftInitialize();
-  // config.TestPrint();
-  soft_count = config.SoftCount();
-  loops = 0;
-  while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 10) {
-    if (loops % 5 == 0) {
-      soft_count += config.SoftLocalSearch(true, true);
-    } else {
-      soft_count += config.SoftLocalSearch(true, false);
-    }
-    loops++;
-  }
-  config.TestPrint();
   return 0;
 }

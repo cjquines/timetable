@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 #include <ctime>
 
 #include <algorithm>
@@ -473,7 +474,7 @@ int Schedule::HardTabuSearch() {
   return best;
 }
 
-int Schedule::SoftLocalSearch(const bool &accept_back, const bool &accept_bad) {
+int Schedule::SoftLocalSearch(const bool &accept_side, const int &threshold) {
   std::vector< std::pair<int, int> > to_swap;
   for (auto ptr : groups_)
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
@@ -491,8 +492,8 @@ int Schedule::SoftLocalSearch(const bool &accept_back, const bool &accept_bad) {
           int delta = SoftCountSwap(section, to_swap[i].second,
                                     to_swap[j].second);
           if (delta < 0 ||
-              (delta == 0 && accept_back) ||
-              (delta > 0 && accept_bad)) {
+              (delta == 0 && accept_side) ||
+              (delta > 0 && delta < threshold)) {
             SoftSwap(section, to_swap[i].second, to_swap[j].second);
             return delta;
           }
@@ -502,8 +503,103 @@ int Schedule::SoftLocalSearch(const bool &accept_back, const bool &accept_bad) {
           int delta = SoftCountTranslate(section, to_swap[i].second,
                                          to_swap[j].second);
           if (delta < 0 ||
-              (delta == 0 && accept_back) ||
-              (delta > 0 && accept_bad)) {
+              (delta == 0 && accept_side) ||
+              (delta > 0 && delta < threshold)) {
+            SoftTranslate(section, to_swap[i].second, to_swap[j].second);
+            return delta;
+          }
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+int Schedule::SoftSimulatedAnnealing(const int &time_limit, const double &kappa,
+                                     const int &tau, const double &alpha) {
+  double initial_temperature = kappa * SimulatedAnnealingSample(100);
+  double temperature = initial_temperature;
+  int loops = 0;
+  int length = tau * num_slots_ * sections_.size() * subjects_.size();
+  int soft_count = SoftCount();
+  std::time_t start = std::time(NULL);
+  while (soft_count > 0 && std::difftime(std::time(NULL), start) < time_limit) {
+    int delta = SimulatedAnnealingSearch(temperature);
+    soft_count += delta;
+    temperature *= alpha;
+    if (delta >= 0) loops++;
+    if (loops >= length) {
+      loops = 0;
+      temperature += initial_temperature;
+    }
+  }
+  return soft_count;
+}
+
+double Schedule::SimulatedAnnealingSample(const int &num_samples) {
+  int samples = 0, total = 0;
+  std::vector< std::pair<int, int> > to_swap;
+  for (auto ptr : groups_)
+    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
+      for (auto jt = 0; jt < num_slots_; jt++)
+        to_swap.emplace_back((*it)->GetId(), jt);
+  std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
+  for (std::vector<int>::size_type i = 0; i < to_swap.size(); i++) {
+    int section = to_swap[i].first;
+    if (timetable_[section][to_swap[i].second] < 0) continue;
+    for (std::vector<int>::size_type j = i+1; j < to_swap.size(); j++) {
+      if (to_swap[j].first == section) {
+        if (timetable_[section][to_swap[j].second] >= 0) {
+          if (!IsValidSoftSwap(section, to_swap[i].second, to_swap[j].second))
+            continue;
+          samples++;
+          total += SoftCountSwap(section, to_swap[i].second, to_swap[j].second);
+          if (samples >= num_samples) break;
+        } else if (timetable_[section][to_swap[j].second] == -1) {
+          if (!IsValidSoftTranslate(section, to_swap[i].second,
+                                    to_swap[j].second)) continue;
+          samples++;
+          total += SoftCountTranslate(section, to_swap[i].second,
+                                      to_swap[j].second);
+          if (samples >= num_samples) break;
+        }
+      }
+    }
+    if (samples >= num_samples) break;
+  }
+  return double(total) / double(samples);
+}
+
+int Schedule::SimulatedAnnealingSearch(const double &temperature) {
+  std::uniform_real_distribution<double> prob(0, 1);
+  std::vector< std::pair<int, int> > to_swap;
+  for (auto ptr : groups_)
+    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
+      for (auto jt = 0; jt < num_slots_; jt++)
+        to_swap.emplace_back((*it)->GetId(), jt);
+  std::shuffle(to_swap.begin(), to_swap.end(), rand_generator_);
+  for (std::vector<int>::size_type i = 0; i < to_swap.size(); i++) {
+    int section = to_swap[i].first;
+    if (timetable_[section][to_swap[i].second] < 0) continue;
+    for (std::vector<int>::size_type j = i+1; j < to_swap.size(); j++) {
+      if (to_swap[j].first == section) {
+        if (timetable_[section][to_swap[j].second] >= 0) {
+          if (!IsValidSoftSwap(section, to_swap[i].second, to_swap[j].second))
+            continue;
+          int delta = SoftCountSwap(section, to_swap[i].second,
+                                    to_swap[j].second);
+          if (delta <= 0 ||
+              prob(rand_generator_) < exp(-double(delta) / temperature)) {
+            SoftSwap(section, to_swap[i].second, to_swap[j].second);
+            return delta;
+          }
+        } else if (timetable_[section][to_swap[j].second] == -1) {
+          if (!IsValidSoftTranslate(section, to_swap[i].second,
+                                    to_swap[j].second)) continue;
+          int delta = SoftCountTranslate(section, to_swap[i].second,
+                                         to_swap[j].second);
+          if (delta <= 0 ||
+              prob(rand_generator_) < exp(-double(delta) / temperature)) {
             SoftTranslate(section, to_swap[i].second, to_swap[j].second);
             return delta;
           }
