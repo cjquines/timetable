@@ -376,14 +376,19 @@ void Schedule::InitialSchedule() {
   }
 }
 
-int Schedule::HardSolver() {
-  int result = HardLocalSearch();
-  int delta;
-  do {
-    delta = HardTabuSearch();
-    result += delta;
-  } while (delta > 0);
-  return result;
+int Schedule::HardSolver(const int &time_limit) {
+  int hard_count = HardCount();
+  std::time_t start = std::time(NULL);
+  while (hard_count > 0 && std::difftime(std::time(NULL), start) < time_limit) {
+    int result = HardLocalSearch();
+    int delta;
+    do {
+      delta = HardTabuSearch();
+      result += delta;
+    } while (delta > 0);
+    hard_count += result;
+  }
+  return hard_count;
 }
 
 int Schedule::HardLocalSearch() {

@@ -94,7 +94,7 @@ public:
   int SoftCount();
 
   void InitialSchedule();
-  int HardSolver();
+  int HardSolver(const int &time_limit);
   int HardLocalSearch();
   int HardTabuSearch();
   int SoftLocalSearch(const bool &accept_back, const bool &accept_bad);
