@@ -6,15 +6,6 @@
 NonSimultaneous::NonSimultaneous(Schedule* schedule)
     : Constraint(schedule, -1) {}
 
-int NonSimultaneous::CountAssign(const int &subject, const int &section,
-                                 const int &timeslot, const int &num_slots) {
-  int teacher = Constraint::schedule_->GetSubject(subject)->GetTeacher();
-  int result = 0;
-  for (int i = 0; i < num_slots; i++)
-    result += Constraint::schedule_->CountSectionsOf(teacher, timeslot+i);
-  return result;
-}
-
 int NonSimultaneous::CountTranslate(const int &section, const int &timeslot,
                                     const int &open_timeslot) {
   int teacher = Constraint::schedule_->GetTeacherOf(section, timeslot);

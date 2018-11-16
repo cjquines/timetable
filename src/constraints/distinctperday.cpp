@@ -8,16 +8,6 @@
 DistinctPerDay::DistinctPerDay(Schedule* schedule)
     : Constraint(schedule, 0) {}
 
-int DistinctPerDay::CountAssign(const int &subject, const int &section,
-                                 const int &timeslot, const int &num_slots) {
-  int lbound, rbound, result = 0;
-  std::tie(lbound, rbound) = Constraint::schedule_->ClampDay(timeslot);
-  for (int i = lbound; i < rbound; i++)
-    if (Constraint::schedule_->GetSubjectOf(section, i) == subject)
-      result++;
-  return result;
-}
-
 int DistinctPerDay::CountTranslate(const int &section, const int &timeslot,
                                    const int &open_timeslot) {
   int lbound, rbound, open_lbound, open_rbound;

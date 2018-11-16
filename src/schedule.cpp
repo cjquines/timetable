@@ -227,14 +227,6 @@ std::pair<int, int> Schedule::ClampDay(const int &timeslot) {
   return std::make_pair(lbound, lbound + num_slots_per_day_);
 }
 
-int Schedule::HardCountAssign(const int &subject, const int &section,
-                              const int &timeslot, const int &num_slots) {
-  int result = 0;
-  for (auto& ptr : hard_constraints_)
-    result += ptr->CountAssign(subject, section, timeslot, num_slots);
-  return result;
-}
-
 void Schedule::HardAssign(const int &subject, const int &section,
                           const int &timeslot, const int &num_slots) {
   int teacher = GetSubject(subject)->GetTeacher();

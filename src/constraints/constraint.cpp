@@ -5,11 +5,6 @@ Constraint::Constraint(Schedule *schedule, const int &priority)
 
 int Constraint::GetPriority() { return priority_; }
 
-int Constraint::CountAssign(const int &subject, const int &section,
-                            const int &timeslot, const int &num_slots) {
-  return 0;
-}
-
 int Constraint::CountTranslate(const int &section, const int &timeslot,
                                const int &open_timeslot) {
   return 0;

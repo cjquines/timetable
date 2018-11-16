@@ -7,11 +7,6 @@
 SubjectGaps::SubjectGaps(Schedule* schedule, const int &priority)
     : Constraint(schedule, priority) {}
 
-int SubjectGaps::CountAssign(const int &subject, const int &section,
-                             const int &timeslot, const int &num_slots) {
-  return 0;
-}
-
 int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
                                 const int &open_timeslot) {
   int lbound, rbound, open_lbound, open_rbound;
@@ -80,11 +75,6 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
 
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
   else return result;
-}
-
-int SubjectGaps::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
-                                   const int &rhs_timeslot) {
-  return 0;
 }
 
 int SubjectGaps::CountAll() {
