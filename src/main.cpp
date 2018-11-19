@@ -104,8 +104,8 @@ int main() {
   grp->AddSubject(32, {2, 2}, 11, "EMT");
   grp->AddSubject(33, {2, 2}, 12, "CAL");
 
-  config.Solve(5, 1);
+  config.Solve(3, 3);
   config.TestPrint();
-  
+
   return 0;
 }

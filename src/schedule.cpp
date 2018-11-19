@@ -134,6 +134,13 @@ void Schedule::AddTeacherTime(const int &priority, const int &teacher,
   else soft_constraints_.push_back(std::move(ptr));
 }
 
+void Schedule::ResetTimetable() {
+  hard_satisfied_ = false;
+  timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
+  teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
+  subject_tabus_.assign(subjects_.size(), std::vector<bool>(num_slots_, 0));
+}
+
 void Schedule::Initialize() {
   for (auto ptr : groups_) {
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
@@ -141,11 +148,7 @@ void Schedule::Initialize() {
     for (auto it = ptr->GetSubjectsBegin(); it != ptr->GetSubjectsEnd(); it++)
       subjects_.push_back(*it);
   }
-
-  hard_satisfied_ = false;
-  timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
-  teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
-  subject_tabus_.assign(subjects_.size(), std::vector<bool>(num_slots_, 0));
+  ResetTimetable();
 }
 
 void Schedule::SoftInitialize() {
@@ -644,9 +647,10 @@ int Schedule::SimulatedAnnealingSearch(const double &temperature) {
 }
 
 void Schedule::Solve(const int &time_limit, const int &attempts) {
+  Initialize();
   for (int i = 0; i < attempts; i++) {
     std::time_t start = std::time(NULL);
-    Initialize();
+    ResetTimetable();
     InitialSchedule();
     HardSolver(time_limit);
     SoftInitialize();
@@ -654,11 +658,11 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
                               - std::difftime(std::time(NULL), start) + 1);
     if (soft_count < best_soft_count_) {
       best_soft_count_ = soft_count;
-      best_time_table_ = timetable_;
+      best_timetable_ = timetable_;
       best_teacher_table_ = teacher_table_;
     }
   }
-  timetable_ = best_time_table_;
+  timetable_ = best_timetable_;
   teacher_table_ = best_teacher_table_;
 }
 
