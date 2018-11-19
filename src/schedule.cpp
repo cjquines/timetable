@@ -3,6 +3,7 @@
 #include <ctime>
 
 #include <algorithm>
+#include <limits>
 #include <iostream>
 #include <random>
 
@@ -23,6 +24,7 @@ Schedule::Schedule(const int &num_days, const int &num_slots_per_day,
     : num_days_(num_days), num_slots_per_day_(num_slots_per_day),
       hard_satisfied_(false), rand_generator_(seed) {
   num_slots_ = num_days_ * num_slots_per_day_;
+  best_soft_count_ = std::numeric_limits<int>::max();
 }
 
 int Schedule::GetNumDays() { return num_days_; }
@@ -505,7 +507,7 @@ int Schedule::SoftSolver(const int &time_limit, const double &kappa,
   while (soft_count > 0 && std::difftime(std::time(NULL), start) < time_limit) {
     if (loops >= 1000) {
       soft_count = SoftSimulatedAnnealing(time_limit
-                                        - std::difftime(std::time(NULL),start),
+                                        - std::difftime(std::time(NULL), start),
                                           kappa, tau, alpha);
       loops = 0;
     } else {
@@ -652,6 +654,18 @@ int Schedule::SimulatedAnnealingSearch(const double &temperature) {
     }
   }
   return 0;
+}
+
+void Schedule::Solve(const int &time_limit, const int &attempts) {
+  for (int i = 0; i < attempts; i++) {
+    std::time_t start = std::time(NULL);
+    Initialize();
+    InitialSchedule();
+    HardSolver(time_limit);
+    SoftInitialize();
+    if (SoftSolver(time_limit - std::difftime(std::time(NULL), start) + 1)
+      < best_soft_count_) SaveTimetable();
+  }
 }
 
 void Schedule::TestPrint() {

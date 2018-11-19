@@ -116,6 +116,7 @@ public:
   double SimulatedAnnealingSample(const int &num_samples);
   int SimulatedAnnealingSearch(const double &temperature);
 
+  void Solve(const int &time_limit, const int &attempts);
   void TestPrint();
 
 private:
