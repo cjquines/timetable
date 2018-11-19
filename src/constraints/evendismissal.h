@@ -13,7 +13,6 @@ public:
   int CountAll() override;
 
 private:
-  int num_sections_;
   std::vector<int> sum_hours_;
 };
 
