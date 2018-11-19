@@ -1,5 +1,6 @@
 CXXFLAGS = -g -O2 -pipe -std=c++14 -Wall
 CNSTR = constraints/distinctperday.o \
+	constraints/evendismissal.o \
 	constraints/nonsimultaneous.o \
 	constraints/reqfirstsubject.o \
 	constraints/subjectgaps.o \
@@ -13,9 +14,10 @@ main: main.o $(OBJS) $(CNSTR)
 tester: main-tester.o $(OBJS) $(CNSTR)
 	g++ $(CXXFLAGS) -o tester main-tester.o $(OBJS) $(CNSTR)
 
-$(CNSTR) schedule.o: constraints/constraint.o
+$(CNSTR) schedule.o: constraints/constraint.o section.o
 main.o main-tester.o: schedule.o group.o
 group.o: section.o subject.o
+schedule.o: $(CNSTR)
 
 clean:
 	rm -f $(OBJS) $(CNSTR)
