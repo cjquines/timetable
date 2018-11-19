@@ -81,8 +81,8 @@ void Schedule::AddTeacher(const int &id, const std::string &name) {
   teachers_.push_back(ptr);
 }
 
-void Schedule::AddSubjectGaps(const int &priority) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<SubjectGaps>(
+void Schedule::AddDistinctPerDay(const int &priority) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<DistinctPerDay>(
     this, priority);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
@@ -90,6 +90,27 @@ void Schedule::AddSubjectGaps(const int &priority) {
 
 void Schedule::AddEvenDismissal(const int &priority) {
   std::unique_ptr<Constraint> ptr = std::make_unique<EvenDismissal>(
+    this, priority);
+  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
+  else soft_constraints_.push_back(std::move(ptr));
+}
+
+void Schedule::AddNonSimultaneous(const int &priority) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<NonSimultaneous>(
+    this, priority);
+  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
+  else soft_constraints_.push_back(std::move(ptr));
+}
+
+void Schedule::AddReqFirstSubject(const int &priority) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<ReqFirstSubject>(
+    this, priority);
+  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
+  else soft_constraints_.push_back(std::move(ptr));
+}
+
+void Schedule::AddSubjectGaps(const int &priority) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<SubjectGaps>(
     this, priority);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
@@ -126,13 +147,9 @@ void Schedule::Initialize() {
       subjects_.push_back(*it);
   }
 
-  std::unique_ptr<Constraint> ptr = std::make_unique<DistinctPerDay>(this);
-  hard_constraints_.push_back(std::move(ptr));
-  ptr = std::make_unique<NonSimultaneous>(this);
-  hard_constraints_.push_back(std::move(ptr));
-  ptr = std::make_unique<ReqFirstSubject>(this);
-  hard_constraints_.push_back(std::move(ptr));
-
+  AddDistinctPerDay(0);
+  AddNonSimultaneous(0);
+  AddReqFirstSubject(0);
   Reset();
 }
 
