@@ -11,6 +11,7 @@
 #include "subject.h"
 #include "teacher.h"
 #include "constraints/distinctperday.h"
+#include "constraints/evendismissal.h"
 #include "constraints/nonsimultaneous.h"
 #include "constraints/reqfirstsubject.h"
 #include "constraints/subjectgaps.h"
@@ -82,6 +83,13 @@ void Schedule::AddTeacher(const int &id, const std::string &name) {
 
 void Schedule::AddSubjectGaps(const int &priority) {
   std::unique_ptr<Constraint> ptr = std::make_unique<SubjectGaps>(
+    this, priority);
+  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
+  else soft_constraints_.push_back(std::move(ptr));
+}
+
+void Schedule::AddEvenDismissal(const int &priority) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<EvenDismissal>(
     this, priority);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));

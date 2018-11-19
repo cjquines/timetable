@@ -2,8 +2,6 @@
 #include "../schedule.h"
 #include "../section.h"
 
-#include <iostream>
-
 SubjectGaps::SubjectGaps(Schedule* schedule, const int &priority)
     : Constraint(schedule, priority) {}
 
@@ -23,10 +21,10 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
     bool open_right = Constraint::schedule_->IsFree(section, large + length, rbound - large - length);
     if (open_left) {
       if (open_right) return 0;
-      return timeslot - open_timeslot;
+      return (timeslot - open_timeslot)*Constraint::priority_;
     } else {
       if (!open_right) return 0;
-      return open_timeslot - timeslot;
+      return (open_timeslot - timeslot)*Constraint::priority_;
     }
   }
 
@@ -80,7 +78,7 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
 int SubjectGaps::CountAll() {
   int result = 0;
   for (auto it = Constraint::schedule_->GetSectionsBegin();
-       it != Constraint::schedule_->GetSectionsEnd(); it++)
+       it != Constraint::schedule_->GetSectionsEnd(); it++) {
     for (int i = 0; i < Constraint::schedule_->GetNumDays(); i++) {
       int j = i*Constraint::schedule_->GetNumSlotsPerDay();
       for (; j < (i+1)*Constraint::schedule_->GetNumSlotsPerDay(); j++)
@@ -98,7 +96,8 @@ int SubjectGaps::CountAll() {
             seen_empty = true, num_empty = 1;
       }
     }
-    
+  }
+
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
   else return result;
 }

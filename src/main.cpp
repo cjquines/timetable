@@ -20,6 +20,7 @@ int main() {
   config.AddTeacher(3, "De Jesus");
   config.AddTeacher(4, "Villareal");
   config.AddSubjectGaps(0);
+  // config.AddEvenDismissal(1);
   config.AddTeacher(5, "Kath");
   config.AddTeacher(6, "Dayrit");
   config.AddTeacher(7, "Fernandez");
@@ -102,9 +103,11 @@ int main() {
 
   config.Initialize();
   config.InitialSchedule();
+  config.TestPrint();
   if (config.HardSolver(5)) {
     std::cout << config.HardCount() << std::endl;
   }
+  config.TestPrint();
   // config.TestPrint();
   // int hard_count = config.HardCount();
   // while (hard_count > 0) {
@@ -116,6 +119,7 @@ int main() {
   config.SoftInitialize();
   // config.TestPrint();
   int soft_count = config.SoftCount();
+  std::cout << soft_count << std::endl;
   int loops = 0;
   while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
     if (loops % 5 == 0) {
