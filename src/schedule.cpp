@@ -652,10 +652,10 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
     std::time_t start = std::time(NULL);
     ResetTimetable();
     InitialSchedule();
-    HardSolver(time_limit);
+    if (HardSolver(time_limit) != 0) continue;
     SoftInitialize();
     int soft_count = SoftSolver(time_limit
-                              - std::difftime(std::time(NULL), start) + 1);
+                              - std::difftime(std::time(NULL), start));
     if (soft_count < best_soft_count_) {
       best_soft_count_ = soft_count;
       best_timetable_ = timetable_;
