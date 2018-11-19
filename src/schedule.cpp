@@ -132,6 +132,12 @@ void Schedule::AddTeacherTime(const int &priority, const int &teacher,
   else soft_constraints_.push_back(std::move(ptr));
 }
 
+void Schedule::SaveTimetable() {
+  best_soft_count_ = SoftCount();
+  best_time_table_ = timetable_;
+  best_teacher_table_ = teacher_table_;
+}
+
 void Schedule::ResetTimetable() {
   hard_satisfied_ = false;
   timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));

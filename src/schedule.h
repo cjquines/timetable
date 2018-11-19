@@ -55,6 +55,7 @@ public:
   void AddTeacherTime(const int &priority, const int &teacher,
                       const std::vector<int> &unassignable);
 
+  void SaveTimetable();
   void ResetTimetable();
   void Initialize();
   void SoftInitialize();
@@ -134,6 +135,10 @@ private:
 
   std::vector< std::vector<int> > timetable_;
   std::vector< std::vector<int> > teacher_table_;
+
+  int best_soft_count_;
+  std::vector< std::vector<int> > best_timetable_;
+  std::vector< std::vector<int> > best_teacher_table_;
 
   std::vector< std::vector<bool> > subject_tabus_;
 };
