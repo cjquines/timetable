@@ -667,12 +667,13 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
 }
 
 void Schedule::TestPrint() {
-  std::cout << "  ";
+  std::cout << "   ";
   for (std::vector<int>::size_type i = 0; i < sections_.size(); i++)
     std::cout << (i%10) << "   ";
   std::cout << std::endl;
   for (int j = 0; j < num_slots_; j++) {
-    std::cout << (j%10);
+    if (j < 10) std::cout << " ";
+    std::cout << (j%100);
     for (std::vector<int>::size_type it = 0; it < sections_.size(); it++) {
       auto jt = timetable_[it][j];
       if (jt >= 0) std::cout << ' ' << GetSubject(jt)->GetName();
@@ -682,7 +683,7 @@ void Schedule::TestPrint() {
     std::cout << std::endl;
     if (j % num_slots_per_day_ == num_slots_per_day_ - 1 && j != num_slots_-1) {
       std::cout << std::endl;
-      std::cout << "  ";
+      std::cout << "   ";
       for (std::vector<int>::size_type i = 0; i < sections_.size(); i++)
         std::cout << (i%10) << "   ";
       std::cout << std::endl;
