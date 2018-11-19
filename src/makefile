@@ -17,7 +17,6 @@ tester: main-tester.o $(OBJS) $(CNSTR)
 $(CNSTR) schedule.o: constraints/constraint.o section.o
 main.o main-tester.o: schedule.o group.o
 group.o: section.o subject.o
-schedule.o: $(CNSTR)
 
 clean:
 	rm -f $(OBJS) $(CNSTR)
