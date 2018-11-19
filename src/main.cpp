@@ -115,7 +115,7 @@ int main() {
   //   // std::cout << hard_count << std::endl;
   // }
   config.SoftInitialize();
-  config.SoftSolver(5, 0.2, 50, 0.95);
+  config.SoftSolver(5);
   config.TestPrint();
 
   // config.Reset();
