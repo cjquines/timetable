@@ -132,7 +132,7 @@ void Schedule::AddTeacherTime(const int &priority, const int &teacher,
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::Reset() {
+void Schedule::ResetTimetable() {
   hard_satisfied_ = false;
   timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
@@ -150,7 +150,7 @@ void Schedule::Initialize() {
   AddDistinctPerDay(0);
   AddNonSimultaneous(0);
   AddReqFirstSubject(0);
-  Reset();
+  ResetTimetable();
 }
 
 void Schedule::SoftInitialize() {
