@@ -19,7 +19,9 @@ int SubjectTime::CountTranslate(const int &section, const int &timeslot,
   int result = 0;
   for (int i = 0; i < num_slots; i++)
     result += unassignable_[open_timeslot+i] - unassignable_[timeslot+i];
-  return result*Constraint::priority_;
+  
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  return result;
 }
 
 int SubjectTime::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
@@ -32,7 +34,9 @@ int SubjectTime::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
   if (Constraint::schedule_->GetSubjectOf(section, rhs_timeslot) == subject_)
     for (int i = 0; i < num_slots; i++)
       result += unassignable_[lhs_timeslot+i] - unassignable_[rhs_timeslot+i];
-  return result*Constraint::priority_;
+
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  return result;
 }
 
 int SubjectTime::CountAll() {
@@ -42,5 +46,7 @@ int SubjectTime::CountAll() {
     for (int i = 0; i < Constraint::schedule_->GetNumSlots(); i++)
       if (unassignable_[i] &&
           Constraint::schedule_->GetSubjectOf((*it)->GetId(), i) == subject_) result++;
-  return result*Constraint::priority_;
+
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  return result;
 }

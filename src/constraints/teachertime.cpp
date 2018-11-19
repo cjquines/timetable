@@ -18,7 +18,9 @@ int TeacherTime::CountTranslate(const int &section, const int &timeslot,
   int result = 0;
   for (int i = 0; i < num_slots; i++)
     result += unassignable_[open_timeslot+i] - unassignable_[timeslot+i];
-  return result*Constraint::priority_;
+
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  return result;
 }
 
 int TeacherTime::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
@@ -31,7 +33,9 @@ int TeacherTime::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
   if (Constraint::schedule_->GetTeacherOf(section, rhs_timeslot) == teacher_)
     for (int i = 0; i < num_slots; i++)
       result += unassignable_[lhs_timeslot+i] - unassignable_[rhs_timeslot+i];
-  return result*Constraint::priority_;
+
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  return result;
 }
 
 int TeacherTime::CountAll() {
@@ -39,5 +43,7 @@ int TeacherTime::CountAll() {
   for (int i = 0; i < Constraint::schedule_->GetNumSlots(); i++)
     if (unassignable_[i] &&
         Constraint::schedule_->GetSectionOf(teacher_, i) != -1) result++;
-  return result*Constraint::priority_;
+
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  return result;
 }

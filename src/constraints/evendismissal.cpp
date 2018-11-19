@@ -82,7 +82,7 @@ int EvenDismissal::CountTranslate(const int &section, const int &timeslot,
   }
 
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
-  else return result;
+  return result;
 }
 
 int EvenDismissal::CountAll() {
@@ -109,5 +109,5 @@ int EvenDismissal::CountAll() {
     result += num_sections*squared_sum[i] - sum_hours[i]*sum_hours[i];
 
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
-  else return result;
+  return result;
 }

@@ -21,13 +21,13 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
     bool open_right = Constraint::schedule_->IsFree(section, large + length, rbound - large - length);
     if (open_left) {
       if (open_right) return 0;
-      // if (Constraint::priority_ > 0)
-      //   return (timeslot - open_timeslot)*Constraint::priority_;
+      if (Constraint::priority_ > 0)
+        return (timeslot - open_timeslot)*Constraint::priority_;
       return timeslot - open_timeslot;
     } else {
       if (!open_right) return 0;
-      // if (Constraint::priority_ > 0)
-      //   return (timeslot - open_timeslot)*Constraint::priority_;
+      if (Constraint::priority_ > 0)
+        return (open_timeslot - timeslot)*Constraint::priority_;
       return open_timeslot - timeslot;
     }
   }
@@ -76,7 +76,7 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
   }
 
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
-  else return result;
+  return result;
 }
 
 int SubjectGaps::CountAll() {
@@ -103,5 +103,5 @@ int SubjectGaps::CountAll() {
   }
 
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
-  else return result;
+  return result;
 }

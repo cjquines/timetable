@@ -5,8 +5,8 @@
 #include "../schedule.h"
 #include "../section.h"
 
-DistinctPerDay::DistinctPerDay(Schedule* schedule)
-    : Constraint(schedule, 0) {}
+DistinctPerDay::DistinctPerDay(Schedule* schedule, const int &priority)
+    : Constraint(schedule, priority) {}
 
 int DistinctPerDay::CountTranslate(const int &section, const int &timeslot,
                                    const int &open_timeslot) {
@@ -25,6 +25,8 @@ int DistinctPerDay::CountTranslate(const int &section, const int &timeslot,
     int this_subject = Constraint::schedule_->GetSubjectOf(section, i);
     if (this_subject == subject) result++;
   }
+
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
   return result;
 }
 
@@ -48,6 +50,8 @@ int DistinctPerDay::CountSwapTimeslot(const int &section, const int &lhs_timeslo
     if (subject == rhs_subject) result--;
     if (subject == lhs_subject) result++;
   }
+
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
   return result;
 }
 
@@ -67,5 +71,7 @@ int DistinctPerDay::CountAll() {
       }
     }
   }
+
+  if (Constraint::priority_ > 0) return result*Constraint::priority_;
   return result;
 }
