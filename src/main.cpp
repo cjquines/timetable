@@ -8,7 +8,7 @@
 #include "group.h"
 
 int main() {
-    std::time_t start_max_5 = std::time(NULL);
+  // std::time_t start_max_5 = std::time(NULL);
 
   std::ios_base::sync_with_stdio(0);
   Schedule config(5, 8, std::time(nullptr));
@@ -115,19 +115,7 @@ int main() {
   //   // std::cout << hard_count << std::endl;
   // }
   config.SoftInitialize();
-  int soft_count = config.SoftCount();
-  int loops = 0;
-  while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
-    if (loops % 5 == 0) {
-      soft_count += config.SoftLocalSearch(true, 10);
-    } else {
-      soft_count += config.SoftLocalSearch(true, 0);
-    }
-    // config.TestPrint();
-    // std::cout << soft_count << std::endl;
-    assert(config.SoftCount() == soft_count);
-    loops++;
-  }
+  config.SoftSolver(5, 0.2, 50, 0.95);
   config.TestPrint();
 
   // config.Reset();

@@ -122,11 +122,11 @@ int main() {
     double pinged = 1;
 
     int loops = 0;
-    while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 5) {
-      if (loops >= 500) {
+    while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 10) {
+      if (loops >= 1000) {
         std::cout << "SA ";
         // output-2: 0.2, 50, 0.99
-        soft_count = config.SoftSimulatedAnnealing(5, 0.2, 50, 0.99);
+        soft_count = config.SoftSimulatedAnnealing(10, 0.2, 50, 0.95);
         // soft_count += config.SoftLocalSearch(true, 10);
         // loops = 0;
       } else {
@@ -143,7 +143,7 @@ int main() {
     }
     std::cout << std::endl;
 
-    if (std::difftime(std::time(NULL), start_max_5) >= 5) {
+    if (std::difftime(std::time(NULL), start_max_5) >= 10) {
       assert(soft_count == config.SoftCount());
       std::cout << "FAIL SOFT " << soft_count << std::endl;
       continue;

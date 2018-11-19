@@ -98,9 +98,13 @@ public:
   int SoftCount();
 
   void InitialSchedule();
+
   int HardSolver(const int &time_limit);
   int HardLocalSearch();
   int HardTabuSearch();
+
+  int SoftSolver(const int &time_limit, const double &kappa,
+                 const int &tau, const double &alpha);
   int SoftLocalSearch(const bool &accept_side, const int &threshold);
   int SoftSimulatedAnnealing(const int &time_limit, const double &kappa,
                              const int &tau, const double &alpha);

@@ -491,6 +491,27 @@ int Schedule::HardTabuSearch() {
   return best;
 }
 
+int Schedule::SoftSolver(const int &time_limit, const double &kappa,
+                         const int &tau, const double &alpha) {
+  int soft_count = SoftCount();
+  std::time_t start = std::time(NULL);
+  int loops = 0;
+  while (soft_count > 0 && std::difftime(std::time(NULL), start) < time_limit) {
+    if (loops >= 1000) {
+      soft_count = SoftSimulatedAnnealing(time_limit
+                                        - std::difftime(std::time(NULL),start),
+                                          kappa, tau, alpha);
+      loops = 0;
+    } else {
+      int delta = SoftLocalSearch(true, 0);
+      if (delta == 0) loops++;
+      else loops = 0;
+      soft_count += delta;
+    }
+  }
+  return soft_count;
+}
+
 int Schedule::SoftLocalSearch(const bool &accept_side, const int &threshold) {
   std::vector< std::pair<int, int> > to_swap;
   for (auto ptr : groups_)
