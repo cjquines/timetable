@@ -490,8 +490,9 @@ int Schedule::HardTabuSearch() {
   return best;
 }
 
-int Schedule::SoftSolver(const int &time_limit, const double &kappa,
-                         const int &tau, const double &alpha) {
+int Schedule::SoftSolver(const int &time_limit, const int &num_samples,
+                         const double &kappa, const int &tau,
+                         const double &alpha) {
   int soft_count = SoftCount();
   std::time_t start = std::time(NULL);
   int loops = 0;
@@ -499,7 +500,7 @@ int Schedule::SoftSolver(const int &time_limit, const double &kappa,
     if (loops >= 1000) {
       soft_count = SoftSimulatedAnnealing(time_limit
                                         - std::difftime(std::time(NULL), start),
-                                          kappa, tau, alpha);
+                                          num_samples, kappa, tau, alpha);
       loops = 0;
     } else {
       int delta = SoftLocalSearch(true, 0);
@@ -552,9 +553,10 @@ int Schedule::SoftLocalSearch(const bool &accept_side, const int &threshold) {
   return 0;
 }
 
-int Schedule::SoftSimulatedAnnealing(const int &time_limit, const double &kappa,
-                                     const int &tau, const double &alpha) {
-  double initial_temperature = kappa * SimulatedAnnealingSample(100);
+int Schedule::SoftSimulatedAnnealing(const int &time_limit, const int &num_samples,
+                                     const double &kappa, const int &tau,
+                                     const double &alpha) {
+  double initial_temperature = kappa * SimulatedAnnealingSample(num_samples);
   double temperature = initial_temperature;
   int loops = 0;
   int length = tau * num_slots_ * sections_.size() * subjects_.size();
