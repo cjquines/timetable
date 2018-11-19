@@ -28,7 +28,7 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
       if (!open_right) return 0;
       // if (Constraint::priority_ > 0)
       //   return (timeslot - open_timeslot)*Constraint::priority_;
-      return timeslot - open_timeslot;
+      return open_timeslot - timeslot;
     }
   }
 
