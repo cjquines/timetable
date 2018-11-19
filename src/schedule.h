@@ -55,8 +55,6 @@ public:
   void AddTeacherTime(const int &priority, const int &teacher,
                       const std::vector<int> &unassignable);
 
-  void SaveTimetable();
-  void ResetTimetable();
   void Initialize();
   void SoftInitialize();
 

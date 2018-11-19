@@ -134,19 +134,6 @@ void Schedule::AddTeacherTime(const int &priority, const int &teacher,
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::SaveTimetable() {
-  best_soft_count_ = SoftCount();
-  best_time_table_ = timetable_;
-  best_teacher_table_ = teacher_table_;
-}
-
-void Schedule::ResetTimetable() {
-  hard_satisfied_ = false;
-  timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
-  teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
-  subject_tabus_.assign(subjects_.size(), std::vector<bool>(num_slots_, 0));
-}
-
 void Schedule::Initialize() {
   for (auto ptr : groups_) {
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
@@ -158,7 +145,11 @@ void Schedule::Initialize() {
   AddDistinctPerDay(0);
   AddNonSimultaneous(0);
   AddReqFirstSubject(0);
-  ResetTimetable();
+
+  hard_satisfied_ = false;
+  timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
+  teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
+  subject_tabus_.assign(subjects_.size(), std::vector<bool>(num_slots_, 0));
 }
 
 void Schedule::SoftInitialize() {
@@ -663,9 +654,16 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
     InitialSchedule();
     HardSolver(time_limit);
     SoftInitialize();
-    if (SoftSolver(time_limit - std::difftime(std::time(NULL), start) + 1)
-      < best_soft_count_) SaveTimetable();
+    int soft_count = SoftSolver(time_limit
+                              - std::difftime(std::time(NULL), start) + 1);
+    if (soft_count < best_soft_count_) {
+      best_soft_count_ = soft_count;
+      best_time_table_ = timetable_;
+      best_teacher_table_ = teacher_table_;
+    }
   }
+  timetable_ = best_time_table_;
+  teacher_table_ = best_teacher_table_;
 }
 
 void Schedule::TestPrint() {
