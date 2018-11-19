@@ -368,7 +368,7 @@ int Schedule::SoftCount() {
   return result;
 }
 
-void Schedule::InitialSchedule() {
+bool Schedule::InitialSchedule() {
   for (auto ptr : groups_) {
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++) {
       std::vector< std::pair<int, int> > unassigned;
@@ -386,10 +386,11 @@ void Schedule::InitialSchedule() {
             break;
           }
         }
-        assert(assigned);
+        if (!assigned) return false;
       }
     }
   }
+  return true;
 }
 
 int Schedule::HardSolver(const int &time_limit) {
@@ -651,7 +652,7 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
   for (int i = 0; i < attempts; i++) {
     std::time_t start = std::time(NULL);
     ResetTimetable();
-    InitialSchedule();
+    if (!InitialSchedule()) continue;
     if (HardSolver(time_limit) != 0) continue;
     SoftInitialize();
     int soft_count = SoftSolver(time_limit

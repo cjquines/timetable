@@ -101,7 +101,7 @@ public:
   int HardCount();
   int SoftCount();
 
-  void InitialSchedule();
+  bool InitialSchedule();
 
   int HardSolver(const int &time_limit);
   int HardLocalSearch();
