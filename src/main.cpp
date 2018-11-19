@@ -21,6 +21,9 @@ int main() {
   config.AddTeacher(4, "Villareal");
   config.AddSubjectGaps(0);
   config.AddEvenDismissal(1);
+  config.AddDistinctPerDay(0);
+  config.AddNonSimultaneous(0);
+  config.AddReqFirstSubject(0);
   config.AddTeacher(5, "Kath");
   config.AddTeacher(6, "Dayrit");
   config.AddTeacher(7, "Fernandez");
@@ -101,42 +104,8 @@ int main() {
   grp->AddSubject(32, {2, 2}, 11, "EMT");
   grp->AddSubject(33, {2, 2}, 12, "CAL");
 
-  config.Initialize();
-  config.InitialSchedule();
-  if (config.HardSolver(5)) {
-    std::cout << config.HardCount() << std::endl;
-  }
-  // config.TestPrint();
-  // int hard_count = config.HardCount();
-  // while (hard_count > 0) {
-  //   hard_count += config.HardSolver();
-  //   // config.TestPrint();
-  //   // if (hard_count == 2) config.TestPrint();
-  //   // std::cout << hard_count << std::endl;
-  // }
-  config.SoftInitialize();
-  config.SoftSolver(5);
+  config.Solve(5, 1);
   config.TestPrint();
-
-  // config.Reset();
-  // config.InitialSchedule();
-  // // config.TestPrint();
-  // hard_count = config.HardCount();
-  // while (hard_count > 0) {
-  //   hard_count += config.HardSolver();
-  // }
-  // config.SoftInitialize();
-  // // config.TestPrint();
-  // soft_count = config.SoftCount();
-  // loops = 0;
-  // while (soft_count > 0 && std::difftime(std::time(NULL), start_max_5) < 10) {
-  //   if (loops % 5 == 0) {
-  //     soft_count += config.SoftLocalSearch(true, true);
-  //   } else {
-  //     soft_count += config.SoftLocalSearch(true, false);
-  //   }
-  //   loops++;
-  // }
-  // config.TestPrint();
+  
   return 0;
 }

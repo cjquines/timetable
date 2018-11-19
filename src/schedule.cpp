@@ -142,10 +142,6 @@ void Schedule::Initialize() {
       subjects_.push_back(*it);
   }
 
-  AddDistinctPerDay(0);
-  AddNonSimultaneous(0);
-  AddReqFirstSubject(0);
-
   hard_satisfied_ = false;
   timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
