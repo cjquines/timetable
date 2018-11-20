@@ -657,7 +657,7 @@ int Schedule::SimulatedAnnealingSearch(const double &temperature) {
 
 void Schedule::Solve(const int &time_limit, const int &attempts) {
   std::ofstream log;
-  log.open("log.txt");
+  log.open("log.txt", std::ios_base::app);
 
   Initialize();
   for (int i = 0; i < attempts; i++) {
@@ -669,7 +669,7 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
       continue;
     }
     HardSolver(time_limit);
-    if (!HardCount()) {
+    if (HardCount()) {
       log << "  failed to satisfy hard constraints." << std::endl;
       continue;
     }
@@ -678,7 +678,9 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
                               - std::difftime(std::time(NULL), start));
     if (soft_count != SoftCount()) {
       log << "  soft_count does not match SoftCount()." << std::endl;
+      log << "  soft_count value: " << soft_count << "." << std::endl;
       soft_count = SoftCount();
+      log << "  Actual soft count: " << soft_count << "." << std::endl;
     }
     log << "  Passed with soft count " << soft_count << "." << std::endl;
     if (soft_count < best_soft_count_) {
@@ -690,6 +692,8 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
 
   timetable_ = best_timetable_;
   teacher_table_ = best_teacher_table_;
+  if (!HardCount()) hard_satisfied_ = true;
+  log << "Best soft count: " << SoftCount() << std::endl;
   log.close();
 }
 
