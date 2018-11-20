@@ -90,9 +90,10 @@ void Schedule::AddDistinctPerDay(const int &priority) {
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddEvenDismissal(const int &priority) {
+void Schedule::AddEvenDismissal(const int &priority,
+                                const std::vector<int> &sections) {
   std::unique_ptr<Constraint> ptr = std::make_unique<EvenDismissal>(
-    this, priority);
+    this, priority, sections);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }

@@ -11,19 +11,14 @@ int main() {
   // std::time_t start_max_5 = std::time(NULL);
 
   std::ios_base::sync_with_stdio(0);
-  Schedule config(5, 16, std::time(nullptr));
-  std::cout << std::time(nullptr) << std::endl;
-  // Schedule config(5, 16, 1542633952);
+  // Schedule config(5, 14, std::time(nullptr));
+  // std::cout << std::time(nullptr) << std::endl;
+  Schedule config(5, 14, 1542636971);
   config.AddTeacher(0, "Darilag");
   config.AddTeacher(1, "Catimbang");
   config.AddTeacher(2, "Salvador");
   config.AddTeacher(3, "De Jesus");
   config.AddTeacher(4, "Villareal");
-  config.AddSubjectGaps(0);
-  config.AddEvenDismissal(1);
-  config.AddDistinctPerDay(0);
-  config.AddNonSimultaneous(0);
-  config.AddReqFirstSubject(0);
   config.AddTeacher(5, "Kath");
   config.AddTeacher(6, "Dayrit");
   config.AddTeacher(7, "Fernandez");
@@ -52,7 +47,7 @@ int main() {
   grp->AddSection(1, "Rousseau");
   grp->AddSubject(0, {3, 3, 2}, 0, "DRR");
   grp->AddSubject(1, {2}, 0, "PE4");
-  config.AddSubjectTime(64, 1, {0, 1, 2, 3, 4, 5, 6, 7});
+  config.AddSubjectTime(225, 1, {0, 1, 2, 3, 4, 5, 6, 7});
   grp->AddSubject(2, {3, 3, 2}, 1, "MIL");
   grp->AddSubject(3, {3, 3, 2}, 1, "PPL");
   grp->AddSubject(4, {3, 3, 2}, 2, "BIO");
@@ -65,7 +60,7 @@ int main() {
   grp->AddSection(2, "Hobbes");
   grp->AddSubject(8, {3, 3, 2}, 0, "DRR");
   grp->AddSubject(9, {2}, 0, "PE4");
-  config.AddSubjectTime(64, 9, {0, 1, 2, 3, 4, 5, 6, 7});
+  config.AddSubjectTime(225, 9, {0, 1, 2, 3, 4, 5, 6, 7});
   grp->AddSubject(10, {3, 3, 2}, 1, "MIL");
   grp->AddSubject(11, {3, 3, 2}, 1, "PPL");
   grp->AddSubject(12, {3, 3, 2}, 2, "BIO");
@@ -84,7 +79,7 @@ int main() {
   grp->AddSubject(18, {3, 3, 2}, 7, "PPP");
   grp->AddSubject(19, {3, 3, 2}, 8, "PR1");
   grp->AddSubject(20, {2}, 0, "PE2");
-  config.AddSubjectTime(64, 20, {0, 1, 2, 3, 4, 5, 6, 7});
+  config.AddSubjectTime(225, 20, {0, 1, 2, 3, 4, 5, 6, 7});
   grp->AddSubject(21, {3, 3, 2}, 9, "STA");
   grp->AddSubject(22, {3, 3, 2}, 10, "EAP");
   grp->AddSubject(23, {3, 3, 2}, 11, "EMT");
@@ -98,12 +93,18 @@ int main() {
   grp->AddSubject(27, {3, 3, 2}, 7, "PPP");
   grp->AddSubject(28, {3, 3, 2}, 4, "PR1");
   grp->AddSubject(29, {2}, 0, "PE2");
-  config.AddSubjectTime(64, 29, {0, 1, 2, 3, 4, 5, 6, 7});
+  config.AddSubjectTime(225, 29, {0, 1, 2, 3, 4, 5, 6, 7});
   grp->AddSubject(30, {3, 3, 2}, 9, "STA");
   grp->AddSubject(31, {3, 3, 2}, 10, "EAP");
   grp->AddSubject(32, {3, 3, 2}, 11, "EMT");
   grp->AddSubject(33, {3, 3, 2}, 12, "CAL");
 
+  config.AddSubjectGaps(0);
+  config.AddEvenDismissal(25, {0, 1, 2});
+  config.AddEvenDismissal(9, {3, 4, 5, 6, 7});
+  config.AddDistinctPerDay(0);
+  config.AddNonSimultaneous(0);
+  config.AddReqFirstSubject(0);
   config.Solve(5, 1);
   config.TestPrint();
 

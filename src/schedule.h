@@ -47,7 +47,8 @@ public:
   void AddTeacher(const int &id, const std::string &name);
 
   void AddDistinctPerDay(const int &priority);
-  void AddEvenDismissal(const int &priority);
+  void AddEvenDismissal(const int &priority,
+                        const std::vector<int> &sections);
   void AddNonSimultaneous(const int &priority);
   void AddReqFirstSubject(const int &priority);
   void AddSubjectGaps(const int &priority);

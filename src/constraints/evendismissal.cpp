@@ -1,29 +1,32 @@
+#include <algorithm>
 #include <vector>
 
 #include "evendismissal.h"
 #include "../schedule.h"
 #include "../section.h"
 
-EvenDismissal::EvenDismissal(Schedule* schedule, const int &priority)
-    : Constraint(schedule, priority) {}
+EvenDismissal::EvenDismissal(Schedule* schedule, const int &priority,
+                             const std::vector<int> &sections)
+    : Constraint(schedule, priority), sections_(sections) {}
 
 int EvenDismissal::CountTranslate(const int &section, const int &timeslot,
                                   const int &open_timeslot) {
+  if (std::find(sections_.begin(), sections_.end(), section) == sections_.end())
+    return 0;
+
   int lbound, rbound, open_lbound, open_rbound;
   std::tie(lbound, rbound) = Constraint::schedule_->ClampDay(timeslot);
   std::tie(open_lbound, open_rbound) = Constraint::schedule_->ClampDay(open_timeslot);
   int length = Constraint::schedule_->GetLengthOf(section, timeslot);
   int old_last, new_last, delta, day, result = 0;
-  int num_sections = std::distance(Constraint::schedule_->GetSectionsBegin(),
-                                   Constraint::schedule_->GetSectionsEnd());
+  int num_sections = sections_.size();
 
   std::vector<int> sum_hours(Constraint::schedule_->GetNumDays(), 0);
-  for (auto it = Constraint::schedule_->GetSectionsBegin();
-       it != Constraint::schedule_->GetSectionsEnd(); it++) {
+  for (auto it : sections_) {
     for (int i = 0; i < Constraint::schedule_->GetNumDays(); i++) {
       int j = (i + 1)*Constraint::schedule_->GetNumSlotsPerDay() - 1;
       for (; j >= i*Constraint::schedule_->GetNumSlotsPerDay(); j--)
-        if (Constraint::schedule_->GetSubjectOf((*it)->GetId(), j) != -1)
+        if (Constraint::schedule_->GetSubjectOf(it, j) != -1)
           break;
       j = (i + 1)*Constraint::schedule_->GetNumSlotsPerDay() - 1 - j;
       sum_hours[i] += j;
@@ -86,18 +89,16 @@ int EvenDismissal::CountTranslate(const int &section, const int &timeslot,
 }
 
 int EvenDismissal::CountAll() {
-  int num_sections = std::distance(Constraint::schedule_->GetSectionsBegin(),
-                                   Constraint::schedule_->GetSectionsEnd());
+  int num_sections = sections_.size();
   std::vector<int> squared_sum(Constraint::schedule_->GetNumDays(), 0);
   std::vector<int> sum_hours(Constraint::schedule_->GetNumDays(), 0);
   int result = 0;
 
-  for (auto it = Constraint::schedule_->GetSectionsBegin();
-       it != Constraint::schedule_->GetSectionsEnd(); it++) {
+  for (auto it : sections_) {
     for (int i = 0; i < Constraint::schedule_->GetNumDays(); i++) {
       int j = (i + 1)*Constraint::schedule_->GetNumSlotsPerDay() - 1;
       for (; j >= i*Constraint::schedule_->GetNumSlotsPerDay(); j--)
-        if (Constraint::schedule_->GetSubjectOf((*it)->GetId(), j) != -1)
+        if (Constraint::schedule_->GetSubjectOf(it, j) != -1)
           break;
       j = (i + 1)*Constraint::schedule_->GetNumSlotsPerDay() - 1 - j;
       squared_sum[i] += j*j;
