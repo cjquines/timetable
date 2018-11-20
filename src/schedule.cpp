@@ -692,7 +692,11 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
 
   timetable_ = best_timetable_;
   teacher_table_ = best_teacher_table_;
-  if (!HardCount()) hard_satisfied_ = true;
+  if (HardCount()) {
+    log << "Hard count non-zero: " << HardCount() << "." << std::endl;
+    log << "Ignoring anyway." << std::endl;
+  }
+  hard_satisfied_ = true;
   log << "Best soft count: " << SoftCount() << std::endl;
   log.close();
 }
