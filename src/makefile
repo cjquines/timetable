@@ -1,6 +1,7 @@
 CXXFLAGS = -g -O2 -pipe -std=c++14 -Wall
 CNSTR = constraints/distinctperday.o \
 	constraints/evendismissal.o \
+	constraints/minsubjects.o \
 	constraints/nonsimultaneous.o \
 	constraints/reqfirstsubject.o \
 	constraints/subjectgaps.o \

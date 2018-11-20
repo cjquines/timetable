@@ -100,6 +100,7 @@ int main() {
   grp->AddSubject(33, {3, 3, 2}, 12, "CAL");
 
   config.AddSubjectGaps(0);
+  config.AddMinSubjects(0, 2);
   config.AddEvenDismissal(25, {0, 1, 2});
   config.AddEvenDismissal(9, {3, 4, 5, 6, 7});
   config.AddDistinctPerDay(0);

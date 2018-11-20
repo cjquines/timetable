@@ -13,6 +13,7 @@
 #include "teacher.h"
 #include "constraints/distinctperday.h"
 #include "constraints/evendismissal.h"
+#include "constraints/minsubjects.h"
 #include "constraints/nonsimultaneous.h"
 #include "constraints/reqfirstsubject.h"
 #include "constraints/subjectgaps.h"
@@ -94,6 +95,13 @@ void Schedule::AddEvenDismissal(const int &priority,
                                 const std::vector<int> &sections) {
   std::unique_ptr<Constraint> ptr = std::make_unique<EvenDismissal>(
     this, priority, sections);
+  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
+  else soft_constraints_.push_back(std::move(ptr));
+}
+
+void Schedule::AddMinSubjects(const int &priority, const int &min_subjects) {
+  std::unique_ptr<Constraint> ptr = std::make_unique<MinSubjects>(
+    this, priority, min_subjects);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }
