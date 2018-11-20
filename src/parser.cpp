@@ -1,5 +1,7 @@
 #include <ctime>
 
+#include <fstream>
+#include <iostream>
 #include <map>
 #include <string>
 
@@ -12,8 +14,18 @@
 Parser::Parser(const char* filename)
     : num_groups_(0), num_teachers_(0), num_sections_(0), num_subjects_(0) {
   input_ = YAML::LoadFile(filename);
+
+  int seed;
+  if (input_["seed"]) seed = input_["seed"].as<int>();
+  else seed = std::time(nullptr);
+
+  std::ofstream log;
+  log.open("log.txt");
+  log << "Seed: " << seed << std::endl;
+  log.close();
+
   schedule_ = new Schedule(input_["days"].as<int>(), input_["slots"].as<int>(),
-                           std::time(nullptr));
+                           seed);
 }
 
 Schedule* Parser::GetSchedule() { return schedule_; }
