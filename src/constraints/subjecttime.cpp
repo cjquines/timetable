@@ -45,7 +45,9 @@ int SubjectTime::CountAll() {
        it != Constraint::schedule_->GetSectionsEnd(); it++)
     for (int i = 0; i < Constraint::schedule_->GetNumSlots(); i++)
       if (unassignable_[i] &&
-          Constraint::schedule_->GetSubjectOf((*it)->GetId(), i) == subject_) result++;
+          Constraint::schedule_->GetSubjectOf((*it)->GetId(),
+            Constraint::schedule_->GetHeadOf((*it)->GetId(), i)) == subject_)
+        result++;
 
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
   return result;
