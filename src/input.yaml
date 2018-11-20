@@ -1,0 +1,168 @@
+days: 5
+slots: 14
+teachers:
+    - name: Mr. Darilag
+      unassignable:
+        priority: 225
+        times: [0, 1, 14, 15, 28, 29, 42, 43, 56, 57]
+    - name: Mr. Catimbang
+    - name: Mrs. Salvador
+    - name: Mr. De Jesus
+    - name: Mrs. Villareal
+    - name: Mrs. Aquino
+    - name: Mrs. Dayrit
+    - name: Mrs. Fernandez
+    - name: Mrs. De Jesus
+    - name: Mr. Lumogdang
+    - name: Mrs. Montubig
+    - name: Mr. Dogma
+    - name: Mr. Agustin
+groups:
+    - sections:
+        - name: Locke
+        - name: Rousseau
+      subjects:
+        - name: Disaster Risk Reduction
+          teacher: Mr. Darilag
+          times: [3, 3, 2]
+        - name: Physical Education 4
+          teacher: Mr. Darilag
+          times: [2]
+          unassignable:
+            priority: 225
+            times: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        - name: Media and Information Literacy
+          teacher: Mr. Catimbang
+          times: [3, 3, 2]
+        - name: Pagsulat sa Piling Larangan
+          teacher: Mr. Catimbang
+          times: [3, 3, 2]
+        - name: General Biology 2
+          teacher: Mrs. Salvador
+          times: [3, 3, 2]
+        - name: Inquiries and Investigation
+          teacher: Mrs. Salvador
+          times: [3, 3, 2]
+        - name: General Physics 2
+          teacher: Mr. De Jesus
+          times: [3, 3, 2]
+        - name: Capstone
+          teacher: Mrs. Villareal
+          times: [3, 3, 2]
+    - sections:
+        - name: Hobbes
+      subjects:
+        - name: Disaster Risk Reduction
+          teacher: Mr. Darilag
+          times: [3, 3, 2]
+        - name: Physical Education 4
+          teacher: Mr. Darilag
+          times: [2]
+          unassignable:
+            priority: 225
+            times: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        - name: Media and Information Literacy
+          teacher: Mr. Catimbang
+          times: [3, 3, 2]
+        - name: Pagsulat sa Piling Larangan
+          teacher: Mr. Catimbang
+          times: [3, 3, 2]
+        - name: General Biology 2
+          teacher: Mrs. Salvador
+          times: [3, 3, 2]
+        - name: Inquiries and Investigation
+          teacher: Mr. De Jesus
+          times: [3, 3, 2]
+        - name: General Physics 2
+          teacher: Mr. De Jesus
+          times: [3, 3, 2]
+        - name: Capstone
+          teacher: Mrs. Villareal
+          times: [3, 3, 2]
+    - sections:
+        - name: 11STEM1
+        - name: 11STEM2
+        - name: 11STEM3
+        - name: 11STEM4
+      subjects:
+        - name: Reading and Writing
+          teacher: Mrs. Aquino
+          times: [3, 3, 2]
+        - name: General Chemistry 2
+          teacher: Mrs. Dayrit
+          times: [3, 3, 2]
+        - name: Pagbasa at Pagsuri
+          teacher: Mrs. Fernandez
+          times: [3, 3, 2]
+        - name: Practical Research 1
+          teacher: Mrs. De Jesus
+          times: [3, 3, 2]
+        - name: Physical Education 2
+          teacher: Mr. Darilag
+          times: [2]
+          unassignable:
+            priority: 225
+            times: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        - name: Probability and Statistics
+          teacher: Mr. Lumogdang
+          times: [3, 3, 2]
+        - name: English for Academic Purposes
+          teacher: Mrs. Montubig
+          times: [3, 3, 2]
+        - name: Empowerment Technologies
+          teacher: Mr. Dogma
+          times: [3, 3, 2]
+        - name: Basic Calculus
+          teacher: Mr. Agustin
+          times: [3, 3, 2]
+    - sections:
+        - name: 11STEM5
+      subjects:
+        - name: Reading and Writing
+          teacher: Mrs. Aquino
+          times: [3, 3, 2]
+        - name: General Chemistry 2
+          teacher: Mrs. Dayrit
+          times: [3, 3, 2]
+        - name: Pagbasa at Pagsuri
+          teacher: Mrs. Fernandez
+          times: [3, 3, 2]
+        - name: Practical Research 1
+          teacher: Mrs. Villareal
+          times: [3, 3, 2]
+        - name: Physical Education 2
+          teacher: Mr. Darilag
+          times: [2]
+          unassignable:
+            priority: 225
+            times: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        - name: Probability and Statistics
+          teacher: Mr. Lumogdang
+          times: [3, 3, 2]
+        - name: English for Academic Purposes
+          teacher: Mrs. Montubig
+          times: [3, 3, 2]
+        - name: Empowerment Technologies
+          teacher: Mr. Dogma
+          times: [3, 3, 2]
+        - name: Basic Calculus
+          teacher: Mr. Agustin
+          times: [3, 3, 2]
+constraints:
+    - type: distinctPerDay
+      priority: 0
+    - type: evenDismissal
+      priority: 25
+      sections: [Locke, Rousseau, Hobbes]
+    - type: evenDismissal
+      priority: 9
+      sections: [11STEM1, 11STEM2, 11STEM3, 11STEM4, 11STEM5]
+    - type: minSubjects
+      priority: 0
+      minSubjects: 2
+    - type: nonSimultaneous
+      priority: 0
+    - type: reqFirstSubject
+      priority: 0
+seconds: 5
+attempts: 1
