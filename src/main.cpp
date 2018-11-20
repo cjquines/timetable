@@ -16,8 +16,8 @@ int num_subjects;
 std::map<std::string, int> sections_dict;
 std::map<std::string, int> teachers_dict;
 
-int main() {
-  YAML::Node input = YAML::LoadFile("input.yaml");
+int main(int argc, char** argv) {
+  YAML::Node input = YAML::LoadFile(argv[1]);
 
   Schedule config(input["days"].as<int>(), input["slots"].as<int>(),
                   std::time(nullptr));
