@@ -63,6 +63,10 @@ void Parser::ReadTeachers() {
                              + "'s name doesn't look like a name.");
 
     std::string name = it["name"].as<std::string>();
+
+    if (teachers_dict_.find(name) != teachers_dict_.end())
+      throw std::runtime_error(name + " is listed more than once among the teachers.");
+
     schedule_->AddTeacher(num_teachers_, name);
 
     if (it["unassignable"]) {
@@ -120,6 +124,10 @@ void Parser::ReadGroups() {
                                + "' sections' names doesn't look like a name.");
 
       std::string name = jt["name"].as<std::string>();
+
+      if (sections_dict_.find(name) != sections_dict_.end())
+        throw std::runtime_error(name + " is listed more than once among the sections.");
+
       grp->AddSection(num_sections_, name);
       sections_dict_[name] = num_sections_++;
     }
