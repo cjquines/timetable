@@ -707,8 +707,12 @@ void Schedule::TestPrint() {
     std::cout << (j%100);
     for (std::vector<int>::size_type it = 0; it < sections_.size(); it++) {
       auto jt = timetable_[it][j];
-      if (jt >= 0) std::cout << ' ' << GetSubject(jt)->GetName();
-      else if (jt == -1) std::cout << "    ";
+      if (jt >= 0) {
+        int id = GetSubject(jt)->GetId();
+        if (id < 10) std::cout << "   ";
+        else std::cout << "  ";
+        std::cout << id;
+      } else if (jt == -1) std::cout << "    ";
       else std::cout << " ---"; 
     }
     std::cout << std::endl;
@@ -722,26 +726,26 @@ void Schedule::TestPrint() {
   }
   std::cout << std::endl;
 
-  std::cout << "  ";
-  for (std::vector<int>::size_type i = 0; i < teachers_.size(); i++)
-    std::cout << (i%10) << " ";
-  std::cout << std::endl;
-  for (int j = 0; j < num_slots_; j++) {
-    std::cout << (j%10);
-    for (std::vector<int>::size_type it = 0; it < teachers_.size(); it++) {
-      auto jt = teacher_table_[it][j];
-      if (jt >= 0) std::cout << ' ' << jt;
-      else std::cout << "  ";
-    }
-    std::cout << std::endl;
-    if (j % num_slots_per_day_ == num_slots_per_day_ - 1 && j != num_slots_-1) {
-      std::cout << std::endl;
-      std::cout << "  ";
-      for (std::vector<int>::size_type i = 0; i < teachers_.size(); i++)
-        std::cout << (i%10) << " ";
-      std::cout << std::endl;
-    }
-  }
+  // std::cout << "  ";
+  // for (std::vector<int>::size_type i = 0; i < teachers_.size(); i++)
+  //   std::cout << (i%10) << " ";
+  // std::cout << std::endl;
+  // for (int j = 0; j < num_slots_; j++) {
+  //   std::cout << (j%10);
+  //   for (std::vector<int>::size_type it = 0; it < teachers_.size(); it++) {
+  //     auto jt = teacher_table_[it][j];
+  //     if (jt >= 0) std::cout << ' ' << jt;
+  //     else std::cout << "  ";
+  //   }
+  //   std::cout << std::endl;
+  //   if (j % num_slots_per_day_ == num_slots_per_day_ - 1 && j != num_slots_-1) {
+  //     std::cout << std::endl;
+  //     std::cout << "  ";
+  //     for (std::vector<int>::size_type i = 0; i < teachers_.size(); i++)
+  //       std::cout << (i%10) << " ";
+  //     std::cout << std::endl;
+  //   }
+  // }
 
   std::cout << std::endl;
   if (!hard_satisfied_) std::cout << HardCount() << std::endl;
