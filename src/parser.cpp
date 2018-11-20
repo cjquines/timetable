@@ -238,6 +238,8 @@ void Parser::ReadConstraints() {
       schedule_->AddNonSimultaneous(priority);
     } else if (type == "reqFirstSubject") {
       schedule_->AddReqFirstSubject(priority);
+    } else {
+      throw std::runtime_error("type " + type + " isn't recognized.");
     }
   }
 }
