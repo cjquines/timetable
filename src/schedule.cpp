@@ -161,7 +161,6 @@ void Schedule::Initialize() {
 }
 
 void Schedule::SoftInitialize() {
-  assert(HardCount() == 0);
   hard_satisfied_ = true;
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, -1));
   for (std::vector<int>::size_type it = 0; it < sections_.size(); it++)
@@ -176,10 +175,7 @@ int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
 
 int Schedule::GetHeadOf(const int &section, const int &timeslot) {
   int head = timeslot;
-  while (timetable_[section][head] == -2) {
-    head--;
-    assert(head >= 0);
-  }
+  while (timetable_[section][head] == -2) head--;
   return head;
 }
 
@@ -664,7 +660,8 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
     std::time_t start = std::time(NULL);
     ResetTimetable();
     if (!InitialSchedule()) continue;
-    if (HardSolver(time_limit) != 0) continue;
+    HardSolver(time_limit);
+    if (!HardCount()) continue;
     SoftInitialize();
     int soft_count = SoftSolver(time_limit
                               - std::difftime(std::time(NULL), start));
