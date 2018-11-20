@@ -3,6 +3,7 @@
 #include <ctime>
 
 #include <algorithm>
+#include <fstream>
 #include <limits>
 #include <iostream>
 #include <random>
@@ -655,24 +656,41 @@ int Schedule::SimulatedAnnealingSearch(const double &temperature) {
 }
 
 void Schedule::Solve(const int &time_limit, const int &attempts) {
+  std::ofstream log;
+  log.open("log.txt");
+
   Initialize();
   for (int i = 0; i < attempts; i++) {
+    log << "Attempt " << i << ": " << std::endl;
     std::time_t start = std::time(NULL);
     ResetTimetable();
-    if (!InitialSchedule()) continue;
+    if (!InitialSchedule()) {
+      log << "  failed to assign initial schedule." << std::endl;
+      continue;
+    }
     HardSolver(time_limit);
-    if (!HardCount()) continue;
+    if (!HardCount()) {
+      log << "  failed to satisfy hard constraints." << std::endl;
+      continue;
+    }
     SoftInitialize();
     int soft_count = SoftSolver(time_limit
                               - std::difftime(std::time(NULL), start));
+    if (soft_count != SoftCount()) {
+      log << "  soft_count does not match SoftCount()." << std::endl;
+      soft_count = SoftCount();
+    }
+    log << "  Passed with soft count " << soft_count << "." << std::endl;
     if (soft_count < best_soft_count_) {
       best_soft_count_ = soft_count;
       best_timetable_ = timetable_;
       best_teacher_table_ = teacher_table_;
     }
   }
+
   timetable_ = best_timetable_;
   teacher_table_ = best_teacher_table_;
+  log.close();
 }
 
 void Schedule::TestPrint() {
