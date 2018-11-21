@@ -664,7 +664,10 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
     log << "Attempt " << i << ": " << std::endl;
     std::time_t start = std::time(NULL);
     ResetTimetable();
-    if (!InitialSchedule()) {
+    bool initial = false;
+    while (!initial && std::difftime(std::time(NULL), start) < time_limit)
+      initial = InitialSchedule();
+    if (!initial) {
       log << "  failed to assign initial schedule." << std::endl;
       continue;
     }
