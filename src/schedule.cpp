@@ -7,6 +7,7 @@
 #include <limits>
 #include <iostream>
 #include <random>
+#include <stdexcept>
 
 #include "schedule.h"
 #include "group.h"
@@ -659,6 +660,8 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
   std::ofstream log;
   log.open("log.txt", std::ios_base::app);
 
+  bool found_working = false;
+
   Initialize();
   for (int i = 0; i < attempts; i++) {
     log << "Attempt " << i << ": " << std::endl;
@@ -690,7 +693,13 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
       best_soft_count_ = soft_count;
       best_timetable_ = timetable_;
       best_teacher_table_ = teacher_table_;
+      found_working = true;
     }
+  }
+
+  if (!found_working) {
+    log << "Did not find a working schedule." << std::endl;
+    throw std::runtime_error("did not find a working schedule.");
   }
 
   timetable_ = best_timetable_;
