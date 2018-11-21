@@ -15,6 +15,7 @@ public:
   Schedule* GetSchedule();
   int GetSeconds();
   int GetAttempts();
+  int GetTop();
 
   void ReadTeachers();
   void ReadGroups();

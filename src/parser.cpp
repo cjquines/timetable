@@ -48,6 +48,8 @@ int Parser::GetSeconds() { return input_["seconds"].as<int>(); }
 
 int Parser::GetAttempts() { return input_["attempts"].as<int>(); }
 
+int Parser::GetTop() { return input_["top"].as<int>(); }
+
 void Parser::ReadTeachers() {
   if (!input_["teachers"])
     throw std::runtime_error("property 'teachers' not found in input file.");
