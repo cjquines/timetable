@@ -1,5 +1,6 @@
 days: 5
 slots: 14
+seed: 1542741096
 teachers:
     - name: Mr. Darilag
       unassignable:
@@ -164,5 +165,7 @@ constraints:
       priority: 0
     - type: reqFirstSubject
       priority: 0
+    - type: subjectGaps
+      priority: 0
 seconds: 5
-attempts: 1
+attempts: 2
