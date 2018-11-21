@@ -30,6 +30,8 @@ private:
   int num_sections_;
   int num_subjects_;
 
+  int priority_factor_;
+
   std::map<std::string, int> sections_dict_;
   std::map<std::string, int> teachers_dict_;
 };

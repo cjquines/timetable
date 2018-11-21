@@ -12,8 +12,8 @@
 
 #include "yaml-cpp/yaml.h"
 
-Parser::Parser(const char* filename)
-    : num_groups_(0), num_teachers_(0), num_sections_(0), num_subjects_(0) {
+Parser::Parser(const char* filename) : num_groups_(0), num_teachers_(0),
+      num_sections_(0), num_subjects_(0), priority_factor_(1) {
   std::ifstream file(filename);
   if (!file.good())
     throw std::runtime_error("the file " + std::string(filename) + " doesn't exist.");
@@ -83,8 +83,10 @@ void Parser::ReadTeachers() {
         throw std::runtime_error(
           name + "'s unassignable times doesn't look like a list.");
 
-      schedule_->AddTeacherTime(it["unassignable"]["priority"].as<int>(),
-                                num_teachers_,
+      int priority = it["unassignable"]["priority"].as<int>();
+      if (priority > 0) priority *= priority_factor_;
+
+      schedule_->AddTeacherTime(priority, num_teachers_,
                                 it["unassignable"]["times"].as< std::vector<int> >());
     }
 
@@ -173,8 +175,10 @@ void Parser::ReadGroups() {
           throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
                                  + "'s unassignable times doesn't look like a list.");
 
-        schedule_->AddSubjectTime(jt["unassignable"]["priority"].as<int>(),
-                                  num_subjects_,
+        int priority = jt["unassignable"]["priority"].as<int>();
+        if (priority > 0) priority *= priority_factor_;
+
+        schedule_->AddSubjectTime(priority, num_subjects_,
                                   jt["unassignable"]["times"].as< std::vector<int> >());
       }
 
@@ -207,6 +211,7 @@ void Parser::ReadConstraints() {
                              + "'s priorities doesn't look like a priority.");
 
     int priority = it["priority"].as<int>();
+    if (priority > 0) priority *= priority_factor_;
 
     if (type == "distinctPerDay") {
       schedule_->AddDistinctPerDay(priority);
@@ -232,6 +237,7 @@ void Parser::ReadConstraints() {
         section_ids.push_back(kt->second);
       }
 
+      priority /= sections.size() * sections.size();
       schedule_->AddEvenDismissal(priority, section_ids);
     } else if (type == "minSubjects") {
       if (!it["minSubjects"])
@@ -255,6 +261,17 @@ void Parser::ReadConstraints() {
 }
 
 void Parser::ParseFile() {
+  if (input_["constraints"].IsSequence()) {
+    for (auto it : input_["constraints"]) {
+      if (it["type"] && it["type"].IsScalar()
+          && it["type"].as<std::string>() == "evenDismissal"
+          && it["sections"].IsSequence()) {
+        if (it["priority"].as<int>() <= 0) continue;
+        priority_factor_ *= it["sections"].size() * it["sections"].size();
+      }
+    }
+  }
+
   ReadTeachers();
   ReadGroups();
   ReadConstraints();
