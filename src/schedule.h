@@ -1,6 +1,7 @@
 #ifndef _TIMETABLE_SCHEDULE_H
 #define _TIMETABLE_SCHEDULE_H
 
+#include <map>
 #include <memory>
 #include <random>
 #include <string>
@@ -120,7 +121,7 @@ public:
   double SimulatedAnnealingSample(const int &num_samples);
   int SimulatedAnnealingSearch(const double &temperature);
 
-  void Solve(const int &time_limit, const int &attempts);
+  void Solve(const int &time_limit, const int &attempts, const int &max_best);
   void TestPrint();
 
 private:
@@ -141,9 +142,8 @@ private:
   std::vector< std::vector<int> > timetable_;
   std::vector< std::vector<int> > teacher_table_;
 
-  int best_soft_count_;
-  std::vector< std::vector<int> > best_timetable_;
-  std::vector< std::vector<int> > best_teacher_table_;
+  std::map< int, std::pair< std::vector< std::vector<int> >,
+            std::vector< std::vector<int> > > > best_tables_;
 
   std::vector< std::vector<bool> > subject_tabus_;
 };

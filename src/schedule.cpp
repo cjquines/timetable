@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <limits>
 #include <iostream>
 #include <random>
 #include <stdexcept>
@@ -27,7 +26,6 @@ Schedule::Schedule(const int &num_days, const int &num_slots_per_day,
     : num_days_(num_days), num_slots_per_day_(num_slots_per_day),
       hard_satisfied_(false), rand_generator_(seed) {
   num_slots_ = num_days_ * num_slots_per_day_;
-  best_soft_count_ = std::numeric_limits<int>::max();
 }
 
 int Schedule::GetNumDays() { return num_days_; }
@@ -656,11 +654,10 @@ int Schedule::SimulatedAnnealingSearch(const double &temperature) {
   return 0;
 }
 
-void Schedule::Solve(const int &time_limit, const int &attempts) {
+void Schedule::Solve(const int &time_limit, const int &attempts,
+                     const int &max_best) {
   std::ofstream log;
   log.open("log.txt", std::ios_base::app);
-
-  bool found_working = false;
 
   Initialize();
   for (int i = 0; i < attempts; i++) {
@@ -689,21 +686,26 @@ void Schedule::Solve(const int &time_limit, const int &attempts) {
       log << "  Actual soft count: " << soft_count << "." << std::endl;
     }
     log << "  Passed with soft count " << soft_count << "." << std::endl;
-    if (soft_count < best_soft_count_) {
-      best_soft_count_ = soft_count;
-      best_timetable_ = timetable_;
-      best_teacher_table_ = teacher_table_;
-      found_working = true;
+    best_tables_.emplace(soft_count, std::make_pair(timetable_, teacher_table_));
+    if (best_tables_.size() >= max_best) {
+      best_tables_.erase(--best_tables_.end());
     }
   }
 
-  if (!found_working) {
+  if (best_tables_.size() == 0) {
     log << "Did not find a working schedule." << std::endl;
     throw std::runtime_error("did not find a working schedule.");
   }
 
-  timetable_ = best_timetable_;
-  teacher_table_ = best_teacher_table_;
+  if (best_tables_.size() < max_best) {
+    log << "Found only " << best_tables_.size() << " schedules; ";
+    log << max_best << " needed." << std::endl;
+  } else {
+    log << "Found " << best_tables_.size() << " schedules." << std::endl;
+  }
+
+  // timetable_ = best_timetable_;
+  // teacher_table_ = best_teacher_table_;
   hard_satisfied_ = true;
   log << "Best soft count: " << SoftCount() << std::endl;
   log.close();
