@@ -177,6 +177,10 @@ void Emitter::OutputSchedule(const std::string &file) {
   AddAttribute("xmlns:ss", "urn:schemas-microsoft-com:office:spreadsheet");
   AddAttribute("xmlns:html", "http://www.w3.org/TR/REC-html40");
   
+  OpenTag("DocumentProperties");
+  AddAttribute("Author", "cjquines/timetable");
+  CloseTag();
+
   OpenTag("ExcelWorkbook");
   AddAttribute("xmlns", "urn:schemas-microsoft-com:office:excel");
   CloseTag();
