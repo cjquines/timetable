@@ -62,6 +62,8 @@ void Emitter::OutputTimetable() {
     OpenTag("Worksheet");
     AddAttribute("ss:Name", "Day " + std::to_string(i + 1));
     OpenTag("Table");
+    AddAttribute("ss:DefaultColumnWidth", "105");
+    AddAttribute("ss:DefaultRowHeight", "31.5");
 
     OpenTag("Row");
     AddCell();
@@ -95,6 +97,8 @@ void Emitter::OutputSectionTable() {
     OpenTag("Worksheet");
     AddAttribute("ss:Name", (*it)->GetName());
     OpenTag("Table");
+    AddAttribute("ss:DefaultColumnWidth", "105");
+    AddAttribute("ss:DefaultRowHeight", "31.5");
 
     OpenTag("Row");
     AddCell();
@@ -128,6 +132,8 @@ void Emitter::OutputTeacherTable() {
     OpenTag("Worksheet");
     AddAttribute("ss:Name", (*it)->GetName());
     OpenTag("Table");
+    AddAttribute("ss:DefaultColumnWidth", "105");
+    AddAttribute("ss:DefaultRowHeight", "31.5");
 
     OpenTag("Row");
     AddCell();
