@@ -8,6 +8,9 @@
 #include "subject.h"
 #include "teacher.h"
 
+const std::string kColumnWidth = "105";
+const std::string kRowHeight = "31.5";
+
 Emitter::Emitter(Schedule *schedule)
     : schedule_(schedule), start_tag_closed_(true) {}
 
@@ -62,8 +65,8 @@ void Emitter::OutputTimetable() {
     OpenTag("Worksheet");
     AddAttribute("ss:Name", "Day " + std::to_string(i + 1));
     OpenTag("Table");
-    AddAttribute("ss:DefaultColumnWidth", "105");
-    AddAttribute("ss:DefaultRowHeight", "31.5");
+    AddAttribute("ss:DefaultColumnWidth", kColumnWidth);
+    AddAttribute("ss:DefaultRowHeight", kRowHeight);
 
     OpenTag("Row");
     AddCell();
@@ -97,8 +100,8 @@ void Emitter::OutputSectionTable() {
     OpenTag("Worksheet");
     AddAttribute("ss:Name", (*it)->GetName());
     OpenTag("Table");
-    AddAttribute("ss:DefaultColumnWidth", "105");
-    AddAttribute("ss:DefaultRowHeight", "31.5");
+    AddAttribute("ss:DefaultColumnWidth", kColumnWidth);
+    AddAttribute("ss:DefaultRowHeight", kRowHeight);
 
     OpenTag("Row");
     AddCell();
@@ -132,8 +135,8 @@ void Emitter::OutputTeacherTable() {
     OpenTag("Worksheet");
     AddAttribute("ss:Name", (*it)->GetName());
     OpenTag("Table");
-    AddAttribute("ss:DefaultColumnWidth", "105");
-    AddAttribute("ss:DefaultRowHeight", "31.5");
+    AddAttribute("ss:DefaultColumnWidth", kColumnWidth);
+    AddAttribute("ss:DefaultRowHeight", kRowHeight);
 
     OpenTag("Row");
     AddCell();
