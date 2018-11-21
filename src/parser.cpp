@@ -44,11 +44,29 @@ Parser::Parser(const char* filename) : num_groups_(0), num_teachers_(0),
 
 Schedule* Parser::GetSchedule() { return schedule_; }
 
-int Parser::GetSeconds() { return input_["seconds"].as<int>(); }
+int Parser::GetSeconds() {
+  if (!input_["seconds"])
+    throw std::runtime_error("property 'seconds' not found in input file.");
+  if (!input_["seconds"].IsScalar())
+    throw std::runtime_error("property 'seconds' doesn't look like an integer.");
+  return input_["seconds"].as<int>();
+}
 
-int Parser::GetAttempts() { return input_["attempts"].as<int>(); }
+int Parser::GetAttempts() {
+  if (!input_["attempts"])
+    throw std::runtime_error("property 'attempts' not found in input file.");
+  if (!input_["attempts"].IsScalar())
+    throw std::runtime_error("property 'attempts' doesn't look like an integer.");
+  return input_["attempts"].as<int>();
+}
 
-int Parser::GetTop() { return input_["top"].as<int>(); }
+int Parser::GetTop() {
+  if (!input_["top"])
+    throw std::runtime_error("property 'top' not found in input file.");
+  if (!input_["top"].IsScalar())
+    throw std::runtime_error("property 'top' doesn't look like an integer.");
+  return input_["top"].as<int>();
+}
 
 void Parser::ReadTeachers() {
   if (!input_["teachers"])
