@@ -655,7 +655,8 @@ int Schedule::SimulatedAnnealingSearch(const double &temperature) {
 }
 
 int Schedule::Solve(const int &time_limit, const int &attempts,
-                    const int &max_best) {
+                    const int &max_best, const int &num_samples,
+                    const double &kappa, const int &tau, const double &alpha) {
   std::ofstream log;
   log.open("log.txt", std::ios_base::app);
 
@@ -678,7 +679,8 @@ int Schedule::Solve(const int &time_limit, const int &attempts,
     }
     SoftInitialize();
     int soft_count = SoftSolver(time_limit
-                              - std::difftime(std::time(NULL), start));
+                              - std::difftime(std::time(NULL), start),
+                                num_samples, kappa, tau, alpha);
     if (soft_count != SoftCount()) {
       log << "  soft_count does not match SoftCount()." << std::endl;
       log << "  soft_count value: " << soft_count << "." << std::endl;

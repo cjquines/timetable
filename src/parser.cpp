@@ -12,6 +12,11 @@
 
 #include "yaml-cpp/yaml.h"
 
+const int kDefNumSamples = 100;
+const double kDefKappa = 0.2;
+const int kDefTau = 50;
+const double kDefAlpha = 0.95;
+
 Parser::Parser(const char* filename) : num_groups_(0), num_teachers_(0),
       num_sections_(0), num_subjects_(0), priority_factor_(1) {
   std::ifstream file(filename);
@@ -66,6 +71,38 @@ int Parser::GetTop() {
   if (!input_["top"].IsScalar())
     throw std::runtime_error("property 'top' doesn't look like an integer.");
   return input_["top"].as<int>();
+}
+
+int Parser::GetNumSamples() {
+  if (!input_["saSamples"])
+    return kDefNumSamples;
+  if (!input_["saSamples"].IsScalar())
+    throw std::runtime_error("property 'saSamples' doesn't look like an integer.");
+  return input_["saSamples"].as<int>();
+}
+
+double Parser::GetKappa() {
+  if (!input_["saKappa"])
+    return kDefKappa;
+  if (!input_["saKappa"].IsScalar())
+    throw std::runtime_error("property 'saKappa' doesn't look like a double.");
+  return input_["saKappa"].as<double>();
+}
+
+int Parser::GetTau() {
+  if (!input_["saTau"])
+    return kDefTau;
+  if (!input_["saTau"].IsScalar())
+    throw std::runtime_error("property 'saTau' doesn't look like an integer.");
+  return input_["saTau"].as<int>();
+}
+
+double Parser::GetAlpha() {
+  if (!input_["saAlpha"])
+    return kDefAlpha;
+  if (!input_["saAlpha"].IsScalar())
+    throw std::runtime_error("property 'saAlpha' doesn't look like a double.");
+  return input_["saAlpha"].as<double>();
 }
 
 void Parser::ReadTeachers() {

@@ -15,11 +15,6 @@ class Teacher;
 
 #include "constraints/constraint.h"
 
-const int kDefNumSamples = 100;
-const double kDefKappa = 0.2;
-const int kDefTau = 50;
-const double kDefAlpha = 0.95;
-
 class Schedule {
 public:
   Schedule(const int &num_days, const int &num_slots_per_day, const int &seed);
@@ -111,9 +106,8 @@ public:
   int HardLocalSearch();
   int HardTabuSearch();
 
-  int SoftSolver(const int &time_limit, const int &num_samples = kDefNumSamples,
-                 const double &kappa = kDefKappa, const int &tau = kDefTau,
-                 const double &alpha = kDefAlpha);
+  int SoftSolver(const int &time_limit, const int &num_samples,
+                 const double &kappa, const int &tau, const double &alpha);
   int SoftLocalSearch(const bool &accept_side, const int &threshold);
   int SoftSimulatedAnnealing(const int &time_limit, const int &num_samples,
                              const double &kappa, const int &tau,
@@ -121,7 +115,9 @@ public:
   double SimulatedAnnealingSample(const int &num_samples);
   int SimulatedAnnealingSearch(const double &temperature);
 
-  int Solve(const int &time_limit, const int &attempts, const int &max_best);
+  int Solve(const int &time_limit, const int &attempts, const int &max_best,
+            const int &num_samples, const double &kappa, const int &tau,
+            const double &alpha);
   void SwitchScheduleTo(const int &schedule);
   void TestPrint();
 

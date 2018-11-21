@@ -18,7 +18,9 @@ int main(int argc, char** argv) {
     Schedule* config = parser.GetSchedule();
 
     int num_schedules = config->Solve(parser.GetSeconds(), parser.GetAttempts(),
-                                      parser.GetTop());
+                                      parser.GetTop(), parser.GetNumSamples(),
+                                      parser.GetKappa(), parser.GetTau(),
+                                      parser.GetAlpha());
 
     Emitter emitter(config);
 

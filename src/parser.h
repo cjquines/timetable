@@ -15,7 +15,12 @@ public:
   Schedule* GetSchedule();
   int GetSeconds();
   int GetAttempts();
+
   int GetTop();
+  int GetNumSamples();
+  double GetKappa();
+  int GetTau();
+  double GetAlpha();
 
   void ReadTeachers();
   void ReadGroups();
