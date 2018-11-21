@@ -17,11 +17,16 @@ int main(int argc, char** argv) {
     parser.ParseFile();
     Schedule* config = parser.GetSchedule();
 
-    config->Solve(parser.GetSeconds(), parser.GetAttempts());
-    config->TestPrint();
+    int num_schedules = config->Solve(parser.GetSeconds(), parser.GetAttempts(),
+                                      parser.GetTop());
 
     Emitter emitter(config);
-    emitter.OutputSchedule("output.xml");
+
+    for (int i = 0; i < num_schedules; i++) {
+      config->SwitchScheduleTo(i);
+      emitter.OutputSchedule("output-" + std::to_string(config->SoftCount())
+                             + ".xml");
+    }
   } catch (const std::runtime_error &error) {
     std::cerr << "ERROR: " << error.what() << std::endl;
   }
