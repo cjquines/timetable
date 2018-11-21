@@ -654,8 +654,8 @@ int Schedule::SimulatedAnnealingSearch(const double &temperature) {
   return 0;
 }
 
-void Schedule::Solve(const int &time_limit, const int &attempts,
-                     const int &max_best) {
+int Schedule::Solve(const int &time_limit, const int &attempts,
+                    const int &max_best) {
   std::ofstream log;
   log.open("log.txt", std::ios_base::app);
 
@@ -704,11 +704,17 @@ void Schedule::Solve(const int &time_limit, const int &attempts,
     log << "Found " << best_tables_.size() << " schedules." << std::endl;
   }
 
-  // timetable_ = best_timetable_;
-  // teacher_table_ = best_teacher_table_;
-  hard_satisfied_ = true;
   log << "Best soft count: " << SoftCount() << std::endl;
   log.close();
+  return best_tables_.size();
+}
+
+void Schedule::SwitchScheduleTo(const int &schedule) {
+  auto it = best_tables_.begin();
+  for (int i = 0; i < schedule; i++) it++;
+  timetable_ = it->second.first;
+  teacher_table_ = it->second.second;
+  hard_satisfied_ = true;
 }
 
 void Schedule::TestPrint() {
