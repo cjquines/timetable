@@ -687,21 +687,21 @@ int Schedule::Solve(const int &time_limit, const int &attempts,
     }
     log << "  Passed with soft count " << soft_count << "." << std::endl;
     best_tables_.emplace(soft_count, std::make_pair(timetable_, teacher_table_));
-    if (best_tables_.size() >= max_best) {
+    if (int(best_tables_.size()) > max_best) {
       best_tables_.erase(--best_tables_.end());
     }
   }
 
-  if (best_tables_.size() == 0) {
+  if (int(best_tables_.size()) == 0) {
     log << "Did not find a working schedule." << std::endl;
     throw std::runtime_error("did not find a working schedule.");
   }
 
-  if (best_tables_.size() < max_best) {
-    log << "Found only " << best_tables_.size() << " schedules; ";
+  if (int(best_tables_.size()) < max_best) {
+    log << "Found only " << best_tables_.size() << " schedule(s); ";
     log << max_best << " needed." << std::endl;
   } else {
-    log << "Found " << best_tables_.size() << " schedules." << std::endl;
+    log << "Found " << best_tables_.size() << " schedule(s)." << std::endl;
   }
 
   log << "Best soft count: " << SoftCount() << std::endl;
