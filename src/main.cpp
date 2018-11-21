@@ -1,9 +1,8 @@
-#include <cassert>
-
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
+#include "emitter.h"
 #include "parser.h"
 #include "schedule.h"
 
@@ -20,8 +19,12 @@ int main(int argc, char** argv) {
 
     config->Solve(parser.GetSeconds(), parser.GetAttempts());
     config->TestPrint();
+
+    Emitter emitter(config);
+    emitter.OutputSchedule("output.xml");
   } catch (const std::runtime_error &error) {
     std::cerr << "ERROR: " << error.what() << std::endl;
   }
+
   return 0;
 }
