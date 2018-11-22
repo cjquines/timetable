@@ -20,7 +20,8 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
   for (int i = lbound; i < rbound; i++) {
     if (seen_filled) {
       if (schedule_->CountSectionsOf(teacher, i) == 0) {
-        if (num_filled > max_consecutive_) result--;
+        if (num_filled > max_consecutive_)
+          result += max_consecutive_ - num_filled;
         seen_filled = false;
       } else num_filled++;
     } else if (schedule_->CountSectionsOf(teacher, i) > 0) {
@@ -28,13 +29,16 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
       num_filled = 1;
     }
   }
+  if (seen_filled && num_filled > max_consecutive_)
+    result += max_consecutive_ - num_filled;
 
   seen_filled = false;
   num_filled = 0;
   for (int i = open_lbound; i < open_rbound; i++) {
     if (seen_filled) {
       if (schedule_->CountSectionsOf(teacher, i) == 0) {
-        if (num_filled > max_consecutive_) result--;
+        if (num_filled > max_consecutive_)
+          result += max_consecutive_ - num_filled;
         seen_filled = false;
       } else num_filled++;
     } else if (schedule_->CountSectionsOf(teacher, i) > 0) {
@@ -42,6 +46,8 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
       num_filled = 1;
     }
   }
+  if (seen_filled && num_filled > max_consecutive_)
+    result += max_consecutive_ - num_filled;
 
   seen_filled = false;
   num_filled = 0;
@@ -52,7 +58,8 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
                      && !(open_timeslot <= i && i < open_timeslot + length));
     if (seen_filled) {
       if (empty) {
-        if (num_filled > max_consecutive_) result++;
+        if (num_filled > max_consecutive_)
+          result += num_filled - max_consecutive_;
         seen_filled = false;
       } else num_filled++;
     } else if (!empty) {
@@ -60,6 +67,8 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
       num_filled = 1;
     }
   }
+  if (seen_filled && num_filled > max_consecutive_)
+    result += num_filled - max_consecutive_;
 
   seen_filled = false;
   num_filled = 0;
@@ -70,7 +79,8 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
                      && !(open_timeslot <= i && i < open_timeslot + length));
     if (seen_filled) {
       if (empty) {
-        if (num_filled > max_consecutive_) result++;
+        if (num_filled > max_consecutive_)
+          result += num_filled - max_consecutive_;
         seen_filled = false;
       } else num_filled++;
     } else if (!empty) {
@@ -78,7 +88,10 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
       num_filled = 1;
     }
   }
+  if (seen_filled && num_filled > max_consecutive_)
+    result += num_filled - max_consecutive_;
 
+  if (lbound == open_lbound) result /= 2;
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
   return result;
 }
@@ -108,7 +121,8 @@ int MaxConsecutive::CountAll() {
            j < (i+1)*schedule_->GetNumSlotsPerDay(); j++) {
         if (seen_filled) {
           if (schedule_->CountSectionsOf((*it)->GetId(), j) == 0) {
-            if (num_filled > max_consecutive_) result++;
+            if (num_filled > max_consecutive_)
+              result += num_filled - max_consecutive_;
             seen_filled = false;
           } else num_filled++;
         } else if (schedule_->CountSectionsOf((*it)->GetId(), j) > 0) {
@@ -116,6 +130,8 @@ int MaxConsecutive::CountAll() {
           num_filled = 1;
         }
       }
+      if (seen_filled && num_filled > max_consecutive_)
+        result += num_filled - max_consecutive_;
     }
   }
 
