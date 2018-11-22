@@ -706,6 +706,7 @@ int Schedule::Solve(const int &time_limit, const int &attempts,
     log << "Found " << best_tables_.size() << " schedule(s)." << std::endl;
   }
 
+  SwitchScheduleTo(0);
   log << "Best soft count: " << SoftCount() << std::endl;
   log.close();
   return best_tables_.size();
