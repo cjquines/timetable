@@ -45,6 +45,7 @@ public:
   void AddDistinctPerDay(const int &priority);
   void AddEvenDismissal(const int &priority,
                         const std::vector<int> &sections);
+  void AddMaxConsecutive(const int &priority, const int &max_consecutive);
   void AddMinSubjects(const int &priority, const int &min_subjects);
   void AddNonSimultaneous(const int &priority);
   void AddReqFirstSubject(const int &priority);

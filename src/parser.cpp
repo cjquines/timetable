@@ -296,6 +296,15 @@ void Parser::ReadConstraints() {
 
       priority /= sections.size() * sections.size();
       schedule_->AddEvenDismissal(priority, section_ids);
+    } else if (type == "maxConsecutive") {
+      if (!it["maxConsecutive"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a maxConsecutive.");
+      if (!it["maxConsecutive"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s maxConsecutive doesn't look like an integer.");
+      
+      schedule_->AddMaxConsecutive(priority, it["maxConsecutive"].as<int>());
     } else if (type == "minSubjects") {
       if (!it["minSubjects"])
         throw std::runtime_error("one of the " + type
