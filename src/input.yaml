@@ -1,6 +1,6 @@
 days: 5
 slots: 14
-seed: 1542741096
+seed: 1542900573
 teachers:
     - name: Mr. Darilag
       unassignable:
@@ -158,6 +158,9 @@ constraints:
     - type: evenDismissal
       priority: 1
       sections: [11STEM1, 11STEM2, 11STEM3, 11STEM4, 11STEM5]
+    - type: maxConsecutive
+      priority: 1
+      maxConsecutive: 6
     - type: minSubjects
       priority: 0
       minSubjects: 2
@@ -168,5 +171,5 @@ constraints:
     - type: subjectGaps
       priority: 0
 seconds: 5
-attempts: 2
+attempts: 1
 top: 1

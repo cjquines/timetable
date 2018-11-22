@@ -1,6 +1,5 @@
-Seed: 1542741096
+Seed: 1542900573
 Attempt 0: 
-  failed to assign initial schedule.
-Attempt 1: 
-  Passed with soft count 546.
-Best soft count: 546
+  Passed with soft count 3124.
+Found 1 schedule(s).
+Best soft count: 3124
