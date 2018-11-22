@@ -42,7 +42,8 @@ int TeacherTime::CountAll() {
   int result = 0;
   for (int i = 0; i < Constraint::schedule_->GetNumSlots(); i++)
     if (unassignable_[i] &&
-        Constraint::schedule_->GetSectionOf(teacher_, i) != -1) result++;
+        Constraint::schedule_->CountSectionsOf(teacher_, i) > 0)
+      result += Constraint::schedule_->CountSectionsOf(teacher_, i);
 
   if (Constraint::priority_ > 0) return result*Constraint::priority_;
   return result;
