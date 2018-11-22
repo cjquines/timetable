@@ -103,11 +103,8 @@ int MaxConsecutive::CountSwapTimeslot(const int &section,
   int rhs_teacher = schedule_->GetTeacherOf(section, rhs_timeslot);
   if (lhs_teacher == rhs_teacher) return 0;
 
-  int result = CountTranslate(section, lhs_timeslot, rhs_timeslot)
-             + CountTranslate(section, rhs_timeslot, lhs_timeslot);
-
-  if (Constraint::priority_ > 0) return result*Constraint::priority_;
-  return result;
+  return CountTranslate(section, lhs_timeslot, rhs_timeslot)
+       + CountTranslate(section, rhs_timeslot, lhs_timeslot);
 }
 
 int MaxConsecutive::CountAll() {
