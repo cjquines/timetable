@@ -14,6 +14,7 @@ public:
 
 protected:
   Schedule* schedule_;
+  int priority_;
 };
 
 #endif
