@@ -3,8 +3,6 @@
 Constraint::Constraint(Schedule *schedule, const int &priority)
     : schedule_(schedule), priority_(priority) {}
 
-int Constraint::GetPriority() { return priority_; }
-
 int Constraint::CountTranslate(const int &section, const int &timeslot,
                                const int &open_timeslot) {
   return 0;
