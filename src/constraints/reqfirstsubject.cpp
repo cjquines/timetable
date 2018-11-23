@@ -9,23 +9,23 @@ int ReqFirstSubject::CountTranslate(const int &section, const int &timeslot,
                                    const int &open_timeslot) {
   int result = 0;
 
-  if (timeslot % Constraint::schedule_->GetNumSlotsPerDay() == 0) result++;
-  if (open_timeslot % Constraint::schedule_->GetNumSlotsPerDay() == 0) result--;
+  if (timeslot % schedule_->GetNumSlotsPerDay() == 0) result++;
+  if (open_timeslot % schedule_->GetNumSlotsPerDay() == 0) result--;
 
-  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  if (priority_ > 0) return result*priority_;
   return result;
 }
 
 int ReqFirstSubject::CountAll() {
   int result = 0;
   
-  for (auto it = Constraint::schedule_->GetSectionsBegin();
-       it != Constraint::schedule_->GetSectionsEnd(); it++)
-    for (int i = 0; i < Constraint::schedule_->GetNumDays(); i++)
-      if (Constraint::schedule_->GetSubjectOf((*it)->GetId(),
-          i*Constraint::schedule_->GetNumSlotsPerDay()) == -1)
+  for (auto it = schedule_->GetSectionsBegin();
+       it != schedule_->GetSectionsEnd(); it++)
+    for (int i = 0; i < schedule_->GetNumDays(); i++)
+      if (schedule_->GetSubjectOf((*it)->GetId(),
+          i*schedule_->GetNumSlotsPerDay()) == -1)
         result++;
 
-  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  if (priority_ > 0) return result*priority_;
   return result;
 }

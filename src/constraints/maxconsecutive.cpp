@@ -92,7 +92,7 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
     result += num_filled - max_consecutive_;
 
   if (lbound == open_lbound) result /= 2;
-  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  if (priority_ > 0) return result*priority_;
   return result;
 }
 
@@ -132,6 +132,6 @@ int MaxConsecutive::CountAll() {
     }
   }
 
-  if (Constraint::priority_ > 0) return result*Constraint::priority_;
+  if (priority_ > 0) return result*priority_;
   return result;
 }
