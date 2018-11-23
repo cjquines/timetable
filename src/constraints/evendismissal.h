@@ -18,11 +18,11 @@ private:
 
   int Dismissal(const int &section, const int &lbound, const int &rbound);
   int DismissalTranslate(const int &section, const int &lbound,
-                         const int &rbound, const int timeslot,
-                         const int open_timeslot);
+                         const int &rbound, const int &timeslot,
+                         const int &open_timeslot);
   int HalfCountTranslate(const int &section, const int &lbound,
-                         const int &rbound, const int timeslot,
-                         const int open_timeslot);
+                         const int &rbound, const int &timeslot,
+                         const int &open_timeslot);
 };
 
 #endif

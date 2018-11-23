@@ -19,8 +19,8 @@ int EvenDismissal::Dismissal(const int &section, const int &lbound,
 }
 
 int EvenDismissal::DismissalTranslate(const int &section, const int &lbound,
-                                      const int &rbound, const int timeslot,
-                                      const int open_timeslot) {
+                                      const int &rbound, const int &timeslot,
+                                      const int &open_timeslot) {
   int result = 0;
   for (int i = rbound - 1; i >= lbound
     && schedule_->IsFreeTranslate(i, section, timeslot, open_timeslot); i--)
@@ -29,8 +29,8 @@ int EvenDismissal::DismissalTranslate(const int &section, const int &lbound,
 }
 
 int EvenDismissal::HalfCountTranslate(const int &section, const int &lbound,
-                                      const int &rbound, const int timeslot,
-                                      const int open_timeslot) {
+                                      const int &rbound, const int &timeslot,
+                                      const int &open_timeslot) {
   int sum_hours = 0;
   for (auto it : sections_) sum_hours += Dismissal(it, lbound, rbound);
   int old_last = Dismissal(section, lbound, rbound);
