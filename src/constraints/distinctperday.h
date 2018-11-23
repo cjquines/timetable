@@ -11,6 +11,10 @@ public:
   int CountSwapTimeslot(const int &section, const int &lhs_timeslot,
                         const int &rhs_timeslot) override;
   int CountAll() override;
+
+private:
+  bool FindSubject(const int &subject, const int &section, const int &lbound,
+                   const int &rbound, const int &skip_timeslot = -1);
 };
 
 #endif
