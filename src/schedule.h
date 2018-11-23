@@ -72,6 +72,8 @@ public:
 
   bool IsFree(const int &section, const int &timeslot,
               const int &num_slots = 1);
+  bool IsFreeTranslate(const int &timeslot, const int &section,
+                       const int &tr_timeslot, const int &open_timeslot);
   bool IsValidHardTranslate(const int &section, const int &timeslot,
                             const int &open_timeslot);
   bool IsValidHardSwap(const int &section, const int &lhs_timeslot,

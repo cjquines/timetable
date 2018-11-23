@@ -235,6 +235,15 @@ bool Schedule::IsFree(const int &section, const int &timeslot,
   return cur_moved == num_slots;
 }
 
+bool Schedule::IsFreeTranslate(const int &timeslot, const int &section,
+                               const int &tr_timeslot,
+                               const int &open_timeslot) {
+  int length = GetLengthOf(section, tr_timeslot);
+  return (tr_timeslot <= timeslot && timeslot < timeslot + length)
+      || (IsFree(section, timeslot)
+       && !(open_timeslot <= timeslot && timeslot < open_timeslot + length));
+}
+
 bool Schedule::IsValidHardTranslate(const int &section, const int &timeslot,
                                     const int &open_timeslot) {
   // Returns True if the section's subject with head at timeslot can be
