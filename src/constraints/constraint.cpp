@@ -13,4 +13,6 @@ int Constraint::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
   return 0;
 }
 
-int Constraint::CountAll() { return 0; }
+int Constraint::CountAll() {
+  return 0;
+}
