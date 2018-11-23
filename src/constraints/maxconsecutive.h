@@ -15,6 +15,10 @@ public:
 
 private:
   int max_consecutive_;
+
+  int Consecutive(const int &teacher, const int &lbound, const int &rbound,
+                  const int &section = -1, const int &timeslot = 0,
+                  const int &open_timeslot = 0);
 };
 
 #endif
