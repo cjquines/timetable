@@ -3,87 +3,58 @@
 
 #include "evendismissal.h"
 #include "../schedule.h"
-#include "../section.h"
 
 EvenDismissal::EvenDismissal(Schedule* schedule, const int &priority,
                              const std::vector<int> &sections)
-    : Constraint(schedule, priority), sections_(sections) {}
+    : Constraint(schedule, priority), sections_(sections) {
+  std::sort(sections_.begin(), sections_.end());
+}
+
+int EvenDismissal::Dismissal(const int &section, const int &lbound,
+                             const int &rbound) {
+  int result = 0;
+  for (int i = rbound - 1; i >= lbound && schedule_->IsFree(section, i); i--)
+    result++;
+  return result;
+}
+
+int EvenDismissal::DismissalTranslate(const int &section, const int &lbound,
+                                      const int &rbound, const int timeslot,
+                                      const int open_timeslot) {
+  int result = 0;
+  for (int i = rbound - 1; i >= lbound
+    && schedule_->IsFreeTranslate(i, section, timeslot, open_timeslot); i--)
+    result++;
+  return result;
+}
+
+int EvenDismissal::HalfCountTranslate(const int &section, const int &lbound,
+                                      const int &rbound, const int timeslot,
+                                      const int open_timeslot) {
+  int sum_hours = 0;
+  for (auto it : sections_) sum_hours += Dismissal(it, lbound, rbound);
+  int old_last = Dismissal(section, lbound, rbound);
+  int delta = DismissalTranslate(section, lbound, rbound, timeslot,
+                                 open_timeslot) - old_last;
+  return sections_.size() * (2*old_last*delta + delta*delta) - 2*sum_hours*delta
+       - delta*delta;
+}
 
 int EvenDismissal::CountTranslate(const int &section, const int &timeslot,
                                   const int &open_timeslot) {
-  if (std::find(sections_.begin(), sections_.end(), section) == sections_.end())
+  if (!std::binary_search(sections_.begin(), sections_.end(), section))
     return 0;
 
   int lbound, rbound, open_lbound, open_rbound;
   std::tie(lbound, rbound) = schedule_->ClampDay(timeslot);
   std::tie(open_lbound, open_rbound) = schedule_->ClampDay(open_timeslot);
-  int length = schedule_->GetLengthOf(section, timeslot);
-  int old_last, new_last, delta, day, result = 0;
-  int num_sections = sections_.size();
 
-  std::vector<int> sum_hours(schedule_->GetNumDays(), 0);
-  for (auto it : sections_) {
-    for (int i = 0; i < schedule_->GetNumDays(); i++) {
-      int j = (i + 1)*schedule_->GetNumSlotsPerDay() - 1;
-      for (; j >= i*schedule_->GetNumSlotsPerDay(); j--)
-        if (schedule_->GetSubjectOf(it, j) != -1)
-          break;
-      j = (i + 1)*schedule_->GetNumSlotsPerDay() - 1 - j;
-      sum_hours[i] += j;
-    }
-  }
+  int result = HalfCountTranslate(section, lbound, rbound, timeslot,
+                                  open_timeslot)
+             + HalfCountTranslate(section, open_lbound, open_rbound, timeslot,
+                                  open_timeslot);
 
-  if (lbound == open_lbound) {
-    old_last = 0; new_last = 0;
-    for (int j = rbound - 1; j >= lbound; j--) {
-      if (schedule_->GetSubjectOf(section, j) != -1) break;
-      old_last++;
-    }
-    for (int j = rbound - 1; j >= lbound; j--) {
-      if (timeslot <= j && j < timeslot + length) new_last++;
-      else if (schedule_->GetSubjectOf(section, j) != -1) break;
-      else if (open_timeslot <= j && j < open_timeslot + length) break;
-      else new_last++;
-    }
-    delta = new_last - old_last;
-    day = lbound / schedule_->GetNumSlotsPerDay();
-    result = num_sections * (2*old_last*delta + delta*delta)
-           - 2*sum_hours[day]*delta
-           - delta*delta;
-  } else {
-    old_last = 0; new_last = 0;
-    for (int j = rbound - 1; j >= lbound; j--) {
-      if (schedule_->GetSubjectOf(section, j) != -1) break;
-      old_last++;
-    }
-    for (int j = rbound - 1; j >= lbound; j--) {
-      if (timeslot <= j && j < timeslot + length) new_last++;
-      else if (schedule_->GetSubjectOf(section, j) != -1) break;
-      else new_last++;
-    }
-    delta = new_last - old_last;
-    day = lbound / schedule_->GetNumSlotsPerDay();
-    result += num_sections * (2*old_last*delta + delta*delta)
-            - 2*sum_hours[day]*delta
-            - delta*delta;
-
-    old_last = 0; new_last = 0;
-    for (int j = open_rbound - 1; j >= open_lbound; j--) {
-      if (schedule_->GetSubjectOf(section, j) != -1) break;
-      old_last++;
-    }
-    for (int j = open_rbound - 1; j >= open_lbound; j--) {
-      if (schedule_->GetSubjectOf(section, j) != -1) break;
-      if (open_timeslot <= j && j < open_timeslot + length) break;
-      new_last++;
-    }
-    delta = new_last - old_last;
-    day = open_lbound / schedule_->GetNumSlotsPerDay();
-    result += num_sections * (2*old_last*delta + delta*delta)
-            - 2*sum_hours[day]*delta
-            - delta*delta;
-  }
-
+  if (lbound == open_lbound) result /= 2;
   if (priority_ > 0) return result*priority_;
   return result;
 }
@@ -96,13 +67,10 @@ int EvenDismissal::CountAll() {
 
   for (auto it : sections_) {
     for (int i = 0; i < schedule_->GetNumDays(); i++) {
-      int j = (i + 1)*schedule_->GetNumSlotsPerDay() - 1;
-      for (; j >= i*schedule_->GetNumSlotsPerDay(); j--)
-        if (schedule_->GetSubjectOf(it, j) != -1)
-          break;
-      j = (i + 1)*schedule_->GetNumSlotsPerDay() - 1 - j;
-      squared_sum[i] += j*j;
-      sum_hours[i] += j;
+      int dismissal = Dismissal(it, i*schedule_->GetNumSlotsPerDay(),
+                                (i + 1)*schedule_->GetNumSlotsPerDay());
+      squared_sum[i] += dismissal*dismissal;
+      sum_hours[i] += dismissal;
     }
   }
 

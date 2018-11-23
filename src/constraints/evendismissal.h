@@ -12,8 +12,17 @@ public:
   int CountTranslate(const int &section, const int &timeslot,
                      const int &open_timeslot) override;
   int CountAll() override;
+
 private:
   std::vector<int> sections_;
+
+  int Dismissal(const int &section, const int &lbound, const int &rbound);
+  int DismissalTranslate(const int &section, const int &lbound,
+                         const int &rbound, const int timeslot,
+                         const int open_timeslot);
+  int HalfCountTranslate(const int &section, const int &lbound,
+                         const int &rbound, const int timeslot,
+                         const int open_timeslot);
 };
 
 #endif
