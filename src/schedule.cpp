@@ -218,6 +218,16 @@ int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {
   return teacher_table_[teacher][timeslot];
 }
 
+int Schedule::CountSectionsTranslate(const int &teacher, const int &timeslot,
+                                     const int &section, const int &tr_timeslot,
+                                     const int &open_timeslot) {
+  int length = GetLengthOf(section, tr_timeslot);
+  int result = CountSectionsOf(teacher, timeslot);
+  if (tr_timeslot <= timeslot && timeslot < tr_timeslot + length) result--;
+  if (open_timeslot <= timeslot && timeslot < open_timeslot + length) result++;
+  return result;
+}
+
 int Schedule::GetSectionOf(const int &teacher, const int &timeslot) {
   assert(hard_satisfied_);
   return teacher_table_[teacher][timeslot];

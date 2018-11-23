@@ -68,6 +68,9 @@ public:
   int GetTeacherOf(const int &section, const int &timeslot);
   int GetLengthOf(const int &section, const int &timeslot);
   int CountSectionsOf(const int &teacher, const int &timeslot);
+  int CountSectionsTranslate(const int &teacher, const int &timeslot,
+                             const int &section, const int &tr_timeslot,
+                             const int &open_timeslot);
   int GetSectionOf(const int &teacher, const int &timeslot);
 
   bool IsFree(const int &section, const int &timeslot,
