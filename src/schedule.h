@@ -70,7 +70,8 @@ public:
   int CountSectionsOf(const int &teacher, const int &timeslot);
   int GetSectionOf(const int &teacher, const int &timeslot);
 
-  bool IsFree(const int &section, const int &timeslot, const int &num_slots);
+  bool IsFree(const int &section, const int &timeslot,
+              const int &num_slots = 1);
   bool IsValidHardTranslate(const int &section, const int &timeslot,
                             const int &open_timeslot);
   bool IsValidHardSwap(const int &section, const int &lhs_timeslot,
