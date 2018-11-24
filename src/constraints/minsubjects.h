@@ -12,6 +12,8 @@ public:
   int CountAll() override;
 private:
   int min_subjects_;
+
+  int CountSubjects(const int &section, const int &lbound, const int &rbound);
 };
 
 #endif
