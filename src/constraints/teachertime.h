@@ -18,6 +18,9 @@ public:
 private:
   int teacher_;
   std::vector<bool> unassignable_;
+
+  int HalfCount(const int &section, const int &lhs_timeslot,
+                const int &rhs_timeslot);
 };
 
 #endif
