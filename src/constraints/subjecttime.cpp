@@ -44,7 +44,7 @@ int SubjectTime::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
 
 int SubjectTime::CountAll() {
   int result = 0;
-  for (const auto it& : schedule_->GetSections()) {
+  for (const auto &it : schedule_->GetSections()) {
     for (int i = 0; i < schedule_->GetNumSlots(); i++) {
       if (unassignable_[i] && schedule_->GetSubjectOf(it->GetId(),
           schedule_->GetHeadOf(it->GetId(), i)) == subject_) result++;
