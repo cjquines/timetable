@@ -1,10 +1,13 @@
 #ifndef _TIMETABLE_SOLVER_H
 #define _TIMETABLE_SOLVER_H
 
+#include <algorithm>
+#include <map>
 #include <random>
 #include <utility>
 #include <vector>
 
+#include "section.h"
 #include "schedule.h"
 
 class Solver {
@@ -30,7 +33,7 @@ public:
 
   int Solve(int time_limit, int attempts, int max_best, int num_samples,
             double kappa, int tau, double alpha);
-  const Schedule& GetBestSchedule(int schedule) const;
+  Schedule* GetBestSchedule(int schedule);
 
 private:
   Schedule* schedule_;
