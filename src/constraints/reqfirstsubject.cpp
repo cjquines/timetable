@@ -2,11 +2,11 @@
 #include "../schedule.h"
 #include "../section.h"
 
-ReqFirstSubject::ReqFirstSubject(Schedule* schedule, const int &priority)
+ReqFirstSubject::ReqFirstSubject(Schedule* schedule, int priority)
     : Constraint(schedule, priority) {}
 
-int ReqFirstSubject::CountTranslate(const int &section, const int &timeslot,
-                                   const int &open_timeslot) {
+int ReqFirstSubject::CountTranslate(int section, int timeslot,
+                                   int open_timeslot) {
   int result = 0;
 
   if (timeslot % schedule_->GetNumSlotsPerDay() == 0) result++;

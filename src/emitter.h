@@ -16,8 +16,8 @@ public:
   void AddContent(const std::string &content);
   void CloseTag();
 
-  void AddCell(const std::string &content = "", const int &merge_down = 0,
-               const int &index = 0, const bool &is_number = false);
+  void AddCell(const std::string &content = "", int merge_down = 0,
+               int index = 0, bool is_number = false);
   void OutputTimetable();
   void OutputSectionTable();
   void OutputTeacherTable();

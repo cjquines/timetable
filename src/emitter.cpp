@@ -45,8 +45,8 @@ void Emitter::CloseTag() {
   open_tags_.pop();
 }
 
-void Emitter::AddCell(const std::string &content, const int &merge_down,
-                      const int &index, const bool &is_number) {
+void Emitter::AddCell(const std::string &content, int merge_down, int index,
+                      bool is_number) {
   OpenTag("Cell");
   if (index > 0) AddAttribute("ss:Index", std::to_string(index));
   if (merge_down > 0) AddAttribute("ss:MergeDown", std::to_string(merge_down));

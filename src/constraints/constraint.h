@@ -5,11 +5,10 @@ class Schedule;
 
 class Constraint {
 public:
-  Constraint(Schedule *schedule, const int &priority);
-  virtual int CountTranslate(const int &section, const int &timeslot,
-                             const int &open_timeslot);
-  virtual int CountSwapTimeslot(const int &section, const int &lhs_timeslot,
-                                const int &rhs_timeslot);
+  Constraint(Schedule *schedule, int priority);
+  virtual int CountTranslate(int section, int timeslot, int open_timeslot);
+  virtual int CountSwapTimeslot(int section, int lhs_timeslot,
+                                int rhs_timeslot);
   virtual int CountAll();
 
 protected:

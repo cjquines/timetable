@@ -4,23 +4,21 @@
 #include "evendismissal.h"
 #include "../schedule.h"
 
-EvenDismissal::EvenDismissal(Schedule* schedule, const int &priority,
+EvenDismissal::EvenDismissal(Schedule* schedule, int priority,
                              const std::vector<int> &sections)
     : Constraint(schedule, priority), sections_(sections) {
   std::sort(sections_.begin(), sections_.end());
 }
 
-int EvenDismissal::Dismissal(const int &section, const int &lbound,
-                             const int &rbound) {
+int EvenDismissal::Dismissal(int section, int lbound, int rbound) {
   int result = 0;
   for (int i = rbound - 1; i >= lbound && schedule_->IsFree(section, i); i--)
     result++;
   return result;
 }
 
-int EvenDismissal::DismissalTranslate(const int &section, const int &lbound,
-                                      const int &rbound, const int &timeslot,
-                                      const int &open_timeslot) {
+int EvenDismissal::DismissalTranslate(int section, int lbound, int rbound,
+                                      int timeslot, int open_timeslot) {
   int result = 0;
   for (int i = rbound - 1; i >= lbound
     && schedule_->IsFreeTranslate(i, section, timeslot, open_timeslot); i--)
@@ -28,9 +26,8 @@ int EvenDismissal::DismissalTranslate(const int &section, const int &lbound,
   return result;
 }
 
-int EvenDismissal::HalfCountTranslate(const int &section, const int &lbound,
-                                      const int &rbound, const int &timeslot,
-                                      const int &open_timeslot) {
+int EvenDismissal::HalfCountTranslate(int section, int lbound, int rbound,
+                                      int timeslot, int open_timeslot) {
   int sum_hours = 0;
   for (auto it : sections_) sum_hours += Dismissal(it, lbound, rbound);
   int old_last = Dismissal(section, lbound, rbound);
@@ -40,8 +37,8 @@ int EvenDismissal::HalfCountTranslate(const int &section, const int &lbound,
        - delta*delta;
 }
 
-int EvenDismissal::CountTranslate(const int &section, const int &timeslot,
-                                  const int &open_timeslot) {
+int EvenDismissal::CountTranslate(int section, int timeslot,
+                                  int open_timeslot) {
   if (!std::binary_search(sections_.begin(), sections_.end(), section))
     return 0;
 

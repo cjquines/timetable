@@ -2,12 +2,10 @@
 #include "../schedule.h"
 #include "../section.h"
 
-MinSubjects::MinSubjects(Schedule* schedule, const int &priority,
-                         const int &min_subjects)
+MinSubjects::MinSubjects(Schedule* schedule, int priority, int min_subjects)
     : Constraint(schedule, priority), min_subjects_(min_subjects) {}
 
-int MinSubjects::CountSubjects(const int &section, const int &lbound,
-                               const int &rbound) {
+int MinSubjects::CountSubjects(int section, int lbound, int rbound) {
   int num_subjects = 0;
   for (int i = lbound; i < rbound; i++) {
     if (!schedule_->IsFree(section, i)) num_subjects++;
@@ -15,8 +13,7 @@ int MinSubjects::CountSubjects(const int &section, const int &lbound,
   return num_subjects;
 }
 
-int MinSubjects::CountTranslate(const int &section, const int &timeslot,
-                                const int &open_timeslot) {
+int MinSubjects::CountTranslate(int section, int timeslot, int open_timeslot) {
   int lbound, rbound, open_lbound, open_rbound;
   std::tie(lbound, rbound) = schedule_->ClampDay(timeslot);
   std::tie(open_lbound, open_rbound) = schedule_->ClampDay(open_timeslot);

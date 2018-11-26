@@ -5,13 +5,13 @@
 #include <cassert>
 #include <iostream>
 
-MaxConsecutive::MaxConsecutive(Schedule* schedule, const int &priority,
-                               const int &max_consecutive)
+MaxConsecutive::MaxConsecutive(Schedule* schedule, int priority,
+                               int max_consecutive)
     : Constraint(schedule, priority), max_consecutive_(max_consecutive) {}
 
-int MaxConsecutive::Consecutive(const int &teacher, const int &lbound,
-                                const int &rbound, const int &section,
-                                const int &timeslot, const int &open_timeslot) {
+int MaxConsecutive::Consecutive(int teacher, int lbound, int rbound,
+                                int section, int timeslot,
+                                int open_timeslot) {
   bool seen_filled = false;
   int num_filled = 0, result = 0;
   for (int i = lbound; i < rbound; i++) {
@@ -35,8 +35,8 @@ int MaxConsecutive::Consecutive(const int &teacher, const int &lbound,
   return result;
 }
 
-int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
-                                   const int &open_timeslot) {
+int MaxConsecutive::CountTranslate(int section, int timeslot,
+                                   int open_timeslot) {
   int teacher = schedule_->GetTeacherOf(section, timeslot);
   int lbound, rbound, open_lbound, open_rbound;
   std::tie(lbound, rbound) = schedule_->ClampDay(timeslot);
@@ -54,9 +54,8 @@ int MaxConsecutive::CountTranslate(const int &section, const int &timeslot,
   return result;
 }
 
-int MaxConsecutive::CountSwapTimeslot(const int &section,
-                                      const int &lhs_timeslot,
-                                      const int &rhs_timeslot) {
+int MaxConsecutive::CountSwapTimeslot(int section, int lhs_timeslot,
+                                      int rhs_timeslot) {
   int lhs_teacher = schedule_->GetTeacherOf(section, lhs_timeslot);
   int rhs_teacher = schedule_->GetTeacherOf(section, rhs_timeslot);
   if (lhs_teacher == rhs_teacher) return 0;

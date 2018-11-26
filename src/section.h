@@ -5,7 +5,7 @@
 
 class Section {
 public:
-  Section(const int &id, const std::string &name);
+  Section(int id, const std::string &name);
   int GetId();
   std::string GetName();
 

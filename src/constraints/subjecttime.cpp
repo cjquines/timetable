@@ -4,15 +4,14 @@
 #include "../schedule.h"
 #include "../section.h"
 
-SubjectTime::SubjectTime(Schedule *schedule, const int &priority,
-                         const int &subject, const std::vector<int> &unassignable)
+SubjectTime::SubjectTime(Schedule *schedule, int priority, int subject,
+                         const std::vector<int> &unassignable)
     : Constraint(schedule, priority), subject_(subject),
       unassignable_(schedule_->GetNumSlots(), 0) {
   for (auto i : unassignable) unassignable_[i] = 1;
 }
 
-int SubjectTime::HalfCount(const int &section, const int &lhs_timeslot,
-                           const int &rhs_timeslot) {
+int SubjectTime::HalfCount(int section, int lhs_timeslot, int rhs_timeslot) {
   int length = schedule_->GetLengthOf(section, lhs_timeslot);
   int result = 0;
   for (int i = 0; i < length; i++) {
@@ -21,8 +20,7 @@ int SubjectTime::HalfCount(const int &section, const int &lhs_timeslot,
   return result;
 }
 
-int SubjectTime::CountTranslate(const int &section, const int &timeslot,
-                                const int &open_timeslot) {
+int SubjectTime::CountTranslate(int section, int timeslot, int open_timeslot) {
   if (schedule_->GetSubjectOf(section, timeslot) != subject_) return 0;
   int result = HalfCount(section, timeslot, open_timeslot);
   
@@ -30,8 +28,8 @@ int SubjectTime::CountTranslate(const int &section, const int &timeslot,
   return result;
 }
 
-int SubjectTime::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
-                                   const int &rhs_timeslot) {
+int SubjectTime::CountSwapTimeslot(int section, int lhs_timeslot,
+                                   int rhs_timeslot) {
   int result = 0;
   if (schedule_->GetSubjectOf(section, lhs_timeslot) == subject_)
     result += HalfCount(section, lhs_timeslot, rhs_timeslot);

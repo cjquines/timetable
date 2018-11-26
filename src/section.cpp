@@ -1,6 +1,6 @@
 #include "section.h"
 
-Section::Section(const int &id, const std::string &name)
+Section::Section(int id, const std::string &name)
   : id_(id), name_(name) {}
 
 int Section::GetId() { return id_; }

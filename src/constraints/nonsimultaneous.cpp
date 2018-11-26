@@ -2,11 +2,11 @@
 #include "../schedule.h"
 #include "../teacher.h"
 
-NonSimultaneous::NonSimultaneous(Schedule* schedule, const int &priority)
+NonSimultaneous::NonSimultaneous(Schedule* schedule, int priority)
     : Constraint(schedule, priority) {}
 
-int NonSimultaneous::CountTranslate(const int &section, const int &timeslot,
-                                    const int &open_timeslot) {
+int NonSimultaneous::CountTranslate(int section, int timeslot,
+                                    int open_timeslot) {
   int teacher = schedule_->GetTeacherOf(section, timeslot);
   int length = schedule_->GetLengthOf(section, timeslot);
   int result = 0;
@@ -20,9 +20,8 @@ int NonSimultaneous::CountTranslate(const int &section, const int &timeslot,
   return result;
 }
 
-int NonSimultaneous::CountSwapTimeslot(const int &section,
-                                       const int &lhs_timeslot,
-                                       const int &rhs_timeslot) {
+int NonSimultaneous::CountSwapTimeslot(int section, int lhs_timeslot,
+                                       int rhs_timeslot) {
   int lhs_teacher = schedule_->GetTeacherOf(section, lhs_timeslot);
   int rhs_teacher = schedule_->GetTeacherOf(section, rhs_timeslot);
   if (lhs_teacher == rhs_teacher) return 0;

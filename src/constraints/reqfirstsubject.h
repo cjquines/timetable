@@ -5,9 +5,8 @@
 
 class ReqFirstSubject : public Constraint {
 public:
-  ReqFirstSubject(Schedule* schedule, const int &priority);
-  int CountTranslate(const int &section, const int &timeslot,
-                     const int &open_timeslot) override;
+  ReqFirstSubject(Schedule* schedule, int priority);
+  int CountTranslate(int section, int timeslot, int open_timeslot) override;
   int CountAll() override;
 };
 

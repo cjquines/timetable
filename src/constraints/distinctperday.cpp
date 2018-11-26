@@ -5,12 +5,11 @@
 #include "../schedule.h"
 #include "../section.h"
 
-DistinctPerDay::DistinctPerDay(Schedule* schedule, const int &priority)
+DistinctPerDay::DistinctPerDay(Schedule* schedule, int priority)
     : Constraint(schedule, priority) {}
 
-bool DistinctPerDay::FindSubject(const int &subject, const int &section,
-                                 const int &lbound, const int &rbound,
-                                 const int &skip_timeslot) {
+bool DistinctPerDay::FindSubject(int subject, int section, int lbound,
+                                 int rbound, int skip_timeslot) {
   for (int i = lbound; i < rbound; i++) {
     if (i == skip_timeslot) continue;
     if (subject == schedule_->GetSubjectOf(section, i)) return true;
@@ -18,8 +17,8 @@ bool DistinctPerDay::FindSubject(const int &subject, const int &section,
   return false;
 }
 
-int DistinctPerDay::CountTranslate(const int &section, const int &timeslot,
-                                   const int &open_timeslot) {
+int DistinctPerDay::CountTranslate(int section, int timeslot,
+                                   int open_timeslot) {
   int lbound, rbound, open_lbound, open_rbound;
   std::tie(lbound, rbound) = schedule_->ClampDay(timeslot);
   std::tie(open_lbound, open_rbound) = schedule_->ClampDay(open_timeslot);
@@ -33,9 +32,8 @@ int DistinctPerDay::CountTranslate(const int &section, const int &timeslot,
   return result;
 }
 
-int DistinctPerDay::CountSwapTimeslot(const int &section,
-                                      const int &lhs_timeslot,
-                                      const int &rhs_timeslot) {
+int DistinctPerDay::CountSwapTimeslot(int section, int lhs_timeslot,
+                                      int rhs_timeslot) {
   int lhs_lbound, lhs_rbound, rhs_lbound, rhs_rbound;
   std::tie(lhs_lbound, lhs_rbound) = schedule_->ClampDay(lhs_timeslot);
   std::tie(rhs_lbound, rhs_rbound) = schedule_->ClampDay(rhs_timeslot);

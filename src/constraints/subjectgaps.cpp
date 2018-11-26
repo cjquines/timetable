@@ -2,11 +2,10 @@
 #include "../schedule.h"
 #include "../section.h"
 
-SubjectGaps::SubjectGaps(Schedule* schedule, const int &priority)
+SubjectGaps::SubjectGaps(Schedule* schedule, int priority)
     : Constraint(schedule, priority) {}
 
-int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
-                                const int &open_timeslot) {
+int SubjectGaps::CountTranslate(int section, int timeslot, int open_timeslot) {
   int lbound, rbound, open_lbound, open_rbound;
   std::tie(lbound, rbound) = schedule_->ClampDay(timeslot);
   std::tie(open_lbound, open_rbound) = schedule_->ClampDay(open_timeslot);

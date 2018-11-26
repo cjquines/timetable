@@ -5,9 +5,8 @@
 
 class SubjectGaps : public Constraint {
 public:
-  SubjectGaps(Schedule* schedule, const int &priority);
-  int CountTranslate(const int &section, const int &timeslot,
-                     const int &open_timeslot) override;
+  SubjectGaps(Schedule* schedule, int priority);
+  int CountTranslate(int section, int timeslot, int open_timeslot) override;
   int CountAll() override;
 };
 

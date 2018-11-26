@@ -5,15 +5,13 @@
 
 class MinSubjects : public Constraint {
 public:
-  MinSubjects(Schedule* schedule, const int &priority,
-              const int &min_subjects);
-  int CountTranslate(const int &section, const int &timeslot,
-                     const int &open_timeslot) override;
+  MinSubjects(Schedule* schedule, int priority, int min_subjects);
+  int CountTranslate(int section, int timeslot, int open_timeslot) override;
   int CountAll() override;
 private:
   int min_subjects_;
 
-  int CountSubjects(const int &section, const int &lbound, const int &rbound);
+  int CountSubjects(int section, int lbound, int rbound);
 };
 
 #endif

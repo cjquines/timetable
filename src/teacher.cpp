@@ -1,6 +1,6 @@
 #include "teacher.h"
 
-Teacher::Teacher(const int &id, const std::string &name)
+Teacher::Teacher(int id, const std::string &name)
   : id_(id), name_(name) {}
 
 int Teacher::GetId() { return id_; }

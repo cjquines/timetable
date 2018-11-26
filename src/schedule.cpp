@@ -22,8 +22,7 @@
 #include "constraints/subjecttime.h"
 #include "constraints/teachertime.h"
 
-Schedule::Schedule(const int &num_days, const int &num_slots_per_day,
-                   const int &seed)
+Schedule::Schedule(int num_days, int num_slots_per_day, int seed)
     : num_days_(num_days), num_slots_per_day_(num_slots_per_day),
       hard_satisfied_(false), rand_generator_(seed) {
   num_slots_ = num_days_ * num_slots_per_day_;
@@ -35,7 +34,7 @@ int Schedule::GetNumSlots() { return num_slots_; }
 
 int Schedule::GetNumSlotsPerDay() { return num_slots_per_day_; }
 
-Group* Schedule::GetGroup(const int &idx) { return groups_[idx]; }
+Group* Schedule::GetGroup(int idx) { return groups_[idx]; }
 
 const std::vector<Group*>& Schedule::GetGroups() const { return groups_; }
 
@@ -47,7 +46,7 @@ std::vector<Group*>::iterator Schedule::GetGroupsEnd() {
   return groups_.end();
 }
 
-Section* Schedule::GetSection(const int &idx) { return sections_[idx]; }
+Section* Schedule::GetSection(int idx) { return sections_[idx]; }
 
 const std::vector<Section*>& Schedule::GetSections() const { return sections_; }
 
@@ -59,7 +58,7 @@ std::vector<Section*>::iterator Schedule::GetSectionsEnd() {
   return sections_.end();
 }
 
-Subject* Schedule::GetSubject(const int &idx) { return subjects_[idx]; }
+Subject* Schedule::GetSubject(int idx) { return subjects_[idx]; }
 
 const std::vector<Subject*>& Schedule::GetSubjects() const { return subjects_; }
 
@@ -71,7 +70,7 @@ std::vector<Subject*>::iterator Schedule::GetSubjectsEnd() {
   return subjects_.end();
 }
 
-Teacher* Schedule::GetTeacher(const int &idx) { return teachers_[idx]; }
+Teacher* Schedule::GetTeacher(int idx) { return teachers_[idx]; }
 
 const std::vector<Teacher*>& Schedule::GetTeachers() const { return teachers_; }
 
@@ -83,24 +82,24 @@ std::vector<Teacher*>::iterator Schedule::GetTeachersEnd() {
   return teachers_.end();
 }
 
-void Schedule::AddGroup(const int &id) {
+void Schedule::AddGroup(int id) {
   Group* ptr = new Group(id);
   groups_.push_back(ptr);
 }
 
-void Schedule::AddTeacher(const int &id, const std::string &name) {
+void Schedule::AddTeacher(int id, const std::string &name) {
   Teacher* ptr = new Teacher(id, name);
   teachers_.push_back(ptr);
 }
 
-void Schedule::AddDistinctPerDay(const int &priority) {
+void Schedule::AddDistinctPerDay(int priority) {
   std::unique_ptr<Constraint> ptr = std::make_unique<DistinctPerDay>(
     this, priority);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddEvenDismissal(const int &priority,
+void Schedule::AddEvenDismissal(int priority,
                                 const std::vector<int> &sections) {
   std::unique_ptr<Constraint> ptr = std::make_unique<EvenDismissal>(
     this, priority, sections);
@@ -108,43 +107,42 @@ void Schedule::AddEvenDismissal(const int &priority,
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddMaxConsecutive(const int &priority,
-                                 const int &max_consecutive) {
+void Schedule::AddMaxConsecutive(int priority, int max_consecutive) {
   std::unique_ptr<Constraint> ptr = std::make_unique<MaxConsecutive>(
     this, priority, max_consecutive);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddMinSubjects(const int &priority, const int &min_subjects) {
+void Schedule::AddMinSubjects(int priority, int min_subjects) {
   std::unique_ptr<Constraint> ptr = std::make_unique<MinSubjects>(
     this, priority, min_subjects);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddNonSimultaneous(const int &priority) {
+void Schedule::AddNonSimultaneous(int priority) {
   std::unique_ptr<Constraint> ptr = std::make_unique<NonSimultaneous>(
     this, priority);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddReqFirstSubject(const int &priority) {
+void Schedule::AddReqFirstSubject(int priority) {
   std::unique_ptr<Constraint> ptr = std::make_unique<ReqFirstSubject>(
     this, priority);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddSubjectGaps(const int &priority) {
+void Schedule::AddSubjectGaps(int priority) {
   std::unique_ptr<Constraint> ptr = std::make_unique<SubjectGaps>(
     this, priority);
   if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddSubjectTime(const int &priority, const int &subject,
+void Schedule::AddSubjectTime(int priority, int subject,
                               const std::vector<int> &unassignable) {
   std::unique_ptr<Constraint> ptr = std::make_unique<SubjectTime>(
     this, priority, subject, unassignable);
@@ -152,7 +150,7 @@ void Schedule::AddSubjectTime(const int &priority, const int &subject,
   else soft_constraints_.push_back(std::move(ptr));
 }
 
-void Schedule::AddTeacherTime(const int &priority, const int &teacher,
+void Schedule::AddTeacherTime(int priority, int teacher,
                               const std::vector<int> &unassignable) {
   std::unique_ptr<Constraint> ptr = std::make_unique<TeacherTime>(
     this, priority, teacher, unassignable);
@@ -186,23 +184,23 @@ void Schedule::SoftInitialize() {
         teacher_table_[GetTeacherOf(it, GetHeadOf(it, jt))][jt] = it;
 }
 
-int Schedule::GetSubjectOf(const int &section, const int &timeslot) {
+int Schedule::GetSubjectOf(int section, int timeslot) {
   return timetable_[section][timeslot];
 }
 
-int Schedule::GetHeadOf(const int &section, const int &timeslot) {
+int Schedule::GetHeadOf(int section, int timeslot) {
   int head = timeslot;
   while (timetable_[section][head] == -2) head--;
   return head;
 }
 
-int Schedule::GetTeacherOf(const int &section, const int &timeslot) {
+int Schedule::GetTeacherOf(int section, int timeslot) {
   // Get teacher of subject with head at timeslot.
   assert(timetable_[section][timeslot] >= 0);
   return GetSubject(GetSubjectOf(section, timeslot))->GetTeacher();
 }
 
-int Schedule::GetLengthOf(const int &section, const int &timeslot) {
+int Schedule::GetLengthOf(int section, int timeslot) {
   // Get length of subject with head at timeslot.
   assert(timetable_[section][timeslot] >= 0);
   int last = timeslot + 1;
@@ -210,7 +208,7 @@ int Schedule::GetLengthOf(const int &section, const int &timeslot) {
   return last - timeslot;
 }
 
-int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {
+int Schedule::CountSectionsOf(int teacher, int timeslot) {
   if (hard_satisfied_) {
     if (teacher_table_[teacher][timeslot] == -1) return 0;
     return 1;
@@ -218,9 +216,8 @@ int Schedule::CountSectionsOf(const int &teacher, const int &timeslot) {
   return teacher_table_[teacher][timeslot];
 }
 
-int Schedule::CountSectionsTranslate(const int &teacher, const int &timeslot,
-                                     const int &section, const int &tr_timeslot,
-                                     const int &open_timeslot) {
+int Schedule::CountSectionsTranslate(int teacher, int timeslot, int section,
+                                     int tr_timeslot, int open_timeslot) {
   int length = GetLengthOf(section, tr_timeslot);
   int result = CountSectionsOf(teacher, timeslot);
   if (tr_timeslot <= timeslot && timeslot < tr_timeslot + length) result--;
@@ -228,13 +225,12 @@ int Schedule::CountSectionsTranslate(const int &teacher, const int &timeslot,
   return result;
 }
 
-int Schedule::GetSectionOf(const int &teacher, const int &timeslot) {
+int Schedule::GetSectionOf(int teacher, int timeslot) {
   assert(hard_satisfied_);
   return teacher_table_[teacher][timeslot];
 }
 
-bool Schedule::IsFree(const int &section, const int &timeslot,
-                      const int &num_slots) {
+bool Schedule::IsFree(int section, int timeslot, int num_slots) {
   // Returns True if section has num_slots free slots, starting with timeslot,
   // such that all free slots are on the same day.
   if (num_slots == 0) return true;
@@ -245,17 +241,16 @@ bool Schedule::IsFree(const int &section, const int &timeslot,
   return cur_moved == num_slots;
 }
 
-bool Schedule::IsFreeTranslate(const int &timeslot, const int &section,
-                               const int &tr_timeslot,
-                               const int &open_timeslot) {
+bool Schedule::IsFreeTranslate(int timeslot, int section, int tr_timeslot,
+                               int open_timeslot) {
   int length = GetLengthOf(section, tr_timeslot);
   return (tr_timeslot <= timeslot && timeslot < timeslot + length)
       || (IsFree(section, timeslot)
        && !(open_timeslot <= timeslot && timeslot < open_timeslot + length));
 }
 
-bool Schedule::IsValidHardTranslate(const int &section, const int &timeslot,
-                                    const int &open_timeslot) {
+bool Schedule::IsValidHardTranslate(int section, int timeslot,
+                                    int open_timeslot) {
   // Returns True if the section's subject with head at timeslot can be
   // hard translated to open_timeslot.
   assert(timetable_[section][timeslot] >= 0);
@@ -263,8 +258,8 @@ bool Schedule::IsValidHardTranslate(const int &section, const int &timeslot,
   return IsFree(section, open_timeslot, GetLengthOf(section, timeslot));
 }
 
-bool Schedule::IsValidHardSwap(const int &section, const int &lhs_timeslot,
-                               const int &rhs_timeslot) {
+bool Schedule::IsValidHardSwap(int section, int lhs_timeslot,
+                               int rhs_timeslot) {
   // Returns True if the section's subject with head at lhs_timeslot can be
   // hard swapped to subject with head at rhs_timeslot. 
   assert(timetable_[section][lhs_timeslot] >= 0);
@@ -273,26 +268,26 @@ bool Schedule::IsValidHardSwap(const int &section, const int &lhs_timeslot,
          GetLengthOf(section, rhs_timeslot);
 }
 
-bool Schedule::IsValidSoftTranslate(const int &section, const int &timeslot,
-                                    const int &open_timeslot) {
+bool Schedule::IsValidSoftTranslate(int section, int timeslot,
+                                    int open_timeslot) {
   return IsValidHardTranslate(section, timeslot, open_timeslot) &&
          (HardCountTranslate(section, timeslot, open_timeslot) == 0);
 }
 
-bool Schedule::IsValidSoftSwap(const int &section, const int &lhs_timeslot,
-                               const int &rhs_timeslot) {
+bool Schedule::IsValidSoftSwap(int section, int lhs_timeslot,
+                               int rhs_timeslot) {
   return IsValidHardSwap(section, lhs_timeslot, rhs_timeslot) &&
          (HardCountSwap(section, lhs_timeslot, rhs_timeslot) == 0);
 }
 
-std::pair<int, int> Schedule::ClampDay(const int &timeslot) {
+std::pair<int, int> Schedule::ClampDay(int timeslot) {
   // Returns [ltimeslot, rtimeslot) for the day timeslot is in.
   int lbound = timeslot / num_slots_per_day_ * num_slots_per_day_;
   return std::make_pair(lbound, lbound + num_slots_per_day_);
 }
 
-void Schedule::HardAssign(const int &subject, const int &section,
-                          const int &timeslot, const int &num_slots) {
+void Schedule::HardAssign(int subject, int section, int timeslot,
+                          int num_slots) {
   int teacher = GetSubject(subject)->GetTeacher();
   for (int i = 0; i < num_slots; i++) {
     timetable_[section][timeslot+i] = -2;
@@ -301,16 +296,14 @@ void Schedule::HardAssign(const int &subject, const int &section,
   timetable_[section][timeslot] = subject;
 }
 
-int Schedule::HardCountTranslate(const int &section, const int &timeslot,
-                                 const int &open_timeslot) {
+int Schedule::HardCountTranslate(int section, int timeslot, int open_timeslot) {
   int result = 0;
   for (auto& ptr : hard_constraints_)
     result += ptr->CountTranslate(section, timeslot, open_timeslot);
   return result;
 }
 
-void Schedule::HardTranslate(const int &section, const int &timeslot,
-                             const int &open_timeslot) {
+void Schedule::HardTranslate(int section, int timeslot, int open_timeslot) {
   int subject = GetSubjectOf(section, timeslot);
   int teacher = GetSubject(subject)->GetTeacher();
   int num_slots = GetLengthOf(section, timeslot);
@@ -323,16 +316,14 @@ void Schedule::HardTranslate(const int &section, const int &timeslot,
   timetable_[section][open_timeslot] = subject;
 }
 
-int Schedule::HardCountSwap(const int &section, const int &lhs_timeslot,
-                            const int &rhs_timeslot) {
+int Schedule::HardCountSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int result = 0;
   for (auto& ptr : hard_constraints_)
     result += ptr->CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
   return result;
 }
 
-void Schedule::HardSwap(const int &section, const int &lhs_timeslot,
-                        const int &rhs_timeslot) {
+void Schedule::HardSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int lhs_subject = GetSubjectOf(section, lhs_timeslot);
   int rhs_subject = GetSubjectOf(section, rhs_timeslot);
   int lhs_teacher = GetSubject(lhs_subject)->GetTeacher();
@@ -348,16 +339,14 @@ void Schedule::HardSwap(const int &section, const int &lhs_timeslot,
   timetable_[section][rhs_timeslot] = lhs_subject;
 }
 
-int Schedule::SoftCountTranslate(const int &section, const int &timeslot,
-                                 const int &open_timeslot) {
+int Schedule::SoftCountTranslate(int section, int timeslot, int open_timeslot) {
   int result = 0;
   for (auto& ptr : soft_constraints_)
     result += ptr->CountTranslate(section, timeslot, open_timeslot);
   return result;
 }
 
-void Schedule::SoftTranslate(const int &section, const int &timeslot,
-                             const int &open_timeslot) {
+void Schedule::SoftTranslate(int section, int timeslot, int open_timeslot) {
   int subject = GetSubjectOf(section, timeslot);
   int teacher = GetSubject(subject)->GetTeacher();
   int num_slots = GetLengthOf(section, timeslot);
@@ -370,16 +359,14 @@ void Schedule::SoftTranslate(const int &section, const int &timeslot,
   timetable_[section][open_timeslot] = subject;
 }
 
-int Schedule::SoftCountSwap(const int &section, const int &lhs_timeslot,
-                            const int &rhs_timeslot) {
+int Schedule::SoftCountSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int result = 0;
   for (auto& ptr : soft_constraints_)
     result += ptr->CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
   return result;
 }
 
-void Schedule::SoftSwap(const int &section, const int &lhs_timeslot,
-                        const int &rhs_timeslot) {
+void Schedule::SoftSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int lhs_subject = GetSubjectOf(section, lhs_timeslot);
   int rhs_subject = GetSubjectOf(section, rhs_timeslot);
   int lhs_teacher = GetSubject(lhs_subject)->GetTeacher();
@@ -434,7 +421,7 @@ bool Schedule::InitialSchedule() {
   return true;
 }
 
-int Schedule::HardSolver(const int &time_limit) {
+int Schedule::HardSolver(int time_limit) {
   int hard_count = HardCount();
   std::time_t start = std::time(NULL);
   while (hard_count > 0 && std::difftime(std::time(NULL), start) < time_limit) {
@@ -531,9 +518,8 @@ int Schedule::HardTabuSearch() {
   return best;
 }
 
-int Schedule::SoftSolver(const int &time_limit, const int &num_samples,
-                         const double &kappa, const int &tau,
-                         const double &alpha) {
+int Schedule::SoftSolver(int time_limit, int num_samples, double kappa, int tau,
+                         double alpha) {
   int soft_count = SoftCount();
   std::time_t start = std::time(NULL);
   int loops = 0;
@@ -553,7 +539,7 @@ int Schedule::SoftSolver(const int &time_limit, const int &num_samples,
   return soft_count;
 }
 
-int Schedule::SoftLocalSearch(const bool &accept_side, const int &threshold) {
+int Schedule::SoftLocalSearch(bool accept_side, int threshold) {
   std::vector< std::pair<int, int> > to_swap;
   for (auto ptr : groups_)
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
@@ -594,9 +580,8 @@ int Schedule::SoftLocalSearch(const bool &accept_side, const int &threshold) {
   return 0;
 }
 
-int Schedule::SoftSimulatedAnnealing(const int &time_limit, const int &num_samples,
-                                     const double &kappa, const int &tau,
-                                     const double &alpha) {
+int Schedule::SoftSimulatedAnnealing(int time_limit, int num_samples,
+                                     double kappa, int tau, double alpha) {
   double initial_temperature = kappa * SimulatedAnnealingSample(num_samples);
   double temperature = initial_temperature;
   int loops = 0;
@@ -616,7 +601,7 @@ int Schedule::SoftSimulatedAnnealing(const int &time_limit, const int &num_sampl
   return soft_count;
 }
 
-double Schedule::SimulatedAnnealingSample(const int &num_samples) {
+double Schedule::SimulatedAnnealingSample(int num_samples) {
   int samples = 0, total = 0;
   std::vector< std::pair<int, int> > to_swap;
   for (auto ptr : groups_)
@@ -650,7 +635,7 @@ double Schedule::SimulatedAnnealingSample(const int &num_samples) {
   return double(total) / double(samples);
 }
 
-int Schedule::SimulatedAnnealingSearch(const double &temperature) {
+int Schedule::SimulatedAnnealingSearch(double temperature) {
   std::uniform_real_distribution<double> prob(0, 1);
   std::vector< std::pair<int, int> > to_swap;
   for (auto ptr : groups_)
@@ -690,9 +675,8 @@ int Schedule::SimulatedAnnealingSearch(const double &temperature) {
   return 0;
 }
 
-int Schedule::Solve(const int &time_limit, const int &attempts,
-                    const int &max_best, const int &num_samples,
-                    const double &kappa, const int &tau, const double &alpha) {
+int Schedule::Solve(int time_limit, int attempts, int max_best, int num_samples,
+                    double kappa, int tau, double alpha) {
   std::ofstream log;
   log.open("log.txt", std::ios_base::app);
 
@@ -748,7 +732,7 @@ int Schedule::Solve(const int &time_limit, const int &attempts,
   return best_tables_.size();
 }
 
-void Schedule::SwitchScheduleTo(const int &schedule) {
+void Schedule::SwitchScheduleTo(int schedule) {
   auto it = best_tables_.begin();
   for (int i = 0; i < schedule; i++) it++;
   timetable_ = it->second.first;

@@ -1,15 +1,14 @@
 #include "constraint.h"
 
-Constraint::Constraint(Schedule *schedule, const int &priority)
+Constraint::Constraint(Schedule *schedule, int priority)
     : schedule_(schedule), priority_(priority) {}
 
-int Constraint::CountTranslate(const int &section, const int &timeslot,
-                               const int &open_timeslot) {
+int Constraint::CountTranslate(int section, int timeslot, int open_timeslot) {
   return 0;
 }
 
-int Constraint::CountSwapTimeslot(const int &section, const int &lhs_timeslot,
-                                  const int &rhs_timeslot) {
+int Constraint::CountSwapTimeslot(int section, int lhs_timeslot,
+                                  int rhs_timeslot) {
   return 0;
 }
 

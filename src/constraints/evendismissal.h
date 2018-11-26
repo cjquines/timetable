@@ -7,22 +7,19 @@
 
 class EvenDismissal : public Constraint {
 public:
-  EvenDismissal(Schedule* schedule, const int &priority,
+  EvenDismissal(Schedule* schedule, int priority,
                 const std::vector<int> &sections);
-  int CountTranslate(const int &section, const int &timeslot,
-                     const int &open_timeslot) override;
+  int CountTranslate(int section, int timeslot, int open_timeslot) override;
   int CountAll() override;
 
 private:
   std::vector<int> sections_;
 
-  int Dismissal(const int &section, const int &lbound, const int &rbound);
-  int DismissalTranslate(const int &section, const int &lbound,
-                         const int &rbound, const int &timeslot,
-                         const int &open_timeslot);
-  int HalfCountTranslate(const int &section, const int &lbound,
-                         const int &rbound, const int &timeslot,
-                         const int &open_timeslot);
+  int Dismissal(int section, int lbound, int rbound);
+  int DismissalTranslate(int section, int lbound, int rbound, int timeslot,
+                         int open_timeslot);
+  int HalfCountTranslate(int section, int lbound, int rbound, int timeslot,
+                         int open_timeslot);
 };
 
 #endif

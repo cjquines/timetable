@@ -5,11 +5,10 @@
 
 class NonSimultaneous : public Constraint {
 public:
-  NonSimultaneous(Schedule* schedule, const int &priority);
-  int CountTranslate(const int &section, const int &timeslot,
-                     const int &open_timeslot) override;
-  int CountSwapTimeslot(const int &section, const int &lhs_timeslot,
-                        const int &rhs_timeslot) override;
+  NonSimultaneous(Schedule* schedule, int priority);
+  int CountTranslate(int section, int timeslot, int open_timeslot) override;
+  int CountSwapTimeslot(int section, int lhs_timeslot,
+                        int rhs_timeslot) override;
   int CountAll() override;
 };
 

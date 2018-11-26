@@ -5,7 +5,7 @@
 
 class Teacher {
 public:
-  Teacher(const int &id, const std::string &name);
+  Teacher(int id, const std::string &name);
   int GetId();
   std::string GetName();
 

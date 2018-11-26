@@ -6,7 +6,7 @@
 
 class Subject {
 public:
-  Subject(const int &id, const std::vector<int> &slots, const int &teacher,
+  Subject(int id, const std::vector<int> &slots, int teacher,
           const std::string &name);
   int GetId();
   std::vector<int>::iterator GetSlotsBegin();
