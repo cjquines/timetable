@@ -1,3 +1,13 @@
+#include <ctime>
+#include <cmath>
+
+#include <random>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+#include "solver.h"
+#include "schedule.h"
 
 bool Solver::InitialSchedule() {
   for (auto ptr : groups_) {
