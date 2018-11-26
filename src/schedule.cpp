@@ -11,7 +11,7 @@
 #include "subject.h"
 #include "teacher.h"
 
-Schedule::Schedule(int num_days, int num_slots_per_day, int seed)
+Schedule::Schedule(int num_days, int num_slots_per_day)
     : num_days_(num_days), num_slots_per_day_(num_slots_per_day),
       hard_satisfied_(false) {
   num_slots_ = num_days_ * num_slots_per_day_;
@@ -53,7 +53,6 @@ void Schedule::ResetTimetable() {
   hard_satisfied_ = false;
   timetable_.assign(sections_.size(), std::vector<int>(num_slots_, -1));
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, 0));
-  subject_tabus_.assign(subjects_.size(), std::vector<bool>(num_slots_, 0));
 }
 
 void Schedule::Initialize() {
