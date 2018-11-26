@@ -13,12 +13,14 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
   int length = schedule_->GetLengthOf(section, timeslot);
   int result = 0;
 
-  if (lbound == open_lbound && schedule_->IsFree(section,
-    std::min(timeslot, open_timeslot) + length, std::abs(timeslot - open_timeslot) - length)) {
+  if (lbound == open_lbound
+   && schedule_->IsFree(section, std::min(timeslot, open_timeslot) + length,
+                        std::abs(timeslot - open_timeslot) - length)) {
     int small = timeslot, large = open_timeslot;
     if (small > large) std::swap(small, large);
     bool open_left = schedule_->IsFree(section, lbound, small - lbound);
-    bool open_right = schedule_->IsFree(section, large + length, rbound - large - length);
+    bool open_right = schedule_->IsFree(section, large + length,
+                                        rbound - large - length);
     if (open_left) {
       if (open_right) return 0;
       if (priority_ > 0)
@@ -34,7 +36,7 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
 
   if (!schedule_->IsFree(section, lbound, timeslot - lbound)) {
     if (schedule_->IsFree(section, timeslot + length,
-                                      rbound - timeslot - length)) {
+                          rbound - timeslot - length)) {
       int num_empty = 0;
       for (int j = timeslot - 1; j >= lbound; j--) {
         if (schedule_->GetSubjectOf(section, j) != -1) {
@@ -53,10 +55,9 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
     }
   }
 
-  if (!schedule_->IsFree(section, open_lbound,
-                                     open_timeslot - open_lbound)) {
+  if (!schedule_->IsFree(section, open_lbound, open_timeslot - open_lbound)) {
     if (schedule_->IsFree(section, open_timeslot + length,
-                                      open_rbound - open_timeslot - length)) {
+                          open_rbound - open_timeslot - length)) {
       int num_empty = 0;
       for (int j = open_timeslot - 1; j >= open_lbound; j--) {
         if (schedule_->GetSubjectOf(section, j) != -1) {
@@ -81,13 +82,12 @@ int SubjectGaps::CountTranslate(const int &section, const int &timeslot,
 
 int SubjectGaps::CountAll() {
   int result = 0;
-  for (auto it = schedule_->GetSectionsBegin();
-       it != schedule_->GetSectionsEnd(); it++) {
+  for (const auto &it : schedule_->GetSections()) {
     for (int i = 0; i < schedule_->GetNumDays(); i++) {
       int j = i*schedule_->GetNumSlotsPerDay();
-      for (; j < (i+1)*schedule_->GetNumSlotsPerDay(); j++)
-        if (schedule_->GetSubjectOf((*it)->GetId(), j) != -1)
-          break;
+      for (; j < (i+1)*schedule_->GetNumSlotsPerDay(); j++) {
+        if (schedule_->GetSubjectOf((*it)->GetId(), j) != -1) break;
+      }
       bool seen_empty = false;
       int num_empty = 0;
       for (; j < (i+1)*schedule_->GetNumSlotsPerDay(); j++) {
