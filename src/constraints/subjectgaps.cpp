@@ -85,17 +85,17 @@ int SubjectGaps::CountAll() {
     for (int i = 0; i < schedule_->GetNumDays(); i++) {
       int j = i*schedule_->GetNumSlotsPerDay();
       for (; j < (i+1)*schedule_->GetNumSlotsPerDay(); j++) {
-        if (schedule_->GetSubjectOf((*it)->GetId(), j) != -1) break;
+        if (schedule_->GetSubjectOf(it->GetId(), j) != -1) break;
       }
       bool seen_empty = false;
       int num_empty = 0;
       for (; j < (i+1)*schedule_->GetNumSlotsPerDay(); j++) {
         if (seen_empty) {
-          if (schedule_->GetSubjectOf((*it)->GetId(), j) != -1) {
+          if (schedule_->GetSubjectOf(it->GetId(), j) != -1) {
             result += num_empty;
             seen_empty = false;
           } else num_empty++;
-        } else if (schedule_->GetSubjectOf((*it)->GetId(), j) == -1)
+        } else if (schedule_->GetSubjectOf(it->GetId(), j) == -1)
             seen_empty = true, num_empty = 1;
       }
     }
