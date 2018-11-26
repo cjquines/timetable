@@ -1,14 +1,16 @@
 #ifndef _TIMETABLE_SOLVER_H
 #define _TIMETABLE_SOLVER_H
 
+#include <random>
+#include <utility>
+#include <vector>
+
 #include "schedule.h"
 
 class Solver {
 public:
   Solver(Schedule* schedule, int seed);
 
-  void Initialize();
-  void SoftInitialize();
   bool InitialSchedule();
 
   template <typename T, typename U>
@@ -28,6 +30,7 @@ public:
 
   int Solve(int time_limit, int attempts, int max_best, int num_samples,
             double kappa, int tau, double alpha);
+  const Schedule& GetBestSchedule(int schedule) const;
 
 private:
   Schedule* schedule_;
