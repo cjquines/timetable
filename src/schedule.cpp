@@ -29,49 +29,17 @@ Group* Schedule::GetGroup(int idx) { return groups_[idx]; }
 
 const std::vector<Group*>& Schedule::GetGroups() const { return groups_; }
 
-std::vector<Group*>::iterator Schedule::GetGroupsBegin() {
-  return groups_.begin();
-}
-
-std::vector<Group*>::iterator Schedule::GetGroupsEnd() {
-  return groups_.end();
-}
-
 Section* Schedule::GetSection(int idx) { return sections_[idx]; }
 
 const std::vector<Section*>& Schedule::GetSections() const { return sections_; }
-
-std::vector<Section*>::iterator Schedule::GetSectionsBegin() {
-  return sections_.begin();
-}
-
-std::vector<Section*>::iterator Schedule::GetSectionsEnd() {
-  return sections_.end();
-}
 
 Subject* Schedule::GetSubject(int idx) { return subjects_[idx]; }
 
 const std::vector<Subject*>& Schedule::GetSubjects() const { return subjects_; }
 
-std::vector<Subject*>::iterator Schedule::GetSubjectsBegin() {
-  return subjects_.begin();
-}
-
-std::vector<Subject*>::iterator Schedule::GetSubjectsEnd() {
-  return subjects_.end();
-}
-
 Teacher* Schedule::GetTeacher(int idx) { return teachers_[idx]; }
 
 const std::vector<Teacher*>& Schedule::GetTeachers() const { return teachers_; }
-
-std::vector<Teacher*>::iterator Schedule::GetTeachersBegin() {
-  return teachers_.begin();
-}
-
-std::vector<Teacher*>::iterator Schedule::GetTeachersEnd() {
-  return teachers_.end();
-}
 
 void Schedule::AddGroup(int id) {
   Group* ptr = new Group(id);

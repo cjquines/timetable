@@ -59,8 +59,7 @@ void Emitter::AddCell(const std::string &content, int merge_down, int index,
 }
 
 void Emitter::OutputTimetable() {
-  int num_sections = std::distance(schedule_->GetSectionsBegin(),
-                                   schedule_->GetSectionsEnd());
+  int num_sections = schedule_->GetSections().size();
   for (int i = 0; i < schedule_->GetNumDays(); i++) {
     OpenTag("Worksheet");
     AddAttribute("ss:Name", "Day " + std::to_string(i + 1));
@@ -95,10 +94,9 @@ void Emitter::OutputTimetable() {
 }
 
 void Emitter::OutputSectionTable() {
-  for (auto it = schedule_->GetSectionsBegin();
-       it != schedule_->GetSectionsEnd(); it++) {
+  for (const auto &it : schedule_->GetSections()) {
     OpenTag("Worksheet");
-    AddAttribute("ss:Name", (*it)->GetName());
+    AddAttribute("ss:Name", it->GetName());
     OpenTag("Table");
     AddAttribute("ss:DefaultColumnWidth", kColumnWidth);
     AddAttribute("ss:DefaultRowHeight", kRowHeight);
@@ -114,12 +112,12 @@ void Emitter::OutputSectionTable() {
       AddCell(std::to_string(i), 0, 1, true);
       for (int j = 0; j < schedule_->GetNumDays(); j++) {
         int timeslot = j*schedule_->GetNumSlotsPerDay() + i;
-        int subject = schedule_->GetSubjectOf((*it)->GetId(), timeslot);
+        int subject = schedule_->GetSubjectOf(it->GetId(), timeslot);
         if (subject < 0) continue;
-        int teacher = schedule_->GetTeacherOf((*it)->GetId(), timeslot);
+        int teacher = schedule_->GetTeacherOf(it->GetId(), timeslot);
         AddCell(schedule_->GetSubject(subject)->GetName()
               + "&#10;" + schedule_->GetTeacher(teacher)->GetName(),
-                schedule_->GetLengthOf((*it)->GetId(), timeslot) - 1, j + 2);
+                schedule_->GetLengthOf(it->GetId(), timeslot) - 1, j + 2);
       }
       CloseTag();
     }
@@ -130,10 +128,9 @@ void Emitter::OutputSectionTable() {
 }
 
 void Emitter::OutputTeacherTable() {
-  for (auto it = schedule_->GetTeachersBegin();
-       it != schedule_->GetTeachersEnd(); it++) {
+  for (const auto &it : schedule_->GetTeachers()) {
     OpenTag("Worksheet");
-    AddAttribute("ss:Name", (*it)->GetName());
+    AddAttribute("ss:Name", it->GetName());
     OpenTag("Table");
     AddAttribute("ss:DefaultColumnWidth", kColumnWidth);
     AddAttribute("ss:DefaultRowHeight", kRowHeight);
@@ -149,7 +146,7 @@ void Emitter::OutputTeacherTable() {
       AddCell(std::to_string(i), 0, 1, true);
       for (int j = 0; j < schedule_->GetNumDays(); j++) {
         int timeslot = j*schedule_->GetNumSlotsPerDay() + i;
-        int section = schedule_->GetSectionOf((*it)->GetId(), timeslot);
+        int section = schedule_->GetSectionOf(it->GetId(), timeslot);
         if (section < 0) continue;
         int subject = schedule_->GetSubjectOf(section, timeslot);
         if (subject < 0) continue;

@@ -26,23 +26,15 @@ public:
 
   Group* GetGroup(int idx);
   const std::vector<Group*>& GetGroups() const;
-  std::vector<Group*>::iterator GetGroupsBegin();
-  std::vector<Group*>::iterator GetGroupsEnd();
 
   Section* GetSection(int idx);
   const std::vector<Section*>& GetSections() const;
-  std::vector<Section*>::iterator GetSectionsBegin();
-  std::vector<Section*>::iterator GetSectionsEnd();
 
   Subject* GetSubject(int idx);
   const std::vector<Subject*>& GetSubjects() const;
-  std::vector<Subject*>::iterator GetSubjectsBegin();
-  std::vector<Subject*>::iterator GetSubjectsEnd();
 
   Teacher* GetTeacher(int idx);
   const std::vector<Teacher*>& GetTeachers() const;
-  std::vector<Teacher*>::iterator GetTeachersBegin();
-  std::vector<Teacher*>::iterator GetTeachersEnd();
 
   void AddGroup(int id);
   void AddTeacher(int id, const std::string &name);
