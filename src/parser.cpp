@@ -34,15 +34,6 @@ Parser::Parser(const char* filename) : num_groups_(0), num_teachers_(0),
 
   input_ = YAML::LoadFile(filename);
 
-  int seed;
-  if (input_["seed"]) seed = input_["seed"].as<int>();
-  else seed = std::time(nullptr);
-
-  std::ofstream log;
-  log.open("log.txt");
-  log << "Seed: " << seed << std::endl;
-  log.close();
-
   if (!input_["days"])
     throw std::runtime_error("property 'days' not found in input file.");
   if (!input_["days"].IsScalar())
@@ -52,8 +43,7 @@ Parser::Parser(const char* filename) : num_groups_(0), num_teachers_(0),
   if (!input_["slots"].IsScalar())
     throw std::runtime_error("property 'slots' doesn't look like an integer.");
 
-  schedule_ = new Schedule(input_["days"].as<int>(), input_["slots"].as<int>(),
-                           seed);
+  schedule_ = new Schedule(input_["days"].as<int>(), input_["slots"].as<int>());
 }
 
 Schedule* Parser::GetSchedule() { return schedule_; }
@@ -64,6 +54,19 @@ int Parser::GetSeconds() {
   if (!input_["seconds"].IsScalar())
     throw std::runtime_error("property 'seconds' doesn't look like an integer.");
   return input_["seconds"].as<int>();
+}
+
+int Parser::GetSeed() {
+  int seed;
+  if (input_["seed"]) seed = input_["seed"].as<int>();
+  else seed = std::time(nullptr);
+
+  std::ofstream log;
+  log.open("log.txt");
+  log << "Seed: " << seed << std::endl;
+  log.close();
+
+  return seed;
 }
 
 int Parser::GetAttempts() {

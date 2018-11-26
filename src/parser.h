@@ -14,6 +14,7 @@ public:
 
   Schedule* GetSchedule();
   int GetSeconds();
+  int GetSeed();
   int GetAttempts();
 
   int GetTop();
