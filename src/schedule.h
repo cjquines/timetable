@@ -1,6 +1,7 @@
 #ifndef _TIMETABLE_SCHEDULE_H
 #define _TIMETABLE_SCHEDULE_H
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <random>
@@ -9,10 +10,10 @@
 #include <vector>
 
 class Group;
-class Section;
 class Subject;
 class Teacher;
 
+#include "section.h"
 #include "constraints/constraint.h"
 
 class Schedule {
@@ -87,6 +88,9 @@ public:
   int SoftCount();
 
   bool InitialSchedule();
+
+  template <typename T, typename U>
+  int SearchTemplate(T translate, U swap);
 
   int HardSolver(int time_limit);
   int HardLocalSearch();
