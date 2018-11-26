@@ -1,24 +1,21 @@
 #ifndef _TIMETABLE_SCHEDULE_H
 #define _TIMETABLE_SCHEDULE_H
 
-#include <algorithm>
-#include <map>
 #include <memory>
-#include <random>
 #include <string>
 #include <utility>
 #include <vector>
 
 class Group;
+class Section;
 class Subject;
 class Teacher;
 
-#include "section.h"
 #include "constraints/constraint.h"
 
 class Schedule {
 public:
-  Schedule(int num_days, int num_slots_per_day, int seed);
+  Schedule(int num_days, int num_slots_per_day);
 
   int GetNumDays();
   int GetNumSlots();
@@ -79,26 +76,6 @@ public:
   int HardCount();
   int SoftCount();
 
-  bool InitialSchedule();
-
-  template <typename T, typename U>
-  int SearchTemplate(T translate, U swap);
-
-  int HardSolver(int time_limit);
-  int HardLocalSearch();
-  int HardTabuSearch();
-
-  int SoftSolver(int time_limit, int num_samples, double kappa, int tau,
-                 double alpha);
-  int SoftLocalSearch(bool accept_side, int threshold);
-  int SoftSimulatedAnnealing(int time_limit, int num_samples, double kappa,
-                             int tau, double alpha);
-  double SimulatedAnnealingSample(int num_samples);
-  int SimulatedAnnealingSearch(double temperature);
-
-  int Solve(int time_limit, int attempts, int max_best, int num_samples,
-            double kappa, int tau, double alpha);
-  void SwitchScheduleTo(int schedule);
   void TestPrint();
 
 private:
@@ -114,15 +91,9 @@ private:
   std::vector< std::unique_ptr<Constraint> > soft_constraints_;
 
   bool hard_satisfied_;
-  std::mt19937 rand_generator_;
 
   std::vector< std::vector<int> > timetable_;
   std::vector< std::vector<int> > teacher_table_;
-
-  std::map< int, std::pair< std::vector< std::vector<int> >,
-            std::vector< std::vector<int> > > > best_tables_;
-
-  std::vector< std::vector<bool> > subject_tabus_;
 };
 
 #include "schedule.tpp"
