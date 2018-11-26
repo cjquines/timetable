@@ -272,7 +272,10 @@ int Solver::Solve(int time_limit, int attempts, int max_best, int num_samples,
   std::ofstream log;
   log.open("log.txt", std::ios_base::app);
 
-  Initialize();
+  schedule_->Initialize();
+  subject_tabus_.assign(schedule_->GetSubjects().size(),
+                        std::vector<bool>(schedule_->GetNumSlots(), 0));
+
   for (int i = 0; i < attempts; i++) {
     log << "Attempt " << i << ": " << std::endl;
     std::time_t start = std::time(NULL);
@@ -301,26 +304,35 @@ int Solver::Solve(int time_limit, int attempts, int max_best, int num_samples,
       log << "  Actual soft count: " << soft_count << "." << std::endl;
     }
     log << "  Passed with soft count " << soft_count << "." << std::endl;
-    best_tables_.emplace(soft_count, std::make_pair(timetable_, teacher_table_));
-    if (int(best_tables_.size()) > max_best) {
-      best_tables_.erase(--best_tables_.end());
+    Schedule* new_schedule = new Schedule(*schedule_);
+    best_schedules_.emplace(soft_count, new_schedule);
+    if (int(best_schedules_.size()) > max_best) {
+      auto it = --best_schedules_.end();
+      delete it->second;
+      best_schedules_.erase(it);
     }
   }
 
-  if (int(best_tables_.size()) == 0) {
+  if (int(best_schedules_.size()) == 0) {
     log << "Did not find a working schedule." << std::endl;
     throw std::runtime_error("did not find a working schedule.");
   }
 
-  if (int(best_tables_.size()) < max_best) {
-    log << "Found only " << best_tables_.size() << " schedule(s); ";
+  if (int(best_schedules_.size()) < max_best) {
+    log << "Found only " << best_schedules_.size() << " schedule(s); ";
     log << max_best << " needed." << std::endl;
   } else {
-    log << "Found " << best_tables_.size() << " schedule(s)." << std::endl;
+    log << "Found " << best_schedules_.size() << " schedule(s)." << std::endl;
   }
 
-  SwitchScheduleTo(0);
-  log << "Best soft count: " << SoftCount() << std::endl;
+  log << "Best soft count: " << best_schedules_.begin()->second->SoftCount();
+  log << std::endl;
   log.close();
-  return best_tables_.size();
+  return best_schedules_.size();
+}
+
+Schedule* Solver::GetBestSchedule(int schedule) {
+  auto it = best_schedules_.begin();
+  for (int i = 0; i < schedule; i++) it++;
+  return it->second;
 }
