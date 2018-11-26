@@ -1,16 +1,25 @@
 #include <ctime>
 #include <cmath>
 
+#include <algorithm>
+#include <fstream>
 #include <random>
 #include <stdexcept>
 #include <utility>
 #include <vector>
 
+#include "group.h"
+#include "section.h"
 #include "solver.h"
 #include "schedule.h"
 
+#include <iostream>
+
+Solver::Solver(Schedule* schedule, int seed)
+    : schedule_(schedule), rand_generator_(seed) {}
+
 bool Solver::InitialSchedule() {
-  for (auto ptr : groups_) {
+  for (const auto &ptr : schedule_->GetGroups()) {
     for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++) {
       std::vector< std::pair<int, int> > unassigned;
       for (auto jt = ptr->GetSubjectsBegin(); jt != ptr->GetSubjectsEnd(); jt++)
@@ -20,9 +29,9 @@ bool Solver::InitialSchedule() {
       for (auto sb : unassigned) {
         int section = (*it)->GetId(), subject = sb.first, num_slots = sb.second;
         bool assigned = false;
-        for (int kt = 0; kt < num_slots_; kt++) {
-          if (IsFree(section, kt, num_slots)) {
-            HardAssign(subject, section, kt, num_slots);
+        for (int kt = 0; kt < schedule_->GetNumSlots(); kt++) {
+          if (schedule_->IsFree(section, kt, num_slots)) {
+            schedule_->HardAssign(subject, section, kt, num_slots);
             assigned = true;
             break;
           }
@@ -35,13 +44,14 @@ bool Solver::InitialSchedule() {
 }
 
 int Solver::HardSolver(int time_limit) {
-  int hard_count = HardCount();
+  int hard_count = schedule_->HardCount();
   std::time_t start = std::time(NULL);
   while (hard_count > 0 && std::difftime(std::time(NULL), start) < time_limit) {
     int result = HardLocalSearch();
     int delta;
     do {
       delta = HardTabuSearch();
+
       result += delta;
     } while (delta > 0);
     hard_count += result;
@@ -54,11 +64,11 @@ int Solver::HardLocalSearch() {
 
   auto translate = [this, &result]
       (int section, int timeslot, int open_timeslot) -> std::pair<int, int> {
-    if (!IsValidHardTranslate(section, timeslot, open_timeslot))
+    if (!schedule_->IsValidHardTranslate(section, timeslot, open_timeslot))
       return std::make_pair(0, 0);
-    int delta = HardCountTranslate(section, timeslot, open_timeslot);
+    int delta = schedule_->HardCountTranslate(section, timeslot, open_timeslot);
     if (delta <= 0) {
-      HardTranslate(section, timeslot, open_timeslot);
+      schedule_->HardTranslate(section, timeslot, open_timeslot);
       result += delta;
       return std::make_pair(2, 0);
     }
@@ -67,11 +77,11 @@ int Solver::HardLocalSearch() {
 
   auto swap = [this, &result]
       (int section, int lhs_timeslot, int rhs_timeslot) -> std::pair<int, int> {
-    if (!IsValidHardSwap(section, lhs_timeslot, rhs_timeslot))
+    if (!schedule_->IsValidHardSwap(section, lhs_timeslot, rhs_timeslot))
       return std::make_pair(0, 0);
-    int delta = HardCountSwap(section, lhs_timeslot, rhs_timeslot);
+    int delta = schedule_->HardCountSwap(section, lhs_timeslot, rhs_timeslot);
     if (delta <= 0) {
-      HardSwap(section, lhs_timeslot, rhs_timeslot);
+      schedule_->HardSwap(section, lhs_timeslot, rhs_timeslot);
       result += delta;
       return std::make_pair(2, 0);
     }
@@ -87,10 +97,10 @@ int Solver::HardTabuSearch() {
 
   auto translate = [this, &best, &best_section, &best_lhs, &best_rhs]
       (int section, int timeslot, int open_timeslot) -> std::pair<int, int> {
-    if (!IsValidHardTranslate(section, timeslot, open_timeslot))
+    if (!schedule_->IsValidHardTranslate(section, timeslot, open_timeslot))
       return std::make_pair(0, 0);
-    int delta = HardCountTranslate(section, timeslot, open_timeslot);
-    int subject = GetSubjectOf(section, timeslot);
+    int delta = schedule_->HardCountTranslate(section, timeslot, open_timeslot);
+    int subject = schedule_->GetSubjectOf(section, timeslot);
     if (delta < best && !subject_tabus_[subject][open_timeslot]) {
       best = delta;
       best_section = section;
@@ -102,10 +112,10 @@ int Solver::HardTabuSearch() {
 
   auto swap = [this, &best, &best_section, &best_lhs, &best_rhs]
       (int section, int lhs_timeslot, int rhs_timeslot) -> std::pair<int, int> {
-    if (!IsValidHardSwap(section, lhs_timeslot, rhs_timeslot))
+    if (!schedule_->IsValidHardSwap(section, lhs_timeslot, rhs_timeslot))
       return std::make_pair(0, 0);
-    int delta = HardCountSwap(section, lhs_timeslot, rhs_timeslot);
-    int subject = GetSubjectOf(section, lhs_timeslot);
+    int delta = schedule_->HardCountSwap(section, lhs_timeslot, rhs_timeslot);
+    int subject = schedule_->GetSubjectOf(section, lhs_timeslot);
     if (delta < best && !subject_tabus_[subject][rhs_timeslot]) {
       best = delta;
       best_section = section;
@@ -118,17 +128,17 @@ int Solver::HardTabuSearch() {
   SearchTemplate(translate, swap);
 
   if (best == 0) return 0;
-  int subject = GetSubjectOf(best_section, best_lhs);
+  int subject = schedule_->GetSubjectOf(best_section, best_lhs);
   subject_tabus_[subject][best_rhs] = true;
-  if (IsFree(best_section, best_rhs))
-    HardTranslate(best_section, best_lhs, best_rhs);
-  else HardSwap(best_section, best_lhs, best_rhs);
+  if (schedule_->IsFree(best_section, best_rhs))
+    schedule_->HardTranslate(best_section, best_lhs, best_rhs);
+  else schedule_->HardSwap(best_section, best_lhs, best_rhs);
   return best;
 }
 
 int Solver::SoftSolver(int time_limit, int num_samples, double kappa, int tau,
                          double alpha) {
-  int soft_count = SoftCount();
+  int soft_count = schedule_->SoftCount();
   std::time_t start = std::time(NULL);
   int loops = 0;
   while (soft_count > 0 && std::difftime(std::time(NULL), start) < time_limit) {
@@ -150,12 +160,12 @@ int Solver::SoftSolver(int time_limit, int num_samples, double kappa, int tau,
 int Solver::SoftLocalSearch(bool accept_side, int threshold) {
   auto translate = [this, accept_side, threshold]
       (int section, int timeslot, int open_timeslot) -> std::pair<int, int> {
-    if (!IsValidSoftTranslate(section, timeslot, open_timeslot))
+    if (!schedule_->IsValidSoftTranslate(section, timeslot, open_timeslot))
       return std::make_pair(0, 0);
-    int delta = SoftCountTranslate(section, timeslot, open_timeslot);
+    int delta = schedule_->SoftCountTranslate(section, timeslot, open_timeslot);
     if (delta < 0 || (delta == 0 && accept_side)
      || (delta > 0 && delta < threshold)) {
-      SoftTranslate(section, timeslot, open_timeslot);
+      schedule_->SoftTranslate(section, timeslot, open_timeslot);
       return std::make_pair(1, delta);
     }
     return std::make_pair(0, 0);
@@ -163,12 +173,12 @@ int Solver::SoftLocalSearch(bool accept_side, int threshold) {
 
   auto swap = [this, accept_side, threshold]
       (int section, int lhs_timeslot, int rhs_timeslot) -> std::pair<int, int> {
-    if (!IsValidSoftSwap(section, lhs_timeslot, rhs_timeslot))
+    if (!schedule_->IsValidSoftSwap(section, lhs_timeslot, rhs_timeslot))
       return std::make_pair(0, 0);
-    int delta = SoftCountSwap(section, lhs_timeslot, rhs_timeslot);
+    int delta = schedule_->SoftCountSwap(section, lhs_timeslot, rhs_timeslot);
     if (delta < 0 || (delta == 0 && accept_side)
      || (delta > 0 && delta < threshold)) {
-      SoftSwap(section, lhs_timeslot, rhs_timeslot);
+      schedule_->SoftSwap(section, lhs_timeslot, rhs_timeslot);
       return std::make_pair(1, delta);
     }
     return std::make_pair(0, 0);
@@ -182,8 +192,9 @@ int Solver::SoftSimulatedAnnealing(int time_limit, int num_samples,
   double initial_temperature = kappa * SimulatedAnnealingSample(num_samples);
   double temperature = initial_temperature;
   int loops = 0;
-  int length = tau * num_slots_ * sections_.size() * subjects_.size();
-  int soft_count = SoftCount();
+  int length = tau * schedule_->GetNumSlots() * schedule_->GetSections().size()
+             * schedule_->GetSubjects().size();
+  int soft_count = schedule_->SoftCount();
   std::time_t start = std::time(NULL);
   while (soft_count > 0 && std::difftime(std::time(NULL), start) < time_limit) {
     int delta = SimulatedAnnealingSearch(temperature);
@@ -202,20 +213,20 @@ double Solver::SimulatedAnnealingSample(int num_samples) {
   int samples = 0, total = 0;
   auto translate = [this, &samples, &total, num_samples]
       (int section, int timeslot, int open_timeslot) -> std::pair<int, int> {
-    if (!IsValidSoftTranslate(section, timeslot, open_timeslot))
+    if (!schedule_->IsValidSoftTranslate(section, timeslot, open_timeslot))
       return std::make_pair(0, 0);
     samples++;
-    total += SoftCountTranslate(section, timeslot, open_timeslot);
+    total += schedule_->SoftCountTranslate(section, timeslot, open_timeslot);
     if (samples >= num_samples) return std::make_pair(2, 0);
     return std::make_pair(0, 0);
   };
 
   auto swap = [this, &samples, &total, num_samples]
       (int section, int lhs_timeslot, int rhs_timeslot) -> std::pair<int, int> {
-    if (!IsValidSoftSwap(section, lhs_timeslot, rhs_timeslot))
+    if (!schedule_->IsValidSoftSwap(section, lhs_timeslot, rhs_timeslot))
       return std::make_pair(0, 0);
     samples++;
-    total += SoftCountSwap(section, lhs_timeslot, rhs_timeslot);
+    total += schedule_->SoftCountSwap(section, lhs_timeslot, rhs_timeslot);
     if (samples >= num_samples) return std::make_pair(2, 0);
     return std::make_pair(0, 0);
   };
@@ -229,12 +240,12 @@ int Solver::SimulatedAnnealingSearch(double temperature) {
 
   auto translate = [this, &prob, temperature]
       (int section, int timeslot, int open_timeslot) -> std::pair<int, int> {
-    if (!IsValidSoftTranslate(section, timeslot, open_timeslot))
+    if (!schedule_->IsValidSoftTranslate(section, timeslot, open_timeslot))
       return std::make_pair(0, 0);
-    int delta = SoftCountTranslate(section, timeslot, open_timeslot);
+    int delta = schedule_->SoftCountTranslate(section, timeslot, open_timeslot);
     if (delta <= 0
      || prob(rand_generator_) < std::exp(-double(delta) / temperature)) {
-      SoftTranslate(section, timeslot, open_timeslot);
+      schedule_->SoftTranslate(section, timeslot, open_timeslot);
       return std::make_pair(1, delta);
     }
     return std::make_pair(0, 0);
@@ -242,12 +253,12 @@ int Solver::SimulatedAnnealingSearch(double temperature) {
 
   auto swap = [this, &prob, temperature]
       (int section, int lhs_timeslot, int rhs_timeslot) -> std::pair<int, int> {
-    if (!IsValidSoftSwap(section, lhs_timeslot, rhs_timeslot))
+    if (!schedule_->IsValidSoftSwap(section, lhs_timeslot, rhs_timeslot))
       return std::make_pair(0, 0);
-    int delta = SoftCountSwap(section, lhs_timeslot, rhs_timeslot);
+    int delta = schedule_->SoftCountSwap(section, lhs_timeslot, rhs_timeslot);
     if (delta <= 0
      || prob(rand_generator_) < std::exp(-double(delta) / temperature)) {
-      SoftSwap(section, lhs_timeslot, rhs_timeslot);
+      schedule_->SoftSwap(section, lhs_timeslot, rhs_timeslot);
       return std::make_pair(1, delta);
     }
     return std::make_pair(0, 0);
@@ -265,27 +276,28 @@ int Solver::Solve(int time_limit, int attempts, int max_best, int num_samples,
   for (int i = 0; i < attempts; i++) {
     log << "Attempt " << i << ": " << std::endl;
     std::time_t start = std::time(NULL);
-    ResetTimetable();
+    schedule_->ResetTimetable();
     bool initial = false;
-    while (!initial && std::difftime(std::time(NULL), start) < time_limit)
+    while (!initial && std::difftime(std::time(NULL), start) < time_limit) {
       initial = InitialSchedule();
+    }
     if (!initial) {
       log << "  failed to assign initial schedule." << std::endl;
       continue;
     }
     HardSolver(time_limit);
-    if (HardCount()) {
+    if (schedule_->HardCount()) {
       log << "  failed to satisfy hard constraints." << std::endl;
       continue;
     }
-    SoftInitialize();
+    schedule_->SoftInitialize();
     int soft_count = SoftSolver(time_limit
                               - std::difftime(std::time(NULL), start),
                                 num_samples, kappa, tau, alpha);
-    if (soft_count != SoftCount()) {
+    if (soft_count != schedule_->SoftCount()) {
       log << "  soft_count does not match SoftCount()." << std::endl;
       log << "  soft_count value: " << soft_count << "." << std::endl;
-      soft_count = SoftCount();
+      soft_count = schedule_->SoftCount();
       log << "  Actual soft count: " << soft_count << "." << std::endl;
     }
     log << "  Passed with soft count " << soft_count << "." << std::endl;
