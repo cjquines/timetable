@@ -9,6 +9,15 @@
 #include "parser.h"
 #include "group.h"
 #include "schedule.h"
+#include "constraints/distinctperday.h"
+#include "constraints/evendismissal.h"
+#include "constraints/maxconsecutive.h"
+#include "constraints/minsubjects.h"
+#include "constraints/nonsimultaneous.h"
+#include "constraints/reqfirstsubject.h"
+#include "constraints/subjectgaps.h"
+#include "constraints/subjecttime.h"
+#include "constraints/teachertime.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -143,7 +152,7 @@ void Parser::ReadTeachers() {
       int priority = it["unassignable"]["priority"].as<int>();
       if (priority > 0) priority *= priority_factor_;
 
-      schedule_->AddTeacherTime(priority, num_teachers_,
+      schedule_->AddConstraint<TeacherTime>(priority, num_teachers_,
                                 it["unassignable"]["times"].as< std::vector<int> >());
     }
 
@@ -235,7 +244,7 @@ void Parser::ReadGroups() {
         int priority = jt["unassignable"]["priority"].as<int>();
         if (priority > 0) priority *= priority_factor_;
 
-        schedule_->AddSubjectTime(priority, num_subjects_,
+        schedule_->AddConstraint<SubjectTime>(priority, num_subjects_,
                                   jt["unassignable"]["times"].as< std::vector<int> >());
       }
 
@@ -271,7 +280,7 @@ void Parser::ReadConstraints() {
     if (priority > 0) priority *= priority_factor_;
 
     if (type == "distinctPerDay") {
-      schedule_->AddDistinctPerDay(priority);
+      schedule_->AddConstraint<DistinctPerDay>(priority);
     } else if (type == "evenDismissal") {
       if (!it["sections"])
         throw std::runtime_error("one of the " + type
@@ -295,7 +304,7 @@ void Parser::ReadConstraints() {
       }
 
       priority /= sections.size() * sections.size();
-      schedule_->AddEvenDismissal(priority, section_ids);
+      schedule_->AddConstraint<EvenDismissal>(priority, section_ids);
     } else if (type == "maxConsecutive") {
       if (!it["maxConsecutive"])
         throw std::runtime_error("one of the " + type
@@ -304,7 +313,7 @@ void Parser::ReadConstraints() {
         throw std::runtime_error("one of the " + type
                                + "'s maxConsecutive doesn't look like an integer.");
       
-      schedule_->AddMaxConsecutive(priority, it["maxConsecutive"].as<int>());
+      schedule_->AddConstraint<MaxConsecutive>(priority, it["maxConsecutive"].as<int>());
     } else if (type == "minSubjects") {
       if (!it["minSubjects"])
         throw std::runtime_error("one of the " + type
@@ -313,13 +322,13 @@ void Parser::ReadConstraints() {
         throw std::runtime_error("one of the " + type
                                + "'s minSubjects doesn't look like an integer.");
 
-      schedule_->AddMinSubjects(priority, it["minSubjects"].as<int>());
+      schedule_->AddConstraint<MinSubjects>(priority, it["minSubjects"].as<int>());
     } else if (type == "nonSimultaneous") {
-      schedule_->AddNonSimultaneous(priority);
+      schedule_->AddConstraint<NonSimultaneous>(priority);
     } else if (type == "reqFirstSubject") {
-      schedule_->AddReqFirstSubject(priority);
+      schedule_->AddConstraint<ReqFirstSubject>(priority);
     } else if (type == "subjectGaps") {
-      schedule_->AddSubjectGaps(priority);
+      schedule_->AddConstraint<SubjectGaps>(priority);
     } else {
       throw std::runtime_error("type " + type + " isn't recognized.");
     }

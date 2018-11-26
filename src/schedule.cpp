@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <random>
 #include <stdexcept>
@@ -12,15 +13,6 @@
 #include "group.h"
 #include "subject.h"
 #include "teacher.h"
-#include "constraints/distinctperday.h"
-#include "constraints/evendismissal.h"
-#include "constraints/maxconsecutive.h"
-#include "constraints/minsubjects.h"
-#include "constraints/nonsimultaneous.h"
-#include "constraints/reqfirstsubject.h"
-#include "constraints/subjectgaps.h"
-#include "constraints/subjecttime.h"
-#include "constraints/teachertime.h"
 
 Schedule::Schedule(int num_days, int num_slots_per_day, int seed)
     : num_days_(num_days), num_slots_per_day_(num_slots_per_day),
@@ -90,72 +82,6 @@ void Schedule::AddGroup(int id) {
 void Schedule::AddTeacher(int id, const std::string &name) {
   Teacher* ptr = new Teacher(id, name);
   teachers_.push_back(ptr);
-}
-
-void Schedule::AddDistinctPerDay(int priority) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<DistinctPerDay>(
-    this, priority);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
-}
-
-void Schedule::AddEvenDismissal(int priority,
-                                const std::vector<int> &sections) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<EvenDismissal>(
-    this, priority, sections);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
-}
-
-void Schedule::AddMaxConsecutive(int priority, int max_consecutive) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<MaxConsecutive>(
-    this, priority, max_consecutive);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
-}
-
-void Schedule::AddMinSubjects(int priority, int min_subjects) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<MinSubjects>(
-    this, priority, min_subjects);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
-}
-
-void Schedule::AddNonSimultaneous(int priority) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<NonSimultaneous>(
-    this, priority);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
-}
-
-void Schedule::AddReqFirstSubject(int priority) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<ReqFirstSubject>(
-    this, priority);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
-}
-
-void Schedule::AddSubjectGaps(int priority) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<SubjectGaps>(
-    this, priority);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
-}
-
-void Schedule::AddSubjectTime(int priority, int subject,
-                              const std::vector<int> &unassignable) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<SubjectTime>(
-    this, priority, subject, unassignable);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
-}
-
-void Schedule::AddTeacherTime(int priority, int teacher,
-                              const std::vector<int> &unassignable) {
-  std::unique_ptr<Constraint> ptr = std::make_unique<TeacherTime>(
-    this, priority, teacher, unassignable);
-  if (priority <= 0) hard_constraints_.push_back(std::move(ptr));
-  else soft_constraints_.push_back(std::move(ptr));
 }
 
 void Schedule::ResetTimetable() {

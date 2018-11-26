@@ -46,17 +46,8 @@ public:
   void AddGroup(int id);
   void AddTeacher(int id, const std::string &name);
 
-  void AddDistinctPerDay(int priority);
-  void AddEvenDismissal(int priority, const std::vector<int> &sections);
-  void AddMaxConsecutive(int priority, int max_consecutive);
-  void AddMinSubjects(int priority, int min_subjects);
-  void AddNonSimultaneous(int priority);
-  void AddReqFirstSubject(int priority);
-  void AddSubjectGaps(int priority);
-  void AddSubjectTime(int priority, int subject,
-                      const std::vector<int> &unassignable);
-  void AddTeacherTime(int priority, int teacher,
-                      const std::vector<int> &unassignable);
+  template <typename T, typename... Args>
+  void AddConstraint(int priority, Args... args);
 
   void ResetTimetable();
   void Initialize();
@@ -137,5 +128,7 @@ private:
 
   std::vector< std::vector<bool> > subject_tabus_;
 };
+
+#include "schedule.tpp"
 
 #endif
