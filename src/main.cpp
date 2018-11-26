@@ -5,8 +5,7 @@
 #include "emitter.h"
 #include "parser.h"
 #include "schedule.h"
-
-#include "yaml-cpp/yaml.h"
+#include "solver.h"
 
 int main(int argc, char** argv) {
   try {
@@ -16,16 +15,15 @@ int main(int argc, char** argv) {
     Parser parser(argv[1]);
     parser.ParseFile();
     Schedule* config = parser.GetSchedule();
+    Solver solver(config, parser.GetSeed());
 
-    int num_schedules = config->Solve(parser.GetSeconds(), parser.GetAttempts(),
-                                      parser.GetTop(), parser.GetNumSamples(),
-                                      parser.GetKappa(), parser.GetTau(),
-                                      parser.GetAlpha());
-
-    Emitter emitter(config);
+    int num_schedules = solver.Solve(parser.GetSeconds(), parser.GetAttempts(),
+                                     parser.GetTop(), parser.GetNumSamples(),
+                                     parser.GetKappa(), parser.GetTau(),
+                                     parser.GetAlpha());
 
     for (int i = 0; i < num_schedules; i++) {
-      config->SwitchScheduleTo(i);
+      Emitter emitter(solver.GetBestSchedule(i));
       emitter.OutputSchedule("output-" + std::to_string(config->SoftCount())
                              + ".xml");
     }
