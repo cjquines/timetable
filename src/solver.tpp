@@ -1,8 +1,8 @@
 #ifndef _TIMETABLE_SOLVER_TPP
 #define _TIMETABLE_SOLVER_TPP
 
-template <typename T, typename U>
-int Solver::SearchTemplate(T translate, U swap) {
+template <typename T, typename U, typename V>
+int Solver::SearchTemplate(T translate, U swap, V adjswap) {
   std::vector< std::pair<int, int> > to_swap;
   for (const auto &it : schedule_->GetSections()) {
     for (int i = 0; i < schedule_->GetNumSlots(); i++) {
@@ -23,8 +23,13 @@ int Solver::SearchTemplate(T translate, U swap) {
 
       if (schedule_->IsFree(section, rhs_timeslot))
         std::tie(flag, result) = translate(section, lhs_timeslot, rhs_timeslot);
-      else if (schedule_->GetSubjectOf(section, rhs_timeslot) >= 0)
-        std::tie(flag, result) = swap(section, lhs_timeslot, rhs_timeslot);
+      else if (schedule_->GetSubjectOf(section, rhs_timeslot) >= 0) {
+        if (schedule_->GetLengthOf(section, lhs_timeslot)
+         == schedule_->GetLengthOf(section, rhs_timeslot))
+          std::tie(flag, result) = swap(section, lhs_timeslot, rhs_timeslot);
+        else
+          std::tie(flag, result) = adjswap(section, lhs_timeslot, rhs_timeslot);
+      }
 
       if (flag == 0) continue;
       else if (flag == 1) return result;

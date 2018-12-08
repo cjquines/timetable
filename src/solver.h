@@ -16,8 +16,8 @@ public:
 
   bool InitialSchedule();
 
-  template <typename T, typename U>
-  int SearchTemplate(T translate, U swap);
+  template <typename T, typename U, typename V>
+  int SearchTemplate(T translate, U swap, V adjswap);
 
   int HardSolver(int time_limit);
   int HardLocalSearch();
