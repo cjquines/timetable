@@ -384,14 +384,14 @@ int Solver::Solve(int time_limit, int attempts, int max_best, int num_samples,
     log << "Found " << best_schedules_.size() << " schedule(s)." << std::endl;
   }
 
-  log << "Best soft count: " << best_schedules_.begin()->second->SoftCount();
+  log << "Best soft count: " << best_schedules_.begin()->first;
   log << std::endl;
   log.close();
   return best_schedules_.size();
 }
 
-Schedule* Solver::GetBestSchedule(int schedule) {
+std::pair<int, Schedule*> Solver::GetBestSchedule(int schedule) {
   auto it = best_schedules_.begin();
   for (int i = 0; i < schedule; i++) it++;
-  return it->second;
+  return std::make_pair(it->first, it->second);
 }

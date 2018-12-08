@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 
 #include "emitter.h"
 #include "parser.h"
@@ -23,9 +24,11 @@ int main(int argc, char** argv) {
                                      parser.GetAlpha());
 
     for (int i = 0; i < num_schedules; i++) {
-      Emitter emitter(solver.GetBestSchedule(i));
-      emitter.OutputSchedule("output-" + std::to_string(config->SoftCount())
-                             + ".xml");
+      int soft_count;
+      Schedule* schedule;
+      std::tie(soft_count, schedule) = solver.GetBestSchedule(i);
+      Emitter emitter(schedule);
+      emitter.OutputSchedule("output-" + std::to_string(soft_count) + ".xml");
     }
   } catch (const std::runtime_error &error) {
     std::cerr << "ERROR: " << error.what() << std::endl;

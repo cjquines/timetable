@@ -39,7 +39,7 @@ public:
 
   int Solve(int time_limit, int attempts, int max_best, int num_samples,
             double kappa, int tau, double alpha);
-  Schedule* GetBestSchedule(int schedule);
+  std::pair<int, Schedule*> GetBestSchedule(int schedule);
 
 private:
   Schedule* schedule_;
