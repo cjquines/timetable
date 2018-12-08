@@ -195,6 +195,11 @@ std::pair<int, int> Schedule::ClampDay(int timeslot) {
   return std::make_pair(lbound, lbound + num_slots_per_day_);
 }
 
+int Schedule::NewRHSSlot(int section, int lhs_timeslot, int rhs_timeslot) {
+  return rhs_timeslot + GetLengthOf(section, rhs_timeslot)
+       - GetLengthOf(section, lhs_timeslot);
+}
+
 void Schedule::HardAssign(int subject, int section, int timeslot,
                           int num_slots) {
   int teacher = GetSubject(subject)->GetTeacher();
@@ -263,7 +268,7 @@ void Schedule::HardAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int rhs_teacher = GetSubject(rhs_subject)->GetTeacher();
   int lhs_length = GetLengthOf(section, lhs_timeslot);
   int rhs_length = GetLengthOf(section, rhs_timeslot);
-  int new_rhs_slot = rhs_timeslot + rhs_length - lhs_length;
+  int new_rhs_slot = NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
 
   for (int i = 0; i < lhs_length; i++)
     teacher_table_[lhs_teacher][lhs_timeslot+i]--;
@@ -332,7 +337,7 @@ void Schedule::SoftAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int rhs_teacher = GetSubject(rhs_subject)->GetTeacher();
   int lhs_length = GetLengthOf(section, lhs_timeslot);
   int rhs_length = GetLengthOf(section, rhs_timeslot);
-  int new_rhs_slot = rhs_timeslot + rhs_length - lhs_length;
+  int new_rhs_slot = NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
 
   for (int i = 0; i < lhs_length; i++) {
     teacher_table_[lhs_teacher][lhs_timeslot+i] = -1;

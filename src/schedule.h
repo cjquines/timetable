@@ -63,6 +63,7 @@ public:
   bool IsValidSoftAdjSwap(int section, int lhs_timeslot, int rhs_timeslot);
 
   std::pair<int, int> ClampDay(int timeslot);
+  int NewRHSSlot(int section, int lhs_timeslot, int rhs_timeslot);
 
   void HardAssign(int subject, int section, int timeslot, int num_slots);
 

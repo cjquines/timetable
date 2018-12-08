@@ -135,9 +135,8 @@ int Solver::HardTabuSearch() {
       -> std::pair<int, int> {
     int lhs_subject = schedule_->GetSubjectOf(section, lhs_timeslot);
     int rhs_subject = schedule_->GetSubjectOf(section, rhs_timeslot);
-    int lhs_length = schedule_->GetLengthOf(section, lhs_timeslot);
-    int rhs_length = schedule_->GetLengthOf(section, rhs_timeslot);
-    int new_rhs_slot = rhs_timeslot + rhs_length - lhs_length;
+    int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot,
+                                             rhs_timeslot);
     if (delta < best && !subject_tabus_[lhs_subject][new_rhs_slot]
      && !subject_tabus_[rhs_subject][lhs_timeslot]) {
       best = delta;
@@ -164,9 +163,8 @@ int Solver::HardTabuSearch() {
       subject_tabus_[rhs_subject][best_lhs] = true;
       schedule_->HardSwap(best_section, best_lhs, best_rhs);
     } else {
-      int lhs_length = schedule_->GetLengthOf(best_section, best_lhs);
-      int rhs_length = schedule_->GetLengthOf(best_section, best_rhs);
-      int new_rhs_slot = best_rhs + rhs_length - lhs_length;
+      int new_rhs_slot = schedule_->NewRHSSlot(best_section, best_lhs,
+                                               best_rhs);
       subject_tabus_[lhs_subject][new_rhs_slot] = true;
       subject_tabus_[rhs_subject][best_lhs] = true;
       schedule_->HardAdjSwap(best_section, best_lhs, best_rhs);

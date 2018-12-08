@@ -33,11 +33,9 @@ int TeacherTime::CountSwapTimeslot(int section, int lhs_timeslot,
 }
 
 int TeacherTime::CountAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
-  int lhs_length = schedule_->GetLengthOf(section, lhs_timeslot);
-  int rhs_length = schedule_->GetLengthOf(section, rhs_timeslot);
-  int new_rhs_slot = rhs_timeslot + rhs_length - lhs_length;
-
+  int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
   int result = 0;
+  
   if (schedule_->GetTeacherOf(section, lhs_timeslot) == teacher_)
     result += HalfCount(section, lhs_timeslot, new_rhs_slot);
   if (schedule_->GetTeacherOf(section, rhs_timeslot) == teacher_)
