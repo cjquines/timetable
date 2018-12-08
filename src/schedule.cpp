@@ -134,7 +134,7 @@ bool Schedule::IsFree(int section, int timeslot, int num_slots) {
 bool Schedule::IsFreeTranslate(int timeslot, int section, int tr_timeslot,
                                int open_timeslot) {
   int length = GetLengthOf(section, tr_timeslot);
-  return (tr_timeslot <= timeslot && timeslot < timeslot + length)
+  return (tr_timeslot <= timeslot && timeslot < tr_timeslot + length)
       || (IsFree(section, timeslot)
        && !(open_timeslot <= timeslot && timeslot < open_timeslot + length));
 }
