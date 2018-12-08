@@ -9,6 +9,7 @@ public:
   virtual int CountTranslate(int section, int timeslot, int open_timeslot);
   virtual int CountSwapTimeslot(int section, int lhs_timeslot,
                                 int rhs_timeslot);
+  virtual int CountAdjSwap(int section, int lhs_timeslot, int rhs_timeslot);
   virtual int CountAll();
 
 protected:

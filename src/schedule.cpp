@@ -134,7 +134,7 @@ bool Schedule::IsFree(int section, int timeslot, int num_slots) {
 bool Schedule::IsFreeTranslate(int timeslot, int section, int tr_timeslot,
                                int open_timeslot) {
   int length = GetLengthOf(section, tr_timeslot);
-  return (tr_timeslot <= timeslot && timeslot < timeslot + length)
+  return (tr_timeslot <= timeslot && timeslot < tr_timeslot + length)
       || (IsFree(section, timeslot)
        && !(open_timeslot <= timeslot && timeslot < open_timeslot + length));
 }
@@ -158,6 +158,19 @@ bool Schedule::IsValidHardSwap(int section, int lhs_timeslot,
          GetLengthOf(section, rhs_timeslot);
 }
 
+bool Schedule::IsValidHardAdjSwap(int section, int lhs_timeslot,
+                                  int rhs_timeslot) {
+  // Returns True if the section's subject with head at lhs_timeslot can be
+  // hard adj swapped to subject with head at rhs_timeslot. 
+  assert(timetable_[section][lhs_timeslot] >= 0);
+  assert(timetable_[section][rhs_timeslot] >= 0);
+  if (rhs_timeslot < lhs_timeslot) return false;
+  int lhs_length = GetLengthOf(section, lhs_timeslot);
+  return (ClampDay(lhs_timeslot).first == ClampDay(rhs_timeslot).first)
+       && IsFree(section, lhs_timeslot + lhs_length,
+                 rhs_timeslot - (lhs_timeslot + lhs_length));
+}
+
 bool Schedule::IsValidSoftTranslate(int section, int timeslot,
                                     int open_timeslot) {
   return IsValidHardTranslate(section, timeslot, open_timeslot) &&
@@ -170,10 +183,21 @@ bool Schedule::IsValidSoftSwap(int section, int lhs_timeslot,
          (HardCountSwap(section, lhs_timeslot, rhs_timeslot) == 0);
 }
 
+bool Schedule::IsValidSoftAdjSwap(int section, int lhs_timeslot,
+                                  int rhs_timeslot) {
+  return IsValidHardAdjSwap(section, lhs_timeslot, rhs_timeslot) &&
+         (HardCountAdjSwap(section, lhs_timeslot, rhs_timeslot) == 0);
+}
+
 std::pair<int, int> Schedule::ClampDay(int timeslot) {
   // Returns [ltimeslot, rtimeslot) for the day timeslot is in.
   int lbound = timeslot / num_slots_per_day_ * num_slots_per_day_;
   return std::make_pair(lbound, lbound + num_slots_per_day_);
+}
+
+int Schedule::NewRHSSlot(int section, int lhs_timeslot, int rhs_timeslot) {
+  return rhs_timeslot + GetLengthOf(section, rhs_timeslot)
+       - GetLengthOf(section, lhs_timeslot);
 }
 
 void Schedule::HardAssign(int subject, int section, int timeslot,
@@ -229,6 +253,32 @@ void Schedule::HardSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   timetable_[section][rhs_timeslot] = lhs_subject;
 }
 
+int Schedule::HardCountAdjSwap(int section, int lhs_timeslot,
+                               int rhs_timeslot) {
+  int result = 0;
+  for (auto& ptr : hard_constraints_)
+    result += ptr->CountAdjSwap(section, lhs_timeslot, rhs_timeslot);
+  return result;
+}
+
+void Schedule::HardAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
+  int lhs_subject = GetSubjectOf(section, lhs_timeslot);
+  int rhs_subject = GetSubjectOf(section, rhs_timeslot);
+  int lhs_teacher = GetSubject(lhs_subject)->GetTeacher();
+  int rhs_teacher = GetSubject(rhs_subject)->GetTeacher();
+  int lhs_length = GetLengthOf(section, lhs_timeslot);
+  int rhs_length = GetLengthOf(section, rhs_timeslot);
+  int new_rhs_slot = NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
+
+  for (int i = 0; i < lhs_length; i++)
+    teacher_table_[lhs_teacher][lhs_timeslot+i]--;
+  for (int i = 0; i < rhs_length; i++)
+    teacher_table_[rhs_teacher][rhs_timeslot+i]--;
+
+  HardAssign(rhs_subject, section, lhs_timeslot, rhs_length);
+  HardAssign(lhs_subject, section, new_rhs_slot, lhs_length);
+}
+
 int Schedule::SoftCountTranslate(int section, int timeslot, int open_timeslot) {
   int result = 0;
   for (auto& ptr : soft_constraints_)
@@ -270,6 +320,47 @@ void Schedule::SoftSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   }
   timetable_[section][lhs_timeslot] = rhs_subject;
   timetable_[section][rhs_timeslot] = lhs_subject;
+}
+
+int Schedule::SoftCountAdjSwap(int section, int lhs_timeslot,
+                                            int rhs_timeslot) {
+  int result = 0;
+  for (auto& ptr : soft_constraints_)
+    result += ptr->CountAdjSwap(section, lhs_timeslot, rhs_timeslot);
+  return result;
+}
+
+void Schedule::SoftAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
+  int lhs_subject = GetSubjectOf(section, lhs_timeslot);
+  int rhs_subject = GetSubjectOf(section, rhs_timeslot);
+  int lhs_teacher = GetSubject(lhs_subject)->GetTeacher();
+  int rhs_teacher = GetSubject(rhs_subject)->GetTeacher();
+  int lhs_length = GetLengthOf(section, lhs_timeslot);
+  int rhs_length = GetLengthOf(section, rhs_timeslot);
+  int new_rhs_slot = NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
+
+  for (int i = 0; i < lhs_length; i++) {
+    teacher_table_[lhs_teacher][lhs_timeslot+i] = -1;
+    timetable_[section][lhs_timeslot+i] = -1;
+  }
+
+  for (int i = 0; i < rhs_length; i++) {
+    teacher_table_[rhs_teacher][rhs_timeslot+i] = -1;
+    timetable_[section][rhs_timeslot+i] = -1;
+  }
+
+  for (int i = 0; i < lhs_length; i++) {
+    teacher_table_[lhs_teacher][new_rhs_slot+i] = section;
+    timetable_[section][new_rhs_slot+i] = -2;
+  }
+
+  for (int i = 0; i < rhs_length; i++) {
+    teacher_table_[rhs_teacher][lhs_timeslot+i] = section;
+    timetable_[section][lhs_timeslot+i] = -2;
+  }
+
+  timetable_[section][lhs_timeslot] = rhs_subject;
+  timetable_[section][new_rhs_slot] = lhs_subject;
 }
 
 int Schedule::HardCount() {

@@ -1,5 +1,0 @@
-Seed: 1542900573
-Attempt 0: 
-  Passed with soft count 3124.
-Found 1 schedule(s).
-Best soft count: 3124
