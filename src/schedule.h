@@ -57,21 +57,28 @@ public:
                        int open_timeslot);
   bool IsValidHardTranslate(int section, int timeslot, int open_timeslot);
   bool IsValidHardSwap(int section, int lhs_timeslot, int rhs_timeslot);
+  bool IsValidHardAdjSwap(int section, int lhs_timeslot, int rhs_timeslot);
   bool IsValidSoftTranslate(int section, int timeslot, int open_timeslot);
   bool IsValidSoftSwap(int section, int lhs_timeslot, int rhs_timeslot);
+  bool IsValidSoftAdjSwap(int section, int lhs_timeslot, int rhs_timeslot);
 
   std::pair<int, int> ClampDay(int timeslot);
 
   void HardAssign(int subject, int section, int timeslot, int num_slots);
+
   int HardCountTranslate(int section, int timeslot, int open_timeslot);
   void HardTranslate(int section, int timeslot, int open_timeslot);
   int HardCountSwap(int section, int lhs_timeslot, int rhs_timeslot);
   void HardSwap(int section, int lhs_timeslot, int rhs_timeslot);
+  int HardCountAdjSwap(int section, int lhs_timeslot, int rhs_timeslot);
+  void HardAdjSwap(int section, int lhs_timeslot, int rhs_timeslot);
 
   int SoftCountTranslate(int section, int timeslot, int open_timeslot);
   void SoftTranslate(int section, int timeslot, int open_timeslot);
   int SoftCountSwap(int section, int lhs_timeslot, int rhs_timeslot);
   void SoftSwap(int section, int lhs_timeslot, int rhs_timeslot);
+  int SoftCountAdjSwap(int section, int lhs_timeslot, int rhs_timeslot);
+  void SoftAdjSwap(int section, int lhs_timeslot, int rhs_timeslot);
 
   int HardCount();
   int SoftCount();
