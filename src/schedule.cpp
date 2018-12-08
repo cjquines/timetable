@@ -158,6 +158,19 @@ bool Schedule::IsValidHardSwap(int section, int lhs_timeslot,
          GetLengthOf(section, rhs_timeslot);
 }
 
+bool Schedule::IsValidHardAdjSwap(int section, int lhs_timeslot,
+                                  int rhs_timeslot) {
+  // Returns True if the section's subject with head at lhs_timeslot can be
+  // hard adj swapped to subject with head at rhs_timeslot. 
+  assert(timetable_[section][lhs_timeslot] >= 0);
+  assert(timetable_[section][rhs_timeslot] >= 0);
+  if (rhs_timeslot < lhs_timeslot) return false;
+  int lhs_length = GetLengthOf(section, lhs_timeslot);
+  return (ClampDay(lhs_timeslot).first == ClampDay(rhs_timeslot).first)
+       && IsFree(section, lhs_timeslot + lhs_length,
+                 rhs_timeslot - (lhs_timeslot + lhs_length));
+}
+
 bool Schedule::IsValidSoftTranslate(int section, int timeslot,
                                     int open_timeslot) {
   return IsValidHardTranslate(section, timeslot, open_timeslot) &&
@@ -168,6 +181,12 @@ bool Schedule::IsValidSoftSwap(int section, int lhs_timeslot,
                                int rhs_timeslot) {
   return IsValidHardSwap(section, lhs_timeslot, rhs_timeslot) &&
          (HardCountSwap(section, lhs_timeslot, rhs_timeslot) == 0);
+}
+
+bool Schedule::IsValidSoftAdjSwap(int section, int lhs_timeslot,
+                                  int rhs_timeslot) {
+  return IsValidHardAdjSwap(section, lhs_timeslot, rhs_timeslot) &&
+         (HardCountAdjSwap(section, lhs_timeslot, rhs_timeslot) == 0);
 }
 
 std::pair<int, int> Schedule::ClampDay(int timeslot) {
