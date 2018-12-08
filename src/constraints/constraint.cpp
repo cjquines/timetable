@@ -12,6 +12,10 @@ int Constraint::CountSwapTimeslot(int section, int lhs_timeslot,
   return 0;
 }
 
+int Constraint::CountAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
+  return CountSwapTimeslot(section, lhs_timeslot, rhs_timeslot);
+}
+
 int Constraint::CountAll() {
   return 0;
 }
