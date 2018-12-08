@@ -345,12 +345,12 @@ void Schedule::SoftAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   }
 
   for (int i = 0; i < lhs_length; i++) {
-    teacher_table_[lhs_length][new_rhs_slot+i] = section;
+    teacher_table_[lhs_teacher][new_rhs_slot+i] = section;
     timetable_[section][new_rhs_slot+i] = -2;
   }
 
   for (int i = 0; i < rhs_length; i++) {
-    teacher_table_[rhs_length][lhs_timeslot+i] = section;
+    teacher_table_[rhs_teacher][lhs_timeslot+i] = section;
     timetable_[section][lhs_timeslot+i] = -2;
   }
 
