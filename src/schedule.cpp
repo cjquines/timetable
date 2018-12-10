@@ -66,10 +66,14 @@ void Schedule::Initialize() {
 void Schedule::SoftInitialize() {
   hard_satisfied_ = true;
   teacher_table_.assign(teachers_.size(), std::vector<int>(num_slots_, -1));
-  for (std::vector<int>::size_type it = 0; it < sections_.size(); it++)
-    for (int jt = 0; jt < num_slots_; jt++)
-      if (timetable_[it][jt] != -1)
-        teacher_table_[GetTeacherOf(it, GetHeadOf(it, jt))][jt] = it;
+  for (std::vector<int>::size_type it = 0; it < sections_.size(); it++) {
+    for (int jt = 0; jt < num_slots_; jt++) {
+      if (IsFree(it, jt)) continue;
+      int teacher = GetTeacherOf(it, GetHeadOf(it, jt));
+      if (teacher == 0) continue;
+      teacher_table_[teacher][jt] = it;
+    }
+  }
 }
 
 int Schedule::GetSubjectOf(int section, int timeslot) {
