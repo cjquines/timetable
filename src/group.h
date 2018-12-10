@@ -12,8 +12,6 @@ public:
   Group(int id);
   
   int GetId();
-  int GetNumSections();
-  int GetNumSubjects();
 
   Section* GetSection(int idx);
   const std::vector<Section*>& GetSections() const;

@@ -4,10 +4,6 @@ Group::Group(int id) : id_(id) {}
 
 int Group::GetId() { return id_; }
 
-int Group::GetNumSections() { return sections_.size(); }
-
-int Group::GetNumSubjects() { return subjects_.size(); }
-
 Section* Group::GetSection(int idx) { return sections_[idx]; }
 
 const std::vector<Section*>& Group::GetSections() const { return sections_; }
