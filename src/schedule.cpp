@@ -268,13 +268,28 @@ void Schedule::HardAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int rhs_length = GetLengthOf(section, rhs_timeslot);
   int new_rhs_slot = NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
 
-  for (int i = 0; i < lhs_length; i++)
+  for (int i = 0; i < lhs_length; i++) {
     teacher_table_[lhs_teacher][lhs_timeslot+i]--;
-  for (int i = 0; i < rhs_length; i++)
-    teacher_table_[rhs_teacher][rhs_timeslot+i]--;
+    timetable_[section][lhs_timeslot+i] = -1;
+  }
 
-  HardAssign(rhs_subject, section, lhs_timeslot, rhs_length);
-  HardAssign(lhs_subject, section, new_rhs_slot, lhs_length);
+  for (int i = 0; i < rhs_length; i++) {
+    teacher_table_[rhs_teacher][rhs_timeslot+i]--;
+    timetable_[section][rhs_timeslot+i] = -1;
+  }
+
+  for (int i = 0; i < lhs_length; i++) {
+    teacher_table_[lhs_teacher][new_rhs_slot+i]++;
+    timetable_[section][new_rhs_slot+i] = -2;
+  }
+
+  for (int i = 0; i < rhs_length; i++) {
+    teacher_table_[rhs_teacher][lhs_timeslot+i]++;
+    timetable_[section][lhs_timeslot+i] = -2;
+  }
+
+  timetable_[section][lhs_timeslot] = rhs_subject;
+  timetable_[section][new_rhs_slot] = lhs_subject;
 }
 
 int Schedule::SoftCountTranslate(int section, int timeslot, int open_timeslot) {

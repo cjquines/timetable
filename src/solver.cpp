@@ -1,8 +1,10 @@
 #include <ctime>
 #include <cmath>
+#include <cassert>
 
 #include <algorithm>
 #include <fstream>
+#include <queue>
 #include <random>
 #include <stdexcept>
 #include <utility>
@@ -21,22 +23,63 @@ Solver::Solver(Schedule* schedule, int seed)
 bool Solver::InitialSchedule() {
   for (const auto &ptr : schedule_->GetGroups()) {
     for (const auto &it : ptr->GetSections()) {
-      std::vector< std::pair<int, int> > unassigned;
-      for (const auto &jt : ptr->GetSubjects())
-        for (const auto &kt : jt->GetSlots())
-          unassigned.emplace_back(jt->GetId(), kt);
-      std::shuffle(unassigned.begin(), unassigned.end(), rand_generator_);
-      for (auto sb : unassigned) {
-        int section = it->GetId(), subject = sb.first, num_slots = sb.second;
-        bool assigned = false;
-        for (int kt = 0; kt < schedule_->GetNumSlots(); kt++) {
-          if (schedule_->IsFree(section, kt, num_slots)) {
-            schedule_->HardAssign(subject, section, kt, num_slots);
-            assigned = true;
-            break;
+      std::vector< std::vector< std::pair<int, int> > > to_assign(
+        schedule_->GetNumDays());
+      std::priority_queue< std::pair<int, int>,
+                           std::vector< std::pair<int, int> >,
+                           std::greater< std::pair<int, int> > > day_slots;
+
+      for (int i = 0; i < schedule_->GetNumDays(); i++) day_slots.emplace(0, i);
+
+      for (int k = 1; k <= schedule_->GetNumDays(); k++) {
+        for (const auto &jt : ptr->GetSubjects()) {
+          if (int(jt->GetSlots().size()) != k) continue;
+          std::vector< std::pair<int, int> > days;
+
+          for (int j = 0; j < k; j++) {
+            int old_slots = day_slots.top().first;
+            int day = day_slots.top().second;
+            day_slots.pop();
+
+            int num_slots = jt->GetSlots()[j];
+            to_assign[day].emplace_back(jt->GetId(), num_slots);
+            days.emplace_back(old_slots + num_slots, day);
           }
+
+          for (int j = 0; j < k; j++) day_slots.push(days[j]);
         }
-        if (!assigned) return false;
+      }
+
+      for (const auto &jt : ptr->GetSubjects()) {
+        if (int(jt->GetSlots().size()) <= schedule_->GetNumDays()) continue;
+        for (const auto &num_slots : jt->GetSlots()) {
+          int old_slots = day_slots.top().first;
+          int day = day_slots.top().second;
+          day_slots.pop();
+
+          to_assign[day].emplace_back(jt->GetId(), num_slots);
+          day_slots.emplace(old_slots + num_slots, day);
+        }
+      }
+
+      while (!day_slots.empty()) {
+        if (day_slots.top().first > schedule_->GetNumSlotsPerDay())
+          return false;
+        day_slots.pop();
+      }
+
+      for (int i = 0; i < schedule_->GetNumDays(); i++) {
+        int last_slot = i*schedule_->GetNumSlotsPerDay();
+        std::shuffle(to_assign[i].begin(), to_assign[i].end(), rand_generator_);
+
+        for (auto sb : to_assign[i]) {
+          int section = it->GetId();
+          int subject = sb.first;
+          int num_slots = sb.second;
+
+          schedule_->HardAssign(subject, section, last_slot, num_slots);
+          last_slot += num_slots;
+        }
       }
     }
   }
