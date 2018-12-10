@@ -20,14 +20,14 @@ Solver::Solver(Schedule* schedule, int seed)
 
 bool Solver::InitialSchedule() {
   for (const auto &ptr : schedule_->GetGroups()) {
-    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++) {
+    for (const auto &it : ptr->GetSections()) {
       std::vector< std::pair<int, int> > unassigned;
-      for (auto jt = ptr->GetSubjectsBegin(); jt != ptr->GetSubjectsEnd(); jt++)
-        for (auto kt = (*jt)->GetSlotsBegin(); kt != (*jt)->GetSlotsEnd(); kt++)
-          unassigned.emplace_back((*jt)->GetId(), *kt);
+      for (const auto &jt : ptr->GetSubjects())
+        for (auto kt = jt->GetSlotsBegin(); kt != jt->GetSlotsEnd(); kt++)
+          unassigned.emplace_back(jt->GetId(), *kt);
       std::shuffle(unassigned.begin(), unassigned.end(), rand_generator_);
       for (auto sb : unassigned) {
-        int section = (*it)->GetId(), subject = sb.first, num_slots = sb.second;
+        int section = it->GetId(), subject = sb.first, num_slots = sb.second;
         bool assigned = false;
         for (int kt = 0; kt < schedule_->GetNumSlots(); kt++) {
           if (schedule_->IsFree(section, kt, num_slots)) {

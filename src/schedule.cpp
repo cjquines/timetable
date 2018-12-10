@@ -57,10 +57,8 @@ void Schedule::ResetTimetable() {
 
 void Schedule::Initialize() {
   for (auto ptr : groups_) {
-    for (auto it = ptr->GetSectionsBegin(); it != ptr->GetSectionsEnd(); it++)
-      sections_.push_back(*it);
-    for (auto it = ptr->GetSubjectsBegin(); it != ptr->GetSubjectsEnd(); it++)
-      subjects_.push_back(*it);
+    for (const auto &it : ptr->GetSections()) sections_.push_back(it);
+    for (const auto &it : ptr->GetSubjects()) subjects_.push_back(it);
   }
   ResetTimetable();
 }

@@ -10,23 +10,11 @@ int Group::GetNumSubjects() { return subjects_.size(); }
 
 Section* Group::GetSection(int idx) { return sections_[idx]; }
 
-std::vector<Section*>::iterator Group::GetSectionsBegin() {
-  return sections_.begin();
-}
-
-std::vector<Section*>::iterator Group::GetSectionsEnd() {
-  return sections_.end();
-}
+const std::vector<Section*>& Group::GetSections() const { return sections_; }
 
 Subject* Group::GetSubject(int idx) { return subjects_[idx]; }
 
-std::vector<Subject*>::iterator Group::GetSubjectsBegin() {
-  return subjects_.begin();
-}
-
-std::vector<Subject*>::iterator Group::GetSubjectsEnd() {
-  return subjects_.end();
-}
+const std::vector<Subject*>& Group::GetSubjects() const { return subjects_; }
 
 void Group::AddSection(int id, const std::string &name) {
   Section* ptr = new Section(id, name);

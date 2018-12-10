@@ -16,12 +16,10 @@ public:
   int GetNumSubjects();
 
   Section* GetSection(int idx);
-  std::vector<Section*>::iterator GetSectionsBegin();
-  std::vector<Section*>::iterator GetSectionsEnd();
+  const std::vector<Section*>& GetSections() const;
 
   Subject* GetSubject(int idx);
-  std::vector<Subject*>::iterator GetSubjectsBegin();
-  std::vector<Subject*>::iterator GetSubjectsEnd();
+  const std::vector<Subject*>& GetSubjects() const;
 
   void AddSection(int id, const std::string &name);
   void AddSubject(int id, const std::vector<int> &slots, int teacher,
