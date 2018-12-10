@@ -8,6 +8,7 @@ NonSimultaneous::NonSimultaneous(Schedule* schedule, int priority)
 int NonSimultaneous::CountTranslate(int section, int timeslot,
                                     int open_timeslot) {
   int teacher = schedule_->GetTeacherOf(section, timeslot);
+  if (teacher == 0) return 0;
   int length = schedule_->GetLengthOf(section, timeslot);
   int result = 0;
 
@@ -35,14 +36,18 @@ int NonSimultaneous::CountAdjSwap(int section, int lhs_timeslot,
   int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
   int result = 0;
 
-  for (int i = 0; i < lhs_length; i++) {
-    if (schedule_->CountSectionsOf(lhs_teacher, lhs_timeslot+i) > 1) result--;
-    if (schedule_->CountSectionsOf(lhs_teacher, new_rhs_slot+i) > 0) result++;
+  if (lhs_teacher != 0) {
+    for (int i = 0; i < lhs_length; i++) {
+      if (schedule_->CountSectionsOf(lhs_teacher, lhs_timeslot+i) > 1) result--;
+      if (schedule_->CountSectionsOf(lhs_teacher, new_rhs_slot+i) > 0) result++;
+    }
   }
 
-  for (int i = 0; i < rhs_length; i++) {
-    if (schedule_->CountSectionsOf(rhs_teacher, rhs_timeslot+i) > 1) result--;
-    if (schedule_->CountSectionsOf(rhs_teacher, lhs_timeslot+i) > 0) result++;
+  if (rhs_teacher != 0) {
+    for (int i = 0; i < rhs_length; i++) {
+      if (schedule_->CountSectionsOf(rhs_teacher, rhs_timeslot+i) > 1) result--;
+      if (schedule_->CountSectionsOf(rhs_teacher, lhs_timeslot+i) > 0) result++;
+    }
   }
 
   if (priority_ > 0) return result*priority_;
@@ -53,6 +58,7 @@ int NonSimultaneous::CountAll() {
   int result = 0;
   
   for (const auto &it : schedule_->GetTeachers()) {
+    if (it->GetId() == 0) continue;
     for (int j = 0; j < schedule_->GetNumSlots(); j++) {
       result += std::max(0, schedule_->CountSectionsOf(it->GetId(), j) - 1);
     }
