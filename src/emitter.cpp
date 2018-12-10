@@ -129,6 +129,8 @@ void Emitter::OutputSectionTable() {
 
 void Emitter::OutputTeacherTable() {
   for (const auto &it : schedule_->GetTeachers()) {
+    if (it->GetId() == 0) continue;
+    
     OpenTag("Worksheet");
     AddAttribute("ss:Name", it->GetName());
     OpenTag("Table");
