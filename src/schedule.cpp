@@ -99,7 +99,7 @@ int Schedule::GetLengthOf(int section, int timeslot) {
 }
 
 int Schedule::CountSectionsOf(int teacher, int timeslot) {
-  if (hard_satisfied_) {
+  if (hard_satisfied_ && teacher != 0) {
     if (teacher_table_[teacher][timeslot] == -1) return 0;
     return 1;
   }
@@ -116,7 +116,7 @@ int Schedule::CountSectionsTranslate(int teacher, int timeslot, int section,
 }
 
 int Schedule::GetSectionOf(int teacher, int timeslot) {
-  assert(hard_satisfied_);
+  assert(hard_satisfied_ && teacher != 0);
   return teacher_table_[teacher][timeslot];
 }
 
@@ -308,8 +308,17 @@ void Schedule::SoftTranslate(int section, int timeslot, int open_timeslot) {
   for (int i = 0; i < num_slots; i++) {
     timetable_[section][timeslot+i] = -1;
     timetable_[section][open_timeslot+i] = -2;
-    teacher_table_[teacher][timeslot+i] = -1;
-    teacher_table_[teacher][open_timeslot+i] = section;
+  }
+  if (teacher != 0) {
+    for (int i = 0; i < num_slots; i++) {
+      teacher_table_[teacher][timeslot+i] = -1;
+      teacher_table_[teacher][open_timeslot+i] = section;
+    }
+  } else {
+    for (int i = 0; i < num_slots; i++) {
+      teacher_table_[teacher][timeslot+i]--;
+      teacher_table_[teacher][open_timeslot+i]++;
+    }
   }
   timetable_[section][open_timeslot] = subject;
 }
@@ -328,10 +337,14 @@ void Schedule::SoftSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int rhs_teacher = GetSubject(rhs_subject)->GetTeacher();
   int num_slots = GetLengthOf(section, lhs_timeslot);
   for (int i = 0; i < num_slots; i++) {
-    teacher_table_[lhs_teacher][lhs_timeslot+i] = -1;
-    teacher_table_[rhs_teacher][rhs_timeslot+i] = -1;
-    teacher_table_[lhs_teacher][rhs_timeslot+i] = section;
-    teacher_table_[rhs_teacher][lhs_timeslot+i] = section;
+    if (lhs_teacher != 0) teacher_table_[lhs_teacher][lhs_timeslot+i] = -1;
+    else teacher_table_[lhs_teacher][lhs_timeslot+i]--;
+    if (rhs_teacher != 0) teacher_table_[rhs_teacher][rhs_timeslot+i] = -1;
+    else teacher_table_[rhs_teacher][rhs_timeslot+i]--;
+    if (lhs_teacher != 0) teacher_table_[lhs_teacher][rhs_timeslot+i] = section;
+    else teacher_table_[lhs_teacher][rhs_timeslot+i]++;
+    if (rhs_teacher != 0) teacher_table_[rhs_teacher][lhs_timeslot+i] = section;
+    else teacher_table_[rhs_teacher][lhs_timeslot+i]++;
   }
   timetable_[section][lhs_timeslot] = rhs_subject;
   timetable_[section][rhs_timeslot] = lhs_subject;
@@ -355,22 +368,26 @@ void Schedule::SoftAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) {
   int new_rhs_slot = NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
 
   for (int i = 0; i < lhs_length; i++) {
-    teacher_table_[lhs_teacher][lhs_timeslot+i] = -1;
+    if (lhs_teacher != 0) teacher_table_[lhs_teacher][lhs_timeslot+i] = -1;
+    else teacher_table_[lhs_teacher][lhs_timeslot+i]--;
     timetable_[section][lhs_timeslot+i] = -1;
   }
 
   for (int i = 0; i < rhs_length; i++) {
-    teacher_table_[rhs_teacher][rhs_timeslot+i] = -1;
+    if (rhs_teacher != 0) teacher_table_[rhs_teacher][rhs_timeslot+i] = -1;
+    else teacher_table_[rhs_teacher][rhs_timeslot+i]--;
     timetable_[section][rhs_timeslot+i] = -1;
   }
 
   for (int i = 0; i < lhs_length; i++) {
-    teacher_table_[lhs_teacher][new_rhs_slot+i] = section;
+    if (lhs_teacher != 0) teacher_table_[lhs_teacher][new_rhs_slot+i] = section;
+    else teacher_table_[lhs_teacher][new_rhs_slot+i]++;
     timetable_[section][new_rhs_slot+i] = -2;
   }
 
   for (int i = 0; i < rhs_length; i++) {
-    teacher_table_[rhs_teacher][lhs_timeslot+i] = section;
+    if (rhs_teacher != 0) teacher_table_[rhs_teacher][lhs_timeslot+i] = section;
+    else teacher_table_[rhs_teacher][lhs_timeslot+i]++;
     timetable_[section][lhs_timeslot+i] = -2;
   }
 
