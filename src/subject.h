@@ -9,8 +9,7 @@ public:
   Subject(int id, const std::vector<int> &slots, int teacher,
           const std::string &name);
   int GetId();
-  std::vector<int>::iterator GetSlotsBegin();
-  std::vector<int>::iterator GetSlotsEnd();
+  const std::vector<int>& GetSlots() const;
   int GetTeacher();
   std::string GetName();
 

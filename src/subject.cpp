@@ -6,9 +6,7 @@ Subject::Subject(int id, const std::vector<int> &slots,
 
 int Subject::GetId() { return id_; }
 
-std::vector<int>::iterator Subject::GetSlotsBegin() { return slots_.begin(); }
-
-std::vector<int>::iterator Subject::GetSlotsEnd() { return slots_.end(); }
+const std::vector<int>& Subject::GetSlots() const { return slots_; }
 
 int Subject::GetTeacher() { return teacher_; }
 
