@@ -61,8 +61,6 @@ int MaxConsecutive::CountSwapTimeslot(int section, int lhs_timeslot,
 
 int MaxConsecutive::CountAdjSwap(int section, int lhs_timeslot,
                                  int rhs_timeslot) {
-  int lhs_teacher = schedule_->GetTeacherOf(section, lhs_timeslot);
-  int rhs_teacher = schedule_->GetTeacherOf(section, rhs_timeslot);
   int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
 
   return CountTranslate(section, lhs_timeslot, new_rhs_slot)
