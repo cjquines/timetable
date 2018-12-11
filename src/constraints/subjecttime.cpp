@@ -5,10 +5,15 @@
 #include "../section.h"
 
 SubjectTime::SubjectTime(Schedule *schedule, int priority, int subject,
-                         const std::vector<int> &unassignable)
-    : Constraint(schedule, priority), subject_(subject),
-      unassignable_(schedule_->GetNumSlots(), 0) {
-  for (auto i : unassignable) unassignable_[i] = 1;
+                         const std::vector<int> &slots, bool unassignable)
+    : Constraint(schedule, priority), subject_(subject) {
+  if (unassignable) {
+    unassignable_.assign(schedule_->GetNumSlots(), 0);
+    for (auto i : slots) unassignable_[i] = 1;
+  } else {
+    unassignable_.assign(schedule_->GetNumSlots(), 1);
+    for (auto i : slots) unassignable_[i] = 0;
+  }
 }
 
 int SubjectTime::HalfCount(int section, int lhs_timeslot, int rhs_timeslot) {
