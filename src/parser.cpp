@@ -230,6 +230,31 @@ void Parser::ReadGroups() {
       std::vector<int> times = jt["times"].as< std::vector<int> >();
       grp->AddSubject(num_subjects_, times, teacher, name);
 
+      if (jt["assignable"] && jt["unassignable"])
+        throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "can't have both assignable and unassignable.");
+
+      if (jt["assignable"]) {
+        if (!jt["assignable"]["priority"])
+          throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "'s assignable constraint doesn't have a priority.");
+        if (!jt["assignable"]["priority"].IsScalar())
+          throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "'s assignable priority doesn't look like an integer.");
+        if (!jt["assignable"]["times"])
+          throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "'s assignable constraint doesn't have a list of times.");
+        if (!jt["assignable"]["times"].IsSequence())
+          throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "'s assignable times doesn't look like a list.");
+
+        int priority = jt["assignable"]["priority"].as<int>();
+        if (priority > 0) priority *= priority_factor_;
+
+        schedule_->AddConstraint<SubjectTime>(priority, num_subjects_,
+          jt["assignable"]["times"].as< std::vector<int> >(), false);
+      }
+
       if (jt["unassignable"]) {
         if (!jt["unassignable"]["priority"])
           throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
