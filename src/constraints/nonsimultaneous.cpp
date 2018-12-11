@@ -30,7 +30,6 @@ int NonSimultaneous::CountAdjSwap(int section, int lhs_timeslot,
                                   int rhs_timeslot) {
   int lhs_teacher = schedule_->GetTeacherOf(section, lhs_timeslot);
   int rhs_teacher = schedule_->GetTeacherOf(section, rhs_timeslot);
-  if (lhs_teacher == rhs_teacher) return 0;
   int lhs_length = schedule_->GetLengthOf(section, lhs_timeslot);
   int rhs_length = schedule_->GetLengthOf(section, rhs_timeslot);
   int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);

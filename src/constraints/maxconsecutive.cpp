@@ -63,7 +63,6 @@ int MaxConsecutive::CountAdjSwap(int section, int lhs_timeslot,
                                  int rhs_timeslot) {
   int lhs_teacher = schedule_->GetTeacherOf(section, lhs_timeslot);
   int rhs_teacher = schedule_->GetTeacherOf(section, rhs_timeslot);
-  if (lhs_teacher == rhs_teacher) return 0;
   int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
 
   return CountTranslate(section, lhs_timeslot, new_rhs_slot)
