@@ -30,9 +30,16 @@ int SubjectTime::CountTranslate(int section, int timeslot, int open_timeslot) {
 
 int SubjectTime::CountSwapTimeslot(int section, int lhs_timeslot,
                                    int rhs_timeslot) {
+  return CountAdjSwap(section, lhs_timeslot, rhs_timeslot);
+}
+
+int SubjectTime::CountAdjSwap(int section, int lhs_timeslot,
+                              int rhs_timeslot) {
   int result = 0;
+  int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
+
   if (schedule_->GetSubjectOf(section, lhs_timeslot) == subject_)
-    result += HalfCount(section, lhs_timeslot, rhs_timeslot);
+    result += HalfCount(section, lhs_timeslot, new_rhs_slot);
   if (schedule_->GetSubjectOf(section, rhs_timeslot) == subject_)
     result += HalfCount(section, rhs_timeslot, lhs_timeslot);
 
