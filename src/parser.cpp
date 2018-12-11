@@ -9,6 +9,7 @@
 #include "parser.h"
 #include "group.h"
 #include "schedule.h"
+#include "constraints/breakcollisions.h"
 #include "constraints/distinctperday.h"
 #include "constraints/evendismissal.h"
 #include "constraints/maxconsecutive.h"
@@ -315,7 +316,16 @@ void Parser::ReadConstraints() {
     int priority = it["priority"].as<int>();
     if (priority > 0) priority *= priority_factor_;
 
-    if (type == "distinctPerDay") {
+    if (type == "breakCollisions") {
+      if (!it["maxCollisions"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a maxCollisions.");
+      if (!it["maxCollisions"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s maxCollisions doesn't look like an integer.");
+      
+      schedule_->AddConstraint<BreakCollisions>(priority, it["maxCollisions"].as<int>());
+    } else if (type == "distinctPerDay") {
       schedule_->AddConstraint<DistinctPerDay>(priority);
     } else if (type == "evenDismissal") {
       if (!it["sections"])
