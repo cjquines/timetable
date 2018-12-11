@@ -251,8 +251,12 @@ void Parser::ReadGroups() {
         int priority = jt["assignable"]["priority"].as<int>();
         if (priority > 0) priority *= priority_factor_;
 
+        bool daily = false;
+        if (jt["assignable"]["daily"])
+          daily = jt["assignable"]["daily"].as<bool>();
+
         schedule_->AddConstraint<SubjectTime>(priority, num_subjects_,
-          jt["assignable"]["times"].as< std::vector<int> >(), false);
+          jt["assignable"]["times"].as< std::vector<int> >(), daily, false);
       }
 
       if (jt["unassignable"]) {
@@ -272,8 +276,12 @@ void Parser::ReadGroups() {
         int priority = jt["unassignable"]["priority"].as<int>();
         if (priority > 0) priority *= priority_factor_;
 
+        bool daily = false;
+        if (jt["assignable"]["daily"])
+          daily = jt["assignable"]["daily"].as<bool>();
+
         schedule_->AddConstraint<SubjectTime>(priority, num_subjects_,
-                                  jt["unassignable"]["times"].as< std::vector<int> >());
+          jt["unassignable"]["times"].as< std::vector<int> >(), daily);
       }
 
       num_subjects_++;
