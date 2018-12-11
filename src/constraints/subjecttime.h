@@ -13,6 +13,7 @@ public:
   int CountTranslate(int section, int timeslot, int open_timeslot) override;
   int CountSwapTimeslot(int section, int lhs_timeslot,
                         int rhs_timeslot) override;
+  int CountAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) override;
   int CountAll() override;
 
 private:
