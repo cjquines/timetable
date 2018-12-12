@@ -17,32 +17,35 @@ int SlotsBetween::Score(int section, int lbound, int rbound,
   bool seen_break = false;
   int result = 0, count = 0, i = lbound;
   while (i < rbound) {
-    if (!schedule_->IsFree(section, i)) {
-      if (schedule_->GetTeacherOf(section, i) == 0
-       && (i < rm_break.first || rm_break.first + rm_break.second <= i)) {
-        if (count < min_slots_) result += min_slots_ - count;
-        else if (count > max_slots_) result += max_slots_ - count;
-        count = 0;
-        seen_break = true;
-        i += schedule_->GetLengthOf(section, i);
-      } else if (i < rm_subj.first || rm_subj.first + rm_subj.second <= i) {
-        count += schedule_->GetLengthOf(section, i);
-        i += schedule_->GetLengthOf(section, i);
-      }
-    } else if (add_break.first <= i && i < add_break.first + add_break.second) {
+    if (i == add_break.first) {
       if (count < min_slots_) result += min_slots_ - count;
-      else if (count > max_slots_) result += max_slots_ - count;
+      else if (count > max_slots_) result += count - max_slots_;
       count = 0;
       seen_break = true;
       i += add_break.second;
-    } else if (add_subj.first <= i && i < add_subj.first + add_subj.second) {
+    } else if (i == add_subj.first) {
       count += add_subj.second;
       i += add_subj.second;
+    } else if (i == rm_break.first) {
+      i += rm_break.second;
+    } else if (i == rm_subj.first) {
+      i += rm_subj.second;
+    } else if (schedule_->GetSubjectOf(section, i) >= 0) {
+      if (schedule_->GetTeacherOf(section, i) == 0) {
+        if (count < min_slots_) result += min_slots_ - count;
+        else if (count > max_slots_) result += count - max_slots_;
+        count = 0;
+        seen_break = true;
+        i += schedule_->GetLengthOf(section, i);
+      } else {
+        count += schedule_->GetLengthOf(section, i);
+        i += schedule_->GetLengthOf(section, i);
+      }
     } else i++;
   }
   if (seen_break) {
     if (count < min_slots_) result += min_slots_ - count;
-    else if (count > max_slots_) result += max_slots_ - count;
+    else if (count > max_slots_) result += count - max_slots_;
   }
   return result;
 }
