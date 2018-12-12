@@ -199,6 +199,17 @@ int Schedule::NewRHSSlot(int section, int lhs_timeslot, int rhs_timeslot) {
        - GetLengthOf(section, lhs_timeslot);
 }
 
+int Schedule::NextSubject(int section, int timeslot) {
+  int rbound = ClampDay(timeslot).second;
+  int result = timeslot;
+  if (!IsFree(section, timeslot)) {
+    int head = GetHeadOf(section, timeslot);
+    result = head + GetLengthOf(section, head);
+  }
+  while (result < rbound && IsFree(section, result)) result++;
+  return result;
+}
+
 void Schedule::HardAssign(int subject, int section, int timeslot,
                           int num_slots) {
   int teacher = GetSubject(subject)->GetTeacher();

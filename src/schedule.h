@@ -64,6 +64,7 @@ public:
 
   std::pair<int, int> ClampDay(int timeslot);
   int NewRHSSlot(int section, int lhs_timeslot, int rhs_timeslot);
+  int NextSubject(int section, int timeslot);
 
   void HardAssign(int subject, int section, int timeslot, int num_slots);
 
