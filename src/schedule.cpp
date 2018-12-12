@@ -106,8 +106,9 @@ int Schedule::CountSectionsOf(int teacher, int timeslot) {
 
 int Schedule::CountSectionsTranslate(int teacher, int timeslot, int section,
                                      int tr_timeslot, int open_timeslot) {
-  int length = GetLengthOf(section, tr_timeslot);
   int result = CountSectionsOf(teacher, timeslot);
+  if (GetTeacherOf(section, tr_timeslot) != teacher) return result;
+  int length = GetLengthOf(section, tr_timeslot);
   if (tr_timeslot <= timeslot && timeslot < tr_timeslot + length) result--;
   if (open_timeslot <= timeslot && timeslot < open_timeslot + length) result++;
   return result;
