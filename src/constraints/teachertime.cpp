@@ -4,10 +4,15 @@
 #include "../schedule.h"
 
 TeacherTime::TeacherTime(Schedule *schedule, int priority, int teacher,
-                         const std::vector<int> &unassignable)
+                         const std::vector<int> &unassignable, bool daily)
     : Constraint(schedule, priority), teacher_(teacher),
       unassignable_(schedule_->GetNumSlots(), 0) {
-  for (auto i : unassignable) unassignable_[i] = 1;
+  std::vector<int> slots(unassignable);
+  if (daily)
+    for (int k = 1; k < schedule_->GetNumDays(); k++)
+      for (auto i : unassignable)
+        slots.push_back(k*schedule_->GetNumSlotsPerDay() + i);
+  for (auto i : slots) unassignable_[i] = 1;
 }
 
 int TeacherTime::HalfCount(int section, int lhs_timeslot, int rhs_timeslot) {

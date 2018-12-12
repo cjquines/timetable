@@ -155,11 +155,15 @@ void Parser::ReadTeachers() {
         throw std::runtime_error(
           name + "'s unassignable times doesn't look like a list.");
 
+      bool daily = false;
+      if (it["unassignable"]["daily"])
+        daily = it["unassignable"]["daily"].as<bool>();
+
       int priority = it["unassignable"]["priority"].as<int>();
       if (priority > 0) priority *= priority_factor_;
 
       schedule_->AddConstraint<TeacherTime>(priority, num_teachers_,
-                                it["unassignable"]["times"].as< std::vector<int> >());
+        it["unassignable"]["times"].as< std::vector<int> >(), daily);
     }
 
     teachers_dict_[name] = num_teachers_++;
