@@ -11,11 +11,16 @@ int NonSimultaneous::CountTranslate(int section, int timeslot,
   if (teacher == 0) return 0;
   int length = schedule_->GetLengthOf(section, timeslot);
   int result = 0;
-
   for (int i = 0; i < length; i++) {
-    if (schedule_->CountSectionsOf(teacher, timeslot+i) > 1) result--;
-    if (schedule_->CountSectionsOf(teacher, open_timeslot+i) > 0) result++;
+    if (schedule_->CountSectionsOf(teacher, lhs_timeslot+i) > 1) result--;
+    if (schedule_->CountSectionsOf(teacher, rhs_timeslot+i) > 0) result++;
   }
+  return result;
+}
+
+int NonSimultaneous::CountTranslate(int section, int timeslot,
+                                    int open_timeslot) {
+  int result = HalfCount(section, timeslot, open_timeslot);
 
   if (priority_ > 0) return result*priority_;
   return result;
@@ -28,26 +33,13 @@ int NonSimultaneous::CountSwapTimeslot(int section, int lhs_timeslot,
 
 int NonSimultaneous::CountAdjSwap(int section, int lhs_timeslot,
                                   int rhs_timeslot) {
-  int lhs_teacher = schedule_->GetTeacherOf(section, lhs_timeslot);
-  int rhs_teacher = schedule_->GetTeacherOf(section, rhs_timeslot);
-  int lhs_length = schedule_->GetLengthOf(section, lhs_timeslot);
-  int rhs_length = schedule_->GetLengthOf(section, rhs_timeslot);
   int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
   int result = 0;
 
-  if (lhs_teacher != 0) {
-    for (int i = 0; i < lhs_length; i++) {
-      if (schedule_->CountSectionsOf(lhs_teacher, lhs_timeslot+i) > 1) result--;
-      if (schedule_->CountSectionsOf(lhs_teacher, new_rhs_slot+i) > 0) result++;
-    }
-  }
-
-  if (rhs_teacher != 0) {
-    for (int i = 0; i < rhs_length; i++) {
-      if (schedule_->CountSectionsOf(rhs_teacher, rhs_timeslot+i) > 1) result--;
-      if (schedule_->CountSectionsOf(rhs_teacher, lhs_timeslot+i) > 0) result++;
-    }
-  }
+  if (lhs_teacher != 0)
+    result += HalfCount(section, lhs_timeslot, new_rhs_slot);
+  if (rhs_teacher != 0) 
+    result += HalfCount(section, rhs_timeslot, lhs_timeslot);
 
   if (priority_ > 0) return result*priority_;
   return result;

@@ -108,8 +108,9 @@ int Schedule::CountSectionsOf(int teacher, int timeslot) {
 
 int Schedule::CountSectionsTranslate(int teacher, int timeslot, int section,
                                      int tr_timeslot, int open_timeslot) {
-  int length = GetLengthOf(section, tr_timeslot);
   int result = CountSectionsOf(teacher, timeslot);
+  if (GetTeacherOf(section, tr_timeslot) != teacher) return result;
+  int length = GetLengthOf(section, tr_timeslot);
   if (tr_timeslot <= timeslot && timeslot < tr_timeslot + length) result--;
   if (open_timeslot <= timeslot && timeslot < open_timeslot + length) result++;
   return result;
@@ -164,11 +165,7 @@ bool Schedule::IsValidHardAdjSwap(int section, int lhs_timeslot,
   // hard adj swapped to subject with head at rhs_timeslot. 
   assert(timetable_[section][lhs_timeslot] >= 0);
   assert(timetable_[section][rhs_timeslot] >= 0);
-  if (rhs_timeslot < lhs_timeslot) return false;
-  int lhs_length = GetLengthOf(section, lhs_timeslot);
-  return (ClampDay(lhs_timeslot).first == ClampDay(rhs_timeslot).first)
-       && IsFree(section, lhs_timeslot + lhs_length,
-                 rhs_timeslot - (lhs_timeslot + lhs_length));
+  return NextSubject(section, lhs_timeslot) == rhs_timeslot;
 }
 
 bool Schedule::IsValidSoftTranslate(int section, int timeslot,
@@ -198,6 +195,17 @@ std::pair<int, int> Schedule::ClampDay(int timeslot) {
 int Schedule::NewRHSSlot(int section, int lhs_timeslot, int rhs_timeslot) {
   return rhs_timeslot + GetLengthOf(section, rhs_timeslot)
        - GetLengthOf(section, lhs_timeslot);
+}
+
+int Schedule::NextSubject(int section, int timeslot) {
+  int rbound = ClampDay(timeslot).second;
+  int result = timeslot;
+  if (!IsFree(section, timeslot)) {
+    int head = GetHeadOf(section, timeslot);
+    result = head + GetLengthOf(section, head);
+  }
+  while (result < rbound && IsFree(section, result)) result++;
+  return result;
 }
 
 void Schedule::HardAssign(int subject, int section, int timeslot,

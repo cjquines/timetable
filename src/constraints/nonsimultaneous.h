@@ -11,6 +11,9 @@ public:
                         int rhs_timeslot) override;
   int CountAdjSwap(int section, int lhs_timeslot, int rhs_timeslot) override;
   int CountAll() override;
+
+private:
+  int HalfCount(int section, int lhs_timeslot, int rhs_timeslot);
 };
 
 #endif
