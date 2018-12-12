@@ -116,6 +116,31 @@ int Schedule::CountSectionsTranslate(int teacher, int timeslot, int section,
   return result;
 }
 
+int Schedule::CountSectionsAdjSwap(int teacher, int timeslot, int section,
+                                   int lhs_timeslot, int rhs_timeslot) {
+  int new_rhs_slot = NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
+  if (GetTeacherOf(section, lhs_timeslot) != teacher)
+    return CountSectionsTranslate(teacher, timeslot, section, rhs_timeslot,
+                                  lhs_timeslot);
+  if (GetTeacherOf(section, rhs_timeslot) != teacher)
+    return CountSectionsTranslate(teacher, timeslot, section, lhs_timeslot,
+                                  new_rhs_slot);
+
+  int result = CountSectionsOf(teacher, timeslot);
+  int lhs_length = GetLengthOf(section, lhs_timeslot);
+  int rhs_length = GetLengthOf(section, rhs_timeslot);
+
+  if (lhs_timeslot <= timeslot && timeslot < lhs_timeslot + lhs_length)
+    result--;
+  if (rhs_timeslot <= timeslot && timeslot < rhs_timeslot + rhs_length)
+    result--;
+  if (new_rhs_slot <= timeslot && timeslot < new_rhs_slot + lhs_length)
+    result++;
+  if (lhs_timeslot <= timeslot && timeslot < lhs_timeslot + rhs_length)
+    result++;
+  return result;
+}
+
 int Schedule::GetSectionOf(int teacher, int timeslot) {
   assert(hard_satisfied_ && teacher != 0);
   return teacher_table_[teacher][timeslot];

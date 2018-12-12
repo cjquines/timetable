@@ -50,6 +50,8 @@ public:
   int CountSectionsOf(int teacher, int timeslot);
   int CountSectionsTranslate(int teacher, int timeslot, int section,
                              int tr_timeslot, int open_timeslot);
+  int CountSectionsAdjSwap(int teacher, int timeslot, int section,
+                           int lhs_timeslot, int rhs_timeslot);
   int GetSectionOf(int teacher, int timeslot);
 
   bool IsFree(int section, int timeslot, int num_slots = 1);
