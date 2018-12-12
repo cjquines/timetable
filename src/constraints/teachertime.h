@@ -8,7 +8,7 @@
 class TeacherTime : public Constraint {
 public:
   TeacherTime(Schedule* schedule, int priority, int teacher,
-              const std::vector<int> &unassignable);
+              const std::vector<int> &unassignable, bool daily = false);
   int CountTranslate(int section, int timeslot, int open_timeslot) override;
   int CountSwapTimeslot(int section, int lhs_timeslot,
                         int rhs_timeslot) override;

@@ -23,6 +23,9 @@ Solver::Solver(Schedule* schedule, int seed)
 bool Solver::InitialSchedule() {
   for (const auto &ptr : schedule_->GetGroups()) {
     for (const auto &it : ptr->GetSections()) {
+      std::vector< std::pair<int, int> > breaks;
+      int break_slots = 0;
+
       std::vector< std::vector< std::pair<int, int> > > to_assign(
         schedule_->GetNumDays());
       std::priority_queue< std::pair<int, int>,
@@ -34,6 +37,14 @@ bool Solver::InitialSchedule() {
       for (int k = 1; k <= schedule_->GetNumDays(); k++) {
         for (const auto &jt : ptr->GetSubjects()) {
           if (int(jt->GetSlots().size()) != k) continue;
+
+          if (jt->GetTeacher() == 0) {
+            int num_slots = jt->GetSlots()[0];
+            breaks.emplace_back(jt->GetId(), num_slots);
+            break_slots += num_slots;
+            continue;
+          }
+
           std::vector< std::pair<int, int> > days;
 
           for (int j = 0; j < k; j++) {
@@ -63,14 +74,18 @@ bool Solver::InitialSchedule() {
       }
 
       while (!day_slots.empty()) {
-        if (day_slots.top().first > schedule_->GetNumSlotsPerDay())
-          return false;
+        if (day_slots.top().first + break_slots
+          > schedule_->GetNumSlotsPerDay()) return false;
         day_slots.pop();
       }
 
       for (int i = 0; i < schedule_->GetNumDays(); i++) {
         int last_slot = i*schedule_->GetNumSlotsPerDay();
         std::shuffle(to_assign[i].begin(), to_assign[i].end(), rand_generator_);
+
+        int d = (to_assign[i].size() + breaks.size() + 1) / (breaks.size() + 1);
+        auto kt = to_assign[i].begin() + d - 1;
+        for (auto jt : breaks) kt = to_assign[i].insert(kt, jt) + d;
 
         for (auto sb : to_assign[i]) {
           int section = it->GetId();

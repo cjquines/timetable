@@ -8,7 +8,8 @@
 class SubjectTime : public Constraint {
 public:
   SubjectTime(Schedule* schedule, int priority, int subject,
-              const std::vector<int> &unassignable);
+              const std::vector<int> &slots, bool daily = false,
+              bool unassignable = true);
   int CountTranslate(int section, int timeslot, int open_timeslot) override;
   int CountSwapTimeslot(int section, int lhs_timeslot,
                         int rhs_timeslot) override;

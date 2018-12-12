@@ -1,19 +1,22 @@
 CXXFLAGS = -g -O2 -pipe -std=c++14 -Wall
-CNSTR = constraints/distinctperday.o \
+CNSTR = constraints/breakcollisions.o \
+	constraints/distinctperday.o \
 	constraints/evendismissal.o \
 	constraints/minsubjects.o \
 	constraints/maxconsecutive.o \
 	constraints/nonsimultaneous.o \
 	constraints/reqfirstsubject.o \
+	constraints/slotsbetween.o \
 	constraints/subjectgaps.o \
 	constraints/subjecttime.o \
+	constraints/teacherbreak.o \
 	constraints/teachertime.o
 OBJS = emitter.o group.o parser.o schedule.o section.o \
 	solver.o subject.o teacher.o constraints/constraint.o
 STATICFLAGS = -static -static-libgcc -static-libstdc++
 
 main: main.o $(OBJS) $(CNSTR)
-	g++ $(CXXFLAGS) -o main main.o $(OBJS) $(CNSTR)
+	g++ $(CXXFLAGS) -o main main.o $(OBJS) $(CNSTR) -L. -lyaml-cpp
 
 static: main.o $(OBJS) $(CNSTR)
 	g++ $(STATICFLAGS) $(CXXFLAGS) -o timetable main.o $(OBJS) $(CNSTR)

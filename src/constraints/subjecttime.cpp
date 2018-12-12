@@ -5,10 +5,21 @@
 #include "../section.h"
 
 SubjectTime::SubjectTime(Schedule *schedule, int priority, int subject,
-                         const std::vector<int> &unassignable)
-    : Constraint(schedule, priority), subject_(subject),
-      unassignable_(schedule_->GetNumSlots(), 0) {
-  for (auto i : unassignable) unassignable_[i] = 1;
+                         const std::vector<int> &slots, bool daily,
+                         bool unassignable)
+    : Constraint(schedule, priority), subject_(subject) {
+  std::vector<int> new_slots(slots);
+  if (daily)
+    for (int k = 1; k < schedule_->GetNumDays(); k++)
+      for (auto i : slots)
+        new_slots.push_back(k*schedule_->GetNumSlotsPerDay() + i);
+  if (unassignable) {
+    unassignable_.assign(schedule_->GetNumSlots(), 0);
+    for (auto i : new_slots) unassignable_[i] = 1;
+  } else {
+    unassignable_.assign(schedule_->GetNumSlots(), 1);
+    for (auto i : new_slots) unassignable_[i] = 0;
+  }
 }
 
 int SubjectTime::HalfCount(int section, int lhs_timeslot, int rhs_timeslot) {

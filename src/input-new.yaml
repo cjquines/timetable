@@ -1,0 +1,223 @@
+days: 5
+slots: 48
+seed: 1542900573
+teachers:
+    - name: Break
+    - name: Mr. Darilag
+      unassignable:
+        priority: 1
+        daily: true
+        times: [0, 1, 2, 3, 4, 5]
+    - name: Mr. Catimbang
+    - name: Mrs. Salvador
+    - name: Mr. De Jesus
+    - name: Mrs. Villareal
+    - name: Mrs. Aquino
+    - name: Mrs. Dayrit
+    - name: Mrs. Fernandez
+    - name: Mrs. De Jesus
+    - name: Mr. Lumogdang
+    - name: Mrs. Montubig
+    - name: Mr. Dogma
+    - name: Mr. Agustin
+groups:
+    - sections:
+        - name: Locke
+        - name: Rousseau
+      subjects:
+        - name: AM
+          teacher: Break
+          times: [2, 2, 2, 2, 2]
+          assignable:
+            priority: 0
+            daily: true
+            times: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+        - name: Lunch
+          teacher: Break
+          times: [4, 4, 4, 4, 4]
+          # assignable:
+          #   priority: 0
+          #   daily: true
+          #   times: [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+        - name: Disaster Risk Reduction
+          teacher: Mr. Darilag
+          times: [9, 9, 6]
+        - name: Physical Education 4
+          teacher: Mr. Darilag
+          times: [6]
+        - name: Media and Information Literacy
+          teacher: Mr. Catimbang
+          times: [9, 9, 6]
+        - name: Pagsulat sa Piling Larangan
+          teacher: Mr. Catimbang
+          times: [9, 9, 6]
+        - name: General Biology 2
+          teacher: Mrs. Salvador
+          times: [9, 9, 6]
+        - name: Inquiries and Investigation
+          teacher: Mrs. Salvador
+          times: [9, 9, 6]
+        - name: General Physics 2
+          teacher: Mr. De Jesus
+          times: [9, 9, 6]
+        - name: Capstone
+          teacher: Mrs. Villareal
+          times: [9, 9, 6]
+    - sections:
+        - name: Hobbes
+      subjects:
+        - name: AM
+          teacher: Break
+          times: [2, 2, 2, 2, 2]
+          assignable:
+            priority: 0
+            daily: true
+            times: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+        - name: Lunch
+          teacher: Break
+          times: [4, 4, 4, 4, 4]
+        - name: Disaster Risk Reduction
+          teacher: Mr. Darilag
+          times: [9, 9, 6]
+        - name: Physical Education 4
+          teacher: Mr. Darilag
+          times: [6]
+        - name: Media and Information Literacy
+          teacher: Mr. Catimbang
+          times: [9, 9, 6]
+        - name: Pagsulat sa Piling Larangan
+          teacher: Mr. Catimbang
+          times: [9, 9, 6]
+        - name: General Biology 2
+          teacher: Mrs. Salvador
+          times: [9, 9, 6]
+        - name: Inquiries and Investigation
+          teacher: Mr. De Jesus
+          times: [9, 9, 6]
+        - name: General Physics 2
+          teacher: Mr. De Jesus
+          times: [9, 9, 6]
+        - name: Capstone
+          teacher: Mrs. Villareal
+          times: [9, 9, 6]
+    - sections:
+        - name: 11STEM1
+        - name: 11STEM2
+        - name: 11STEM3
+        - name: 11STEM4
+      subjects:
+        - name: AM
+          teacher: Break
+          times: [2, 2, 2, 2, 2]
+          assignable:
+            priority: 0
+            daily: true
+            times: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+        - name: Lunch
+          teacher: Break
+          times: [4, 4, 4, 4, 4]
+        - name: Reading and Writing
+          teacher: Mrs. Aquino
+          times: [9, 9, 6]
+        - name: General Chemistry 2
+          teacher: Mrs. Dayrit
+          times: [9, 9, 6]
+        - name: Pagbasa at Pagsuri
+          teacher: Mrs. Fernandez
+          times: [9, 9, 6]
+        - name: Practical Research 1
+          teacher: Mrs. De Jesus
+          times: [9, 9, 6]
+        - name: Physical Education 2
+          teacher: Mr. Darilag
+          times: [6]
+        - name: Probability and Statistics
+          teacher: Mr. Lumogdang
+          times: [9, 9, 6]
+        - name: English for Academic Purposes
+          teacher: Mrs. Montubig
+          times: [9, 9, 6]
+        - name: Empowerment Technologies
+          teacher: Mr. Dogma
+          times: [9, 9, 6]
+        - name: Basic Calculus
+          teacher: Mr. Agustin
+          times: [9, 9, 6]
+    - sections:
+        - name: 11STEM5
+      subjects:
+        - name: AM
+          teacher: Break
+          times: [2, 2, 2, 2, 2]
+          assignable:
+            priority: 0
+            daily: true
+            times: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+        - name: Lunch
+          teacher: Break
+          times: [4, 4, 4, 4, 4]
+        - name: Reading and Writing
+          teacher: Mrs. Aquino
+          times: [9, 9, 6]
+        - name: General Chemistry 2
+          teacher: Mrs. Dayrit
+          times: [9, 9, 6]
+        - name: Pagbasa at Pagsuri
+          teacher: Mrs. Fernandez
+          times: [9, 9, 6]
+        - name: Practical Research 1
+          teacher: Mrs. Villareal
+          times: [9, 9, 6]
+        - name: Physical Education 2
+          teacher: Mr. Darilag
+          times: [6]
+        - name: Probability and Statistics
+          teacher: Mr. Lumogdang
+          times: [9, 9, 6]
+        - name: English for Academic Purposes
+          teacher: Mrs. Montubig
+          times: [9, 9, 6]
+        - name: Empowerment Technologies
+          teacher: Mr. Dogma
+          times: [9, 9, 6]
+        - name: Basic Calculus
+          teacher: Mr. Agustin
+          times: [9, 9, 6]
+constraints:
+    - type: breakCollisions
+      priority: 1
+      maxCollisions: 3
+    - type: distinctPerDay
+      priority: 0
+    - type: evenDismissal
+      priority: 1
+      sections: [Locke, Rousseau, Hobbes]
+    - type: evenDismissal
+      priority: 1
+      sections: [11STEM1, 11STEM2, 11STEM3, 11STEM4, 11STEM5]
+    - type: minSubjects
+      priority: 0
+      minSubjects: 2
+    - type: nonSimultaneous
+      priority: 0
+    - type: reqFirstSubject
+      priority: 0
+    - type: teacherBreak
+      priority: 1
+      lbound: 6
+      rbound: 18
+      length: 2
+    - type: teacherBreak
+      priority: 1
+      lbound: 24
+      rbound: 36
+      length: 4
+    - type: slotsBetween
+      priority: 1
+      minSlots: 6
+      maxSlots: 9
+    - type: subjectGaps
+      priority: 0
+seconds: 5
+attempts: 1
+top: 1

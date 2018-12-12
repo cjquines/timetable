@@ -9,14 +9,17 @@
 #include "parser.h"
 #include "group.h"
 #include "schedule.h"
+#include "constraints/breakcollisions.h"
 #include "constraints/distinctperday.h"
 #include "constraints/evendismissal.h"
 #include "constraints/maxconsecutive.h"
 #include "constraints/minsubjects.h"
 #include "constraints/nonsimultaneous.h"
 #include "constraints/reqfirstsubject.h"
+#include "constraints/slotsbetween.h"
 #include "constraints/subjectgaps.h"
 #include "constraints/subjecttime.h"
+#include "constraints/teacherbreak.h"
 #include "constraints/teachertime.h"
 
 #include "yaml-cpp/yaml.h"
@@ -152,11 +155,15 @@ void Parser::ReadTeachers() {
         throw std::runtime_error(
           name + "'s unassignable times doesn't look like a list.");
 
+      bool daily = false;
+      if (it["unassignable"]["daily"])
+        daily = it["unassignable"]["daily"].as<bool>();
+
       int priority = it["unassignable"]["priority"].as<int>();
       if (priority > 0) priority *= priority_factor_;
 
       schedule_->AddConstraint<TeacherTime>(priority, num_teachers_,
-                                it["unassignable"]["times"].as< std::vector<int> >());
+        it["unassignable"]["times"].as< std::vector<int> >(), daily);
     }
 
     teachers_dict_[name] = num_teachers_++;
@@ -230,6 +237,35 @@ void Parser::ReadGroups() {
       std::vector<int> times = jt["times"].as< std::vector<int> >();
       grp->AddSubject(num_subjects_, times, teacher, name);
 
+      if (jt["assignable"] && jt["unassignable"])
+        throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "can't have both assignable and unassignable.");
+
+      if (jt["assignable"]) {
+        if (!jt["assignable"]["priority"])
+          throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "'s assignable constraint doesn't have a priority.");
+        if (!jt["assignable"]["priority"].IsScalar())
+          throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "'s assignable priority doesn't look like an integer.");
+        if (!jt["assignable"]["times"])
+          throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "'s assignable constraint doesn't have a list of times.");
+        if (!jt["assignable"]["times"].IsSequence())
+          throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
+                                 + "'s assignable times doesn't look like a list.");
+
+        int priority = jt["assignable"]["priority"].as<int>();
+        if (priority > 0) priority *= priority_factor_;
+
+        bool daily = false;
+        if (jt["assignable"]["daily"])
+          daily = jt["assignable"]["daily"].as<bool>();
+
+        schedule_->AddConstraint<SubjectTime>(priority, num_subjects_,
+          jt["assignable"]["times"].as< std::vector<int> >(), daily, false);
+      }
+
       if (jt["unassignable"]) {
         if (!jt["unassignable"]["priority"])
           throw std::runtime_error(name + " of group " + std::to_string(num_groups_)
@@ -247,8 +283,12 @@ void Parser::ReadGroups() {
         int priority = jt["unassignable"]["priority"].as<int>();
         if (priority > 0) priority *= priority_factor_;
 
+        bool daily = false;
+        if (jt["assignable"]["daily"])
+          daily = jt["assignable"]["daily"].as<bool>();
+
         schedule_->AddConstraint<SubjectTime>(priority, num_subjects_,
-                                  jt["unassignable"]["times"].as< std::vector<int> >());
+          jt["unassignable"]["times"].as< std::vector<int> >(), daily);
       }
 
       num_subjects_++;
@@ -282,7 +322,16 @@ void Parser::ReadConstraints() {
     int priority = it["priority"].as<int>();
     if (priority > 0) priority *= priority_factor_;
 
-    if (type == "distinctPerDay") {
+    if (type == "breakCollisions") {
+      if (!it["maxCollisions"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a maxCollisions.");
+      if (!it["maxCollisions"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s maxCollisions doesn't look like an integer.");
+      
+      schedule_->AddConstraint<BreakCollisions>(priority, it["maxCollisions"].as<int>());
+    } else if (type == "distinctPerDay") {
       schedule_->AddConstraint<DistinctPerDay>(priority);
     } else if (type == "evenDismissal") {
       if (!it["sections"])
@@ -330,8 +379,47 @@ void Parser::ReadConstraints() {
       schedule_->AddConstraint<NonSimultaneous>(priority);
     } else if (type == "reqFirstSubject") {
       schedule_->AddConstraint<ReqFirstSubject>(priority);
+    } else if (type == "slotsBetween") {
+      if (!it["minSlots"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a minSlots.");
+      if (!it["minSlots"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s minSlots doesn't look like an integer.");
+      if (!it["maxSlots"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a maxSlots.");
+      if (!it["maxSlots"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s maxSlots doesn't look like an integer.");
+
+      schedule_->AddConstraint<SlotsBetween>(priority, it["minSlots"].as<int>(),
+                                             it["maxSlots"].as<int>());
     } else if (type == "subjectGaps") {
       schedule_->AddConstraint<SubjectGaps>(priority);
+    } else if (type == "teacherBreak") {
+      if (!it["lbound"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a lbound.");
+      if (!it["lbound"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s minSlots doesn't look like an integer.");
+      if (!it["rbound"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a rbound.");
+      if (!it["rbound"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s rbound doesn't look like an integer.");
+      if (!it["length"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a length.");
+      if (!it["length"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s length doesn't look like an integer.");
+
+      schedule_->AddConstraint<TeacherBreak>(priority, it["lbound"].as<int>(),
+                                             it["rbound"].as<int>(),
+                                             it["length"].as<int>());
     } else {
       throw std::runtime_error("type " + type + " isn't recognized.");
     }

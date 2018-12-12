@@ -8,6 +8,7 @@ NonSimultaneous::NonSimultaneous(Schedule* schedule, int priority)
 int NonSimultaneous::HalfCount(int section, int lhs_timeslot,
                                int rhs_timeslot) {
   int teacher = schedule_->GetTeacherOf(section, lhs_timeslot);
+  if (teacher == 0) return 0;
   int length = schedule_->GetLengthOf(section, lhs_timeslot);
   int result = 0;
   for (int i = 0; i < length; i++) {
@@ -44,6 +45,7 @@ int NonSimultaneous::CountAll() {
   int result = 0;
   
   for (const auto &it : schedule_->GetTeachers()) {
+    if (it->GetId() == 0) continue;
     for (int j = 0; j < schedule_->GetNumSlots(); j++) {
       result += std::max(0, schedule_->CountSectionsOf(it->GetId(), j) - 1);
     }
