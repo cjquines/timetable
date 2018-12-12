@@ -16,6 +16,7 @@
 #include "constraints/minsubjects.h"
 #include "constraints/nonsimultaneous.h"
 #include "constraints/reqfirstsubject.h"
+#include "constraints/slotsbetween.h"
 #include "constraints/subjectgaps.h"
 #include "constraints/subjecttime.h"
 #include "constraints/teachertime.h"
@@ -373,6 +374,22 @@ void Parser::ReadConstraints() {
       schedule_->AddConstraint<NonSimultaneous>(priority);
     } else if (type == "reqFirstSubject") {
       schedule_->AddConstraint<ReqFirstSubject>(priority);
+    } else if (type == "slotsBetween") {
+      if (!it["minSlots"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a minSlots.");
+      if (!it["minSlots"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s minSlots doesn't look like an integer.");
+      if (!it["maxSlots"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a maxSlots.");
+      if (!it["maxSlots"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s maxSlots doesn't look like an integer.");
+
+      schedule_->AddConstraint<SlotsBetween>(priority, it["minSlots"].as<int>(),
+                                             it["maxSlots"].as<int>());
     } else if (type == "subjectGaps") {
       schedule_->AddConstraint<SubjectGaps>(priority);
     } else {

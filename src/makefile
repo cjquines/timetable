@@ -6,6 +6,7 @@ CNSTR = constraints/breakcollisions.o \
 	constraints/maxconsecutive.o \
 	constraints/nonsimultaneous.o \
 	constraints/reqfirstsubject.o \
+	constraints/slotsbetween.o \
 	constraints/subjectgaps.o \
 	constraints/subjecttime.o \
 	constraints/teachertime.o
