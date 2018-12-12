@@ -19,6 +19,7 @@
 #include "constraints/slotsbetween.h"
 #include "constraints/subjectgaps.h"
 #include "constraints/subjecttime.h"
+#include "constraints/teacherbreak.h"
 #include "constraints/teachertime.h"
 
 #include "yaml-cpp/yaml.h"
@@ -392,6 +393,29 @@ void Parser::ReadConstraints() {
                                              it["maxSlots"].as<int>());
     } else if (type == "subjectGaps") {
       schedule_->AddConstraint<SubjectGaps>(priority);
+    } else if (type == "teacherBreak") {
+      if (!it["lbound"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a lbound.");
+      if (!it["lbound"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s minSlots doesn't look like an integer.");
+      if (!it["rbound"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a rbound.");
+      if (!it["rbound"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s rbound doesn't look like an integer.");
+      if (!it["length"])
+        throw std::runtime_error("one of the " + type
+                               + " constraints doesn't have a length.");
+      if (!it["length"].IsScalar())
+        throw std::runtime_error("one of the " + type
+                               + "'s length doesn't look like an integer.");
+
+      schedule_->AddConstraint<TeacherBreak>(priority, it["lbound"].as<int>(),
+                                             it["rbound"].as<int>(),
+                                             it["length"].as<int>());
     } else {
       throw std::runtime_error("type " + type + " isn't recognized.");
     }

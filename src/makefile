@@ -9,6 +9,7 @@ CNSTR = constraints/breakcollisions.o \
 	constraints/slotsbetween.o \
 	constraints/subjectgaps.o \
 	constraints/subjecttime.o \
+	constraints/teacherbreak.o \
 	constraints/teachertime.o
 OBJS = emitter.o group.o parser.o schedule.o section.o \
 	solver.o subject.o teacher.o constraints/constraint.o
