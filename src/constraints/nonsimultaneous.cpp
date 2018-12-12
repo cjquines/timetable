@@ -5,11 +5,11 @@
 NonSimultaneous::NonSimultaneous(Schedule* schedule, int priority)
     : Constraint(schedule, priority) {}
 
-int NonSimultaneous::CountTranslate(int section, int timeslot,
-                                    int open_timeslot) {
-  int teacher = schedule_->GetTeacherOf(section, timeslot);
+int NonSimultaneous::HalfCount(int section, int lhs_timeslot,
+                               int rhs_timeslot) {
+  int teacher = schedule_->GetTeacherOf(section, lhs_timeslot);
   if (teacher == 0) return 0;
-  int length = schedule_->GetLengthOf(section, timeslot);
+  int length = schedule_->GetLengthOf(section, lhs_timeslot);
   int result = 0;
   for (int i = 0; i < length; i++) {
     if (schedule_->CountSectionsOf(teacher, lhs_timeslot+i) > 1) result--;
@@ -34,12 +34,8 @@ int NonSimultaneous::CountSwapTimeslot(int section, int lhs_timeslot,
 int NonSimultaneous::CountAdjSwap(int section, int lhs_timeslot,
                                   int rhs_timeslot) {
   int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
-  int result = 0;
-
-  if (lhs_teacher != 0)
-    result += HalfCount(section, lhs_timeslot, new_rhs_slot);
-  if (rhs_teacher != 0) 
-    result += HalfCount(section, rhs_timeslot, lhs_timeslot);
+  int result = HalfCount(section, lhs_timeslot, new_rhs_slot)
+             + HalfCount(section, rhs_timeslot, lhs_timeslot);
 
   if (priority_ > 0) return result*priority_;
   return result;
