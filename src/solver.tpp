@@ -28,11 +28,8 @@ int Solver::SearchTemplate(T translate, U swap, V adjswap) {
     }
 
     if (flag == 0) {
-      int rbound = schedule_->ClampDay(lhs_timeslot).second;
-      int rhs_timeslot = lhs_timeslot + 1;
-      while ((schedule_->GetSubjectOf(section, rhs_timeslot) < 0)
-          && rhs_timeslot < rbound) rhs_timeslot++;
-      if (rhs_timeslot == rbound) break;
+      int rhs_timeslot = schedule_->NextSubject(section, lhs_timeslot);
+      if (rhs_timeslot == schedule_->ClampDay(lhs_timeslot).second) break;
       std::tie(flag, result) = adjswap(section, lhs_timeslot, rhs_timeslot);
     }
 
