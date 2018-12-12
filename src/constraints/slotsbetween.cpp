@@ -109,32 +109,22 @@ int SlotsBetween::CountAdjSwap(int section, int lhs_timeslot,
   if ((lhs_teacher != 0 && rhs_teacher != 0) || (lhs_teacher == rhs_teacher))
     return 0;
 
-  int lhs_lbound, lhs_rbound, rhs_lbound, rhs_rbound;
-  std::tie(lhs_lbound, lhs_rbound) = schedule_->ClampDay(lhs_timeslot);
-  std::tie(rhs_lbound, rhs_rbound) = schedule_->ClampDay(rhs_timeslot);
+  int lbound, rbound;
+  std::tie(lbound, rbound) = schedule_->ClampDay(lhs_timeslot);
   int lhs_length = schedule_->GetLengthOf(section, lhs_timeslot);
-  int rhs_length = schedule_->GetLengthOf(section, lhs_timeslot);
+  int rhs_length = schedule_->GetLengthOf(section, rhs_timeslot);
   int new_rhs_slot = schedule_->NewRHSSlot(section, lhs_timeslot, rhs_timeslot);
-  int result = - Score(section, lhs_lbound, lhs_rbound)
-               - Score(section, rhs_lbound, rhs_rbound);
+  int result = -Score(section, lbound, rbound);
 
-  if (lhs_teacher == 0) {
-    result += Score(section, lhs_lbound, lhs_rbound,
-                    {new_rhs_slot, lhs_length}, {lhs_timeslot, lhs_length},
-                    {lhs_timeslot, rhs_length}, {rhs_timeslot, rhs_length})
-            + Score(section, rhs_lbound, rhs_rbound,
+  if (lhs_teacher == 0)
+    result += Score(section, lbound, rbound,
                     {new_rhs_slot, lhs_length}, {lhs_timeslot, lhs_length},
                     {lhs_timeslot, rhs_length}, {rhs_timeslot, rhs_length});
-  } else {
-    result += Score(section, lhs_lbound, lhs_rbound,
-                    {lhs_timeslot, rhs_length}, {rhs_timeslot, rhs_length},
-                    {new_rhs_slot, lhs_length}, {lhs_timeslot, lhs_length})
-            + Score(section, rhs_lbound, rhs_rbound,
+  else
+    result += Score(section, lbound, rbound,
                     {lhs_timeslot, rhs_length}, {rhs_timeslot, rhs_length},
                     {new_rhs_slot, lhs_length}, {lhs_timeslot, lhs_length});
-  }
 
-  if (lhs_lbound == rhs_lbound) result /= 2;
   if (priority_ > 0) return result*priority_;
   return result;
 }
