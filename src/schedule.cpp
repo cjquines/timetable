@@ -163,11 +163,7 @@ bool Schedule::IsValidHardAdjSwap(int section, int lhs_timeslot,
   // hard adj swapped to subject with head at rhs_timeslot. 
   assert(timetable_[section][lhs_timeslot] >= 0);
   assert(timetable_[section][rhs_timeslot] >= 0);
-  if (rhs_timeslot < lhs_timeslot) return false;
-  int lhs_length = GetLengthOf(section, lhs_timeslot);
-  return (ClampDay(lhs_timeslot).first == ClampDay(rhs_timeslot).first)
-       && IsFree(section, lhs_timeslot + lhs_length,
-                 rhs_timeslot - (lhs_timeslot + lhs_length));
+  return NextSubject(section, lhs_timeslot) == rhs_timeslot;
 }
 
 bool Schedule::IsValidSoftTranslate(int section, int timeslot,
